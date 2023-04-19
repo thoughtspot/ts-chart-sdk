@@ -1,0 +1,13 @@
+{
+    "defaultLocale" : "en_US",
+    "name": "Custom Column Chart",
+    "description": "Chart.js Column chart created for TS using BYOC",
+    "author": {
+        "name": "Chetan Agrawal",
+        "email": "chetan.agrawal@thoughtspot.com",
+        "org": "ThoughtSpot"
+    },
+    "sourceUrl": "TBD",
+    "iconUrl": "TBD",
+    "manifestVersion": "v0.1"
+}

@@ -1,0 +1,49 @@
+{
+  "name": "@thoughtspot/ts-chart-sdk",
+  "private": true,
+  "version": "0.0.0",
+  "module": "lib/index",
+  "main": "lib/index",
+  "types": "lib/index",
+  "files": [
+    "dist/**",
+    "lib/**",
+    "src/**"
+  ],
+  "scripts": {
+    "build": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
+    "compile-ts": "pnpm run nx-install",
+    "test": "npx jest -c jest.config.sdk.js --runInBand",
+    "lint": "eslint 'src/**'",
+    "lint:fix": "eslint 'src/**' --fix",
+    "ci": "npm-run-all lint test",
+    "docgen": "typedoc --tsconfig tsconfig.json",
+    "dev": "npm run dev:bar",
+    "dev:bar": "vite serve example/custom-bar-chart"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@types/lodash": "4.14.175",
+    "@types/node": "^16.11.7",
+    "eslint": "7.32.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-comment-length": "0.9.2",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jsdoc": "41.1.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^27.4.6",
+    "jsdom": "^19.0.0",
+    "npm-run-all": "^4.1.5",
+    "ts-jest": "^27.1.1",
+    "typedoc": "^0.24.4",
+    "typescript": "4.8.4",
+    "vite": "4.2.1"
+  },
+  "dependencies": {
+    "chart.js": "4.2.1",
+    "lodash": "^4.17.21"
+  },
+  "prettier": "./prettier-config"
+}

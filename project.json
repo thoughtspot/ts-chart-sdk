@@ -1,0 +1,20 @@
+{
+  "root": "js/ts-packages/ts-chart-sdk",
+  "sourceRoot": "js/ts-packages/ts-chart-sdk/src",
+  "projectType": "library",
+  "targets": {
+    "install": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "pnpm run build"
+        ],
+        "cwd": "js/ts-packages/ts-chart-sdk",
+        "outputPath": [
+          "js/ts-packages/ts-chart-sdk/lib",
+          "js/ts-packages/ts-chart-sdk/cjs"
+        ]
+      }
+    }
+  }
+}
