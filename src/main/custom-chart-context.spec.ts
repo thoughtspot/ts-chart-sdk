@@ -5,8 +5,9 @@
  */
 
 import { mockInitializeContextPayload } from '../test/test-utils';
+import { ErrorType } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
-import { CustomChartContext } from './custom-chart-context';
+import { CustomChartContext, getChartContext } from './custom-chart-context';
 import * as PostMessageEventBridge from './post-message-event-bridge';
 
 jest.mock('./post-message-event-bridge');
@@ -41,20 +42,25 @@ describe('CustomChartContext', () => {
     });
 
     describe('initialize', () => {
+        let customChartContext: CustomChartContext;
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+        });
+
         afterEach(() => {
             // Destroy the chart context after each test
+            customChartContext.destroy();
             jest.resetAllMocks();
             eventProcesor = null;
         });
 
         test('should wait till the parent calls initialize', async () => {
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
             expect(mockInitMessage).toHaveBeenCalled();
-            // // initialize function should not resolve
+            // initialize function should not resolve
             const promise = customChartContext.initialize();
             const rej = jest.fn();
             const res = jest.fn();
@@ -65,16 +71,9 @@ describe('CustomChartContext', () => {
 
             expect(rej).not.toHaveBeenCalled();
             expect(res).not.toHaveBeenCalled();
-            customChartContext.destroy();
         });
 
         test('should return a promise that resolves when the chart context is initialized', async () => {
-            // Create a new instance of CustomChartContext before each test
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
             expect(mockInitMessage).toHaveBeenCalled();
 
             // Call the initialize function and wait for it to resolve
@@ -93,31 +92,74 @@ describe('CustomChartContext', () => {
 
             await expect(promise).resolves.toBeUndefined();
             expect(mockPostMessage).toHaveBeenCalledWith({
-                isConfigValid: true,
-                defaultChartConfig: [],
+                isConfigValid: false,
+                defaultChartConfig: undefined,
                 chartConfigEditorDefinition: undefined,
                 visualPropEditorDefinition: undefined,
             });
             expect(mockPostMessage).toHaveBeenCalled();
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
+        });
 
-            customChartContext.destroy();
+        test('multiple intializations should throw an error', async () => {
+            // Call the initialize function and wait for it to resolve
+            const promise = customChartContext.initialize();
+
+            // Check that the hasInitializedPromise has resolved
+            const mockPostMessage = jest.fn();
+            eventProcesor({
+                data: {
+                    payload: mockInitializeContextPayload,
+                    eventType: TSToChartEvent.Initialize,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+
+            await expect(promise).resolves.toBeUndefined();
+
+            let error;
+            try {
+                customChartContext = new CustomChartContext({
+                    getDefaultChartConfig,
+                    getQueriesFromChartConfig,
+                    renderChart,
+                });
+            } catch (err: any) {
+                error = err.message;
+            }
+            expect(error).toBe(ErrorType.MultipleContextsNotSupported);
+
+            try {
+                await getChartContext({
+                    getDefaultChartConfig,
+                    getQueriesFromChartConfig,
+                    renderChart,
+                });
+            } catch (err: any) {
+                error = err.message;
+            }
+            expect(error).toBe(ErrorType.MultipleContextsNotSupported);
         });
     });
 
     describe('on', () => {
-        afterEach(() => {
-            // Destroy the chart context after each test
-            jest.resetAllMocks();
-            eventProcesor = null;
-        });
-
-        test('should not trigger post message if host is not accurata', () => {
-            const customChartContext = new CustomChartContext({
+        let customChartContext: CustomChartContext;
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
                 renderChart,
             });
+        });
+        afterEach(() => {
+            // Destroy the chart context after each test
+            jest.resetAllMocks();
+            customChartContext.destroy();
+            eventProcesor = null;
+        });
+
+        test('should not trigger post message if host is not accurate', () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for ChartConfigValidate
@@ -133,15 +175,9 @@ describe('CustomChartContext', () => {
             // Check that the event listener was added to the eventListeners
             // object
             expect(mockPostMessage).not.toHaveBeenCalled();
-            customChartContext.destroy();
         });
 
-        test('test for default internal function', () => {
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
+        test('default internal function testing', () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for ChartConfigValidate
@@ -189,15 +225,23 @@ describe('CustomChartContext', () => {
             expect(mockPostMessage).toHaveBeenCalledWith({});
             expect(renderChart).toHaveBeenCalled();
 
-            customChartContext.destroy();
+            mockPostMessage.mockReset();
+
+            // mock the event trigger for getQueriesFromChartConfig
+            eventProcesor({
+                data: {
+                    payload: mockInitializeContextPayload,
+                    eventType: TSToChartEvent.GetDataQuery,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            // Check that the response was received
+            expect(mockPostMessage).toHaveBeenCalledWith({});
+            expect(getQueriesFromChartConfig).toHaveBeenCalled();
         });
 
-        test('test for default external function', () => {
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
+        test('default external function testing', () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for DataUpdate
@@ -262,16 +306,9 @@ describe('CustomChartContext', () => {
             expect(customChartContext.getChartModel().visualProps).toBe(
                 'random data',
             );
-
-            customChartContext.destroy();
         });
 
         test('should add an event listener to the specified event type', () => {
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
             expect(mockInitMessage).toHaveBeenCalled();
             // Define a test event type and callback function
             const TEST_EVENT_TYPE = 'testEventType' as any;
@@ -293,15 +330,9 @@ describe('CustomChartContext', () => {
             // Check that the event listener was added to the eventListeners
             // object
             expect(testCallbackFn).toHaveBeenCalled();
-            customChartContext.destroy();
         });
 
         test('should respond with an error to an unspecified event type', () => {
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
             expect(mockInitMessage).toHaveBeenCalled();
             // Define a test event type and callback function
             const TEST_EVENT_TYPE = 'testEventType' as any;
@@ -322,24 +353,26 @@ describe('CustomChartContext', () => {
                 hasError: true,
                 error: `Event type not recognised or processed: ${TEST_EVENT_TYPE}`,
             });
-            customChartContext.destroy();
         });
     });
 
     describe('emitEvent', () => {
-        afterEach(() => {
-            // Destroy the chart context after each test
-            jest.resetAllMocks();
-            eventProcesor = null;
-        });
-
-        test('should reject the promise if the chart context is not initialized', async () => {
-            // Create a new instance of CustomChartContext before each test
-            const customChartContext = new CustomChartContext({
+        let customChartContext: CustomChartContext;
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
                 renderChart,
             });
+        });
+        afterEach(() => {
+            // Destroy the chart context after each test
+            jest.resetAllMocks();
+            customChartContext.destroy();
+            eventProcesor = null;
+        });
+
+        test('should reject the promise if the chart context is not initialized', async () => {
             // Define a test event type and payload
             const TEST_EVENT_TYPE = 'testEventType' as any;
             const testPayload = { value: 'testPayload' };
@@ -352,17 +385,9 @@ describe('CustomChartContext', () => {
             // Check that the result is defined
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
             await expect(result).rejects.not.toBeDefined();
-            customChartContext.destroy();
         });
 
         test('should resolve the promise if the chart context is initialized', async () => {
-            // Create a new instance of CustomChartContext before each test
-            const customChartContext = new CustomChartContext({
-                getDefaultChartConfig,
-                getQueriesFromChartConfig,
-                renderChart,
-            });
-
             // Check that the hasInitializedPromise has resolved
             const mockPostMessage = jest.fn();
             eventProcesor({
@@ -376,9 +401,12 @@ describe('CustomChartContext', () => {
 
             // define mock response for the postMessage response promise
             let resolve: any;
-            mockPostMessageToHost.mockImplementation(() => new global.Promise<any>((res) => {
-                resolve = res;
-            }));
+            mockPostMessageToHost.mockImplementation(
+                () =>
+                    new global.Promise<any>((res) => {
+                        resolve = res;
+                    }),
+            );
 
             // Define a test event type and payload
             const TEST_EVENT_TYPE = 'testEventType' as any;
@@ -399,7 +427,6 @@ describe('CustomChartContext', () => {
                 TEST_EVENT_TYPE,
             );
             await expect(result).resolves.toBe('helloworld');
-            customChartContext.destroy();
         });
     });
 });

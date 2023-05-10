@@ -22,13 +22,13 @@ export interface ChartConfigDimension {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * list of columns added for the dimension
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columns: ChartColumn[],
+    columns: ChartColumn[];
 }
 
 /**
@@ -46,13 +46,13 @@ export interface ChartConfig {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * Details of columns for each dimension
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    dimensions: ChartConfigDimension[]
+    dimensions: ChartConfigDimension[];
 }
 
 /**
@@ -73,14 +73,14 @@ export type DataArray = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnDataType: DataType,
+    columnDataType: DataType;
     /**
      * The array of data values associated with the column
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    dataValue: any[]
-}
+    dataValue: any[];
+};
 
 /**
  * For each query defined by the user, a query data object is sent
@@ -95,26 +95,26 @@ export type QueryData = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    data: DataArray[],
+    data: DataArray[];
 
     /**
      * @hidden
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    completionRatio: number,
+    completionRatio: number;
     /**
      * @hidden
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    samplingRatio: number,
+    samplingRatio: number;
 
     /**
      * number of rows of data fetched for the query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    totalRowCount: number
-}
+    totalRowCount: number;
+};
 
 /**
  *
@@ -128,26 +128,26 @@ export interface ChartModel {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columns: ChartColumn[],
+    columns: ChartColumn[];
     /**
      * Array of Datasets for each query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    data?: QueryData[],
-    sortInfo?: any, // TODO(chetan):
-    visualProps?: VisualProps,
+    data?: QueryData[];
+    sortInfo?: any; // TODO(chetan):
+    visualProps?: VisualProps;
     config: {
         // chart config stored by chart developer
-        chartConfig?: ChartConfig[],
-    }
+        chartConfig?: ChartConfig[];
+    };
 }
 
 // Generic Validation Response
 export type ValidationResponse = {
-    isValid: boolean,
-    validationErrorMessage?: string[]
-}
+    isValid: boolean;
+    validationErrorMessage?: string[];
+};
 
 /**
  * Custom Visual props is the stored metadata for the visual props definition
@@ -163,7 +163,7 @@ export type VisualProps = JSON;
 type CustomStylingConfig = any;
 
 export interface AppConfig {
-    styleConfig?: CustomStylingConfig,
+    styleConfig?: CustomStylingConfig;
 
     appOptions?: {
         isMobile?: boolean;
@@ -171,7 +171,7 @@ export interface AppConfig {
 
         // runtime configurations
         isDebugMode?: boolean; // enables debug mode for logging
-    },
+    };
 
     // locale related settings
     localeOptions?: {

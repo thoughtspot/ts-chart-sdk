@@ -13,46 +13,46 @@
  *
  * @group Visual Properties Editor
  */
-export interface TextInputFormDetail{
-    type: 'text',
+export interface TextInputFormDetail {
+    type: 'text';
     /**
      * key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * I18n'ed string to show on the form label
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label?: string,
+    label?: string;
     /**
      * Use text as password
      *
      * @default false
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    password?: boolean,
+    password?: boolean;
     /**
      * Allow multiline text
      *
      * @default false
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    multiline?: boolean,
+    multiline?: boolean;
     /**
      * Placeholder text
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    placeholder?: string,
+    placeholder?: string;
     /**
      * Default value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string,
+    defaultValue?: string;
 }
 
 /**
@@ -61,25 +61,25 @@ export interface TextInputFormDetail{
  * @group Visual Properties Editor
  */
 export interface ToggleFormDetail {
-    type: 'toggle',
+    type: 'toggle';
     /**
      * key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * I18n'ed string to show on the form label
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label?: string,
+    label?: string;
     /**
      * Default value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: boolean,
+    defaultValue?: boolean;
 }
 
 /**
@@ -88,25 +88,25 @@ export interface ToggleFormDetail {
  * @group Visual Properties Editor
  */
 export interface CheckboxFormDetail {
-    type: 'checkbox',
+    type: 'checkbox';
     /**
      * key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * I18n'ed string to show on the form label
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label?: string,
+    label?: string;
     /**
      * Default value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: boolean,
+    defaultValue?: boolean;
 }
 
 /**
@@ -115,31 +115,31 @@ export interface CheckboxFormDetail {
  * @group Visual Properties Editor
  */
 export interface RadioButtonFormDetail {
-    type: 'radio',
+    type: 'radio';
     /**
      * key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * I18n'ed string to show on the form label
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label?: string,
+    label?: string;
     /**
      * Default value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string,
+    defaultValue?: string;
     /**
      * list fo values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    values: string[],
+    values: string[];
 }
 
 /**
@@ -148,31 +148,31 @@ export interface RadioButtonFormDetail {
  * @group Visual Properties Editor
  */
 export interface DropDownFormDetail {
-    type: 'dropdown',
+    type: 'dropdown';
     /**
      * key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * I18n'ed string to show on the form label
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label?: string,
+    label?: string;
     /**
      * Default value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string,
+    defaultValue?: string;
     /**
      * list fo values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    values: string[],
+    values: string[];
 }
 
 /**
@@ -181,31 +181,31 @@ export interface DropDownFormDetail {
  * @group Visual Properties Editor
  */
 export interface Section {
-  type: 'section'
-  /**
-   * key to define & store the children's parent
-   *
-   * @version SDK: 0.1 | ThoughtSpot:
-   */
-  key: string,
-  /**
-   * I18n'ed string to show the section name label
-   *
-   * @version SDK: 0.1 | ThoughtSpot:
-   */
-  label?: string,
-  /**
-   * Can include either form elements or nested sections
-   *
-   * @version SDK: 0.1 | ThoughtSpot:
-   */
-  children?: PropElement[],
-  /**
-   * defines form alignment in the view for the section
-   *
-   * @version SDK: 0.1 | ThoughtSpot:
-   */
-  alignment?: 'row' | 'column'
+    type: 'section';
+    /**
+     * key to define & store the children's parent
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * I18n'ed string to show the section name label
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Can include either form elements or nested sections
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    children?: PropElement[];
+    /**
+     * defines form alignment in the view for the section
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    alignment?: 'row' | 'column';
 }
 
 /**
@@ -213,8 +213,13 @@ export interface Section {
  *
  * @group Visual Properties Editor
  */
-export type PropElement = Section | TextInputFormDetail | ToggleFormDetail | CheckboxFormDetail
-  | RadioButtonFormDetail | DropDownFormDetail;
+export type PropElement =
+    | Section
+    | TextInputFormDetail
+    | ToggleFormDetail
+    | CheckboxFormDetail
+    | RadioButtonFormDetail
+    | DropDownFormDetail;
 
 /**
  * Visual property editor definition object
@@ -228,7 +233,7 @@ export interface VisualPropEditorDefinition {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    elements: PropElement[]
+    elements: PropElement[];
 }
 
 /**

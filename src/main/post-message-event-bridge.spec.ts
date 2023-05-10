@@ -44,7 +44,7 @@ describe('postMessageToHostApp', () => {
             (channel.port1.onmessage as any)(response);
         } else {
             // on message should have been initialized
-            expect(true).toBeFalsy();
+            throw new Error('on message should have been initialized');
         }
 
         // Wait for the promise to resolve
@@ -100,7 +100,7 @@ describe('postMessageToHostApp', () => {
             (channel.port1.onmessage as any)(response);
         } else {
             // on message should have been initialized
-            expect(true).toBeFalsy();
+            throw new Error('on message should have been initialized');
         }
 
         // Wait for the promise to reject

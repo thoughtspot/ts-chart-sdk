@@ -21,16 +21,16 @@ import {
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
     DataUpdateEventPayload,
+    GetDataQueryPayload,
+    GetDataQueryResponsePayload,
     InitializeEventPayload,
     InitializeEventResponsePayload,
+    Query,
     TSToChartEvent,
     TSToChartEventsPayloadMap,
     TSToChartInternalEventsPayloadMap,
     VisualPropsUpdateEventPayload,
     VisualPropsValidateEventPayload,
-    Query,
-    GetDataQueryPayload,
-    GetDataQueryResponsePayload,
 } from '../types/ts-to-chart-event.types';
 import { VisualPropEditorDefinition } from '../types/visual-prop.types';
 import * as PostMessageEventBridge from './post-message-event-bridge';
@@ -53,9 +53,7 @@ export type CustomChartContextProps = {
      * @returns {@link Array<Query>}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    getQueriesFromChartConfig: (
-        chartConfig: ChartConfig[],
-    ) => Query[];
+    getQueriesFromChartConfig: (chartConfig: ChartConfig[]) => Query[];
     /**
      * Main Render function that will render the chart based on the chart context provided
      *
@@ -163,7 +161,7 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     // TODO: define a better type mapping here.
-    private eventListeners: Record< string, ((...args: any[]) => void)[]> = {};
+    private eventListeners: Record<string, ((...args: any[]) => void)[]> = {};
 
     /**
      * This is a promise object to wait on till the chart context
@@ -302,7 +300,7 @@ export class CustomChartContext {
     private registerEventProcessor = () => {
         if (isInitialized) {
             console.error(
-                'The context is already initialized. you cannot have mulitple contexts',
+                'The context is already initialized. you cannot have multiple contexts',
             );
             throw new Error(ErrorType.MultipleContextsNotSupported);
         }
@@ -355,7 +353,8 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.Initialize,
-            (payload: InitializeEventPayload) => this.initializeContext(payload),
+            (payload: InitializeEventPayload) =>
+                this.initializeContext(payload),
         );
 
         /**
@@ -367,10 +366,11 @@ export class CustomChartContext {
             TSToChartEvent.VisualPropsValidate,
             (payload: VisualPropsValidateEventPayload): ValidationResponse => {
                 if (this.chartContextProps.validateVisualProps) {
-                    const validationResponse = this.chartContextProps.validateVisualProps(
-                        payload.visualProps,
-                        this.chartModel,
-                    );
+                    const validationResponse =
+                        this.chartContextProps.validateVisualProps(
+                            payload.visualProps,
+                            this.chartModel,
+                        );
                     return validationResponse;
                 }
                 // this will never be true
@@ -385,12 +385,13 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.ChartConfigValidate,
-            (payload: ChartConfigValidateEventPayload) => {
+            (payload: ChartConfigValidateEventPayload): ValidationResponse => {
                 if (this.chartContextProps.validateConfig) {
-                    const validationResponse = this.chartContextProps.validateConfig(
-                        payload.chartConfig,
-                        this.chartModel,
-                    );
+                    const validationResponse =
+                        this.chartContextProps.validateConfig(
+                            payload.chartConfig,
+                            this.chartModel,
+                        );
                     return validationResponse;
                 }
                 // this will never be true
@@ -405,9 +406,10 @@ export class CustomChartContext {
         this.onInternal(
             TSToChartEvent.GetDataQuery,
             (payload: GetDataQueryPayload): GetDataQueryResponsePayload => {
-                const queries = this.chartContextProps.getQueriesFromChartConfig(
-                    payload.config,
-                );
+                const queries =
+                    this.chartContextProps.getQueriesFromChartConfig(
+                        payload.config,
+                    );
                 return {
                     queries,
                 };
@@ -446,14 +448,19 @@ export class CustomChartContext {
          * If event is not defined by developer, default is always sent to refresh the
          * chart iframe.
          */
-        this.on(TSToChartEvent.DataUpdate, (payload: DataUpdateEventPayload): {
-            triggerRenderChart: boolean;
-        } => {
-            this.chartModel.data = payload.data;
-            return {
-                triggerRenderChart: true,
-            };
-        });
+        this.on(
+            TSToChartEvent.DataUpdate,
+            (
+                payload: DataUpdateEventPayload,
+            ): {
+                triggerRenderChart: boolean;
+            } => {
+                this.chartModel.data = payload.data;
+                return {
+                    triggerRenderChart: true,
+                };
+            },
+        );
 
         /**
          * This event is triggered when the TS app sends the updated visual properties.
@@ -496,33 +503,37 @@ export class CustomChartContext {
         return this.publishChartContextPropsToHost();
     };
 
-    private publishChartContextPropsToHost = (): InitializeEventResponsePayload => {
-        // for first search, this would be null
-        const hasChartConfig = !_.isEmpty(this.chartModel.config.chartConfig);
-        const { isValid } = hasChartConfig
-            && this.chartContextProps.validateConfig
-            ? this.chartContextProps.validateConfig(
-                this.chartModel.config.chartConfig ?? [],
-                this.chartModel,
-            )
-            : { isValid: false };
-
-        let defaultChartConfig: ChartConfig[] = [];
-        if (!isValid) {
-            defaultChartConfig = this.chartContextProps.getDefaultChartConfig(
-                this.chartModel,
+    private publishChartContextPropsToHost =
+        (): InitializeEventResponsePayload => {
+            // for first search, this would be null
+            const hasChartConfig = !_.isEmpty(
+                this.chartModel.config.chartConfig,
             );
-        }
+            const { isValid } =
+                hasChartConfig && this.chartContextProps.validateConfig
+                    ? this.chartContextProps.validateConfig(
+                          this.chartModel.config.chartConfig ?? [],
+                          this.chartModel,
+                      )
+                    : { isValid: false };
 
-        return {
-            isConfigValid: isValid,
-            defaultChartConfig,
-            chartConfigEditorDefinition: this.chartContextProps
-                .chartConfigEditorDefinition,
-            visualPropEditorDefinition: this.chartContextProps
-                .visualPropEditorDefinition,
+            let defaultChartConfig: ChartConfig[] = [];
+            if (!isValid) {
+                defaultChartConfig =
+                    this.chartContextProps.getDefaultChartConfig(
+                        this.chartModel,
+                    );
+            }
+
+            return {
+                isConfigValid: isValid,
+                defaultChartConfig,
+                chartConfigEditorDefinition:
+                    this.chartContextProps.chartConfigEditorDefinition,
+                visualPropEditorDefinition:
+                    this.chartContextProps.visualPropEditorDefinition,
+            };
         };
-    };
 
     /**
      * Process each message events

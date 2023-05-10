@@ -33,52 +33,53 @@ const postMessageToHostApp = (
     hostUrl: string,
     eventPayload: any,
     eventType: ChartToTSEvent,
-): Promise<any> => new Promise((resolve, reject) => {
-    const channel = new MessageChannel();
-    channel.port1.onmessage = (res: any) => {
-        channel.port1.close();
-        const { hasError, error } = res.data;
-        if (hasError) {
-            console.log('ChartContext: message failure:', res.data);
-            reject(error);
-        } else {
-            console.log('ChartContext: message success:', res.data);
-            resolve(null);
-        }
-    };
+): Promise<any> =>
+    new Promise((resolve, reject) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (res: any) => {
+            channel.port1.close();
+            const { hasError, error } = res.data;
+            if (hasError) {
+                console.log('ChartContext: message failure:', res.data);
+                reject(error);
+            } else {
+                console.log('ChartContext: message success:', res.data);
+                resolve(null);
+            }
+        };
 
-    setTimeout(() => {
-        reject(
-            new Error(
-                `ChartContext: postMessage operation timed out. ${eventType}`,
-                eventPayload,
-            ),
-        );
-    }, TIMEOUT_THRESHOLD);
+        setTimeout(() => {
+            reject(
+                new Error(
+                    `ChartContext: postMessage operation timed out. ${eventType}`,
+                    eventPayload,
+                ),
+            );
+        }, TIMEOUT_THRESHOLD);
 
-    try {
-        window.parent.window.postMessage(
-            {
-                componentId,
-                payload: {
-                    ...eventPayload,
+        try {
+            window.parent.window.postMessage(
+                {
+                    componentId,
+                    payload: {
+                        ...eventPayload,
+                    },
+                    eventType,
+                    source: 'ts-chart-sdk',
                 },
+                hostUrl,
+                [channel.port2],
+            );
+        } catch (err) {
+            console.error(
+                'ChartContext: error in emitting event:',
+                err,
                 eventType,
-                source: 'ts-chart-sdk',
-            },
-            hostUrl,
-            [channel.port2],
-        );
-    } catch (err) {
-        console.error(
-            'ChartContext: error in emitting event:',
-            err,
-            eventType,
-            eventPayload,
-        );
-        reject(err);
-    }
-});
+                eventPayload,
+            );
+            reject(err);
+        }
+    });
 
 export {
     init as initMessageListener,

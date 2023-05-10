@@ -24,13 +24,13 @@ export interface ChartConfigSection {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * i18n'ed string to show the section label on the config editor
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label: string,
+    label: string;
 
     /**
      * In the UI, the following values will only prevent from dropping unnecessary
@@ -44,14 +44,14 @@ export interface ChartConfigSection {
      * @default Number.POSITIVE_INFINITY
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    maxColumnCount?: number,
+    maxColumnCount?: number;
     /**
      * Allow Numeric Columns on the Section
      *
      * @default true
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    allowMeasureColumns?: boolean,
+    allowMeasureColumns?: boolean;
     /**
      * Allow Attribute/Dimensional Columns on the Section
      * Example: strings, dates, etc
@@ -59,7 +59,7 @@ export interface ChartConfigSection {
      * @default true
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    allowAttributeColumns?: boolean,
+    allowAttributeColumns?: boolean;
     /**
      * Allow Date and Time based Columns on the Section
      *
@@ -67,7 +67,7 @@ export interface ChartConfigSection {
      * @hidden Not exposing this now to define more clearly
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    allowTimeSeriesColumns?: boolean,
+    allowTimeSeriesColumns?: boolean;
 }
 
 /**
@@ -80,23 +80,23 @@ export interface ChartConfigEditorDefinition {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    key: string,
+    key: string;
     /**
      * i18n'ed string to show the editor header for the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    label?: string,
+    label?: string;
     /**
      * i18n'ed string to show the editor description for the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    descriptionText?: string,
+    descriptionText?: string;
     /**
      * Following will define all the column sections for the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnSections: ChartConfigSection[],
+    columnSections: ChartConfigSection[];
 }

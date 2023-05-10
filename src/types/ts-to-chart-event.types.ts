@@ -1,11 +1,11 @@
 import { ChartColumn } from './answer-column.types';
 import {
-    ChartModel,
-    ChartConfig,
     AppConfig,
+    ChartConfig,
+    ChartModel,
     QueryData,
-    VisualProps,
     ValidationResponse,
+    VisualProps,
 } from './common.types';
 import { ChartConfigEditorDefinition } from './configurator.types';
 import { VisualPropEditorDefinition } from './visual-prop.types';
@@ -85,7 +85,9 @@ export interface TSToChartInternalEventsPayloadMap {
         payload: InitializeEventPayload,
     ) => InitializeEventResponsePayload;
 
-    [TSToChartEvent.GetDataQuery]: (payload: GetDataQueryPayload) => GetDataQueryResponsePayload
+    [TSToChartEvent.GetDataQuery]: (
+        payload: GetDataQueryPayload,
+    ) => GetDataQueryResponsePayload;
 
     [TSToChartEvent.ChartConfigValidate]: (
         payload: ChartConfigValidateEventPayload,
@@ -171,7 +173,7 @@ export interface InitializeEventResponsePayload {
  * @group ThoughtSpot to Chart Events
  */
 export interface GetDataQueryPayload {
-    config: ChartConfig[],
+    config: ChartConfig[];
 }
 
 /**
@@ -179,11 +181,11 @@ export interface GetDataQueryPayload {
  * @group ThoughtSpot to Chart Events
  */
 export interface Query {
-    queryColumns: ChartColumn[],
+    queryColumns: ChartColumn[];
     queryParams?: {
-        offset?: number,
-        size?: number,
-    }
+        offset?: number;
+        size?: number;
+    };
 }
 
 /**
@@ -191,7 +193,7 @@ export interface Query {
  * @group ThoughtSpot to Chart Events
  */
 export interface GetDataQueryResponsePayload {
-    queries: Query[]
+    queries: Query[];
 }
 
 /**

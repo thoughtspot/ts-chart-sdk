@@ -1,7 +1,7 @@
 export enum ColumnType {
     UNKNOWN,
     MEASURE,
-    ATTRIBUTE
+    ATTRIBUTE,
 }
 
 /**
@@ -57,7 +57,7 @@ export enum FormatType {
     NONE,
     PATTERN,
     PERCENTAGE,
-    CURRENCY
+    CURRENCY,
 }
 
 /**
@@ -77,19 +77,19 @@ export enum CurrencyFormatType {
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export interface CurrencyFormat {
-    type: CurrencyFormatType,
+    type: CurrencyFormatType;
     /**
      * column id of the column in case of currency formatted by a column
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    column: string,
+    column: string;
     /**
      * ISO code for the currency types
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    isoCode: string,
+    isoCode: string;
 }
 
 /**
@@ -99,21 +99,21 @@ export interface CurrencyFormat {
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export interface ColumnFormat {
-    type: FormatType,
+    type: FormatType;
     /**
      * Pattern to define the number formatting style
      *
      * @optional
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    pattern?: string,
+    pattern?: string;
     /**
      * Currency format details
      *
      * @optional
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    currencyFormat?: CurrencyFormat
+    currencyFormat?: CurrencyFormat;
 }
 
 export interface ChartColumn {
@@ -122,19 +122,19 @@ export interface ChartColumn {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    id: string,
+    id: string;
     /**
      * Column Name
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    name: string
+    name: string;
     /**
      * Type of column if attribute or measure
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    type: ColumnType
+    type: ColumnType;
 
     /**
      * Type of the time based aggregation
@@ -142,14 +142,14 @@ export interface ChartColumn {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    timeBucket: ColumnTimeBucket
+    timeBucket: ColumnTimeBucket;
 
     /**
      * Type of data for the column
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    dataType: DataType
+    dataType: DataType;
 
     // // worksheet level formatting
     // // (TBD make this more cleaner during export)
@@ -170,5 +170,5 @@ export interface ChartColumn {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    format?: ColumnFormat
+    format?: ColumnFormat;
 }
