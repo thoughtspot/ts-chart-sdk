@@ -11,10 +11,10 @@
         "src/**"
     ],
     "scripts": {
-        "build": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
-        "tsc": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
-        "compile-ts": "pnpm run nx-install",
-        "test": "npx jest -c jest.config.sdk.js --runInBand",
+        "build": "npx tsc -p .; npx tsc -p . --module commonjs --outDir cjs",
+        "tsc": "npx tsc -p .; npx tsc -p . --module commonjs --outDir cjs",
+        "test-sdk": "npx jest -c jest.config.sdk.js --runInBand",
+        "test": "npm run test-sdk",
         "lint": "eslint 'src/**'",
         "lint:fix": "eslint 'src/**' --fix",
         "ci": "npm-run-all lint test",
@@ -54,7 +54,7 @@
         "prettier": "^2.8.8",
         "ts-jest": "^27.1.1",
         "typedoc": "^0.24.4",
-        "typescript": "4.8.4",
+        "typescript": "^4.8.4",
         "vite": "4.2.1"
     },
     "dependencies": {
