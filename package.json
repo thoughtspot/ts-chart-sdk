@@ -12,6 +12,7 @@
     ],
     "scripts": {
         "build": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
+        "tsc": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
         "compile-ts": "pnpm run nx-install",
         "test": "npx jest -c jest.config.sdk.js --runInBand",
         "lint": "eslint 'src/**'",
@@ -58,7 +59,8 @@
     },
     "dependencies": {
         "chart.js": "4.2.1",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "tsc": "^2.0.4"
     },
     "prettier": "./prettier-config",
     "browserslist": [
