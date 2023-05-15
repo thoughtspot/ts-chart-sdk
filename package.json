@@ -11,8 +11,8 @@
         "src/**"
     ],
     "scripts": {
-        "build": "npx tsc -p .; npx tsc -p . --module commonjs --outDir cjs",
-        "tsc": "npx tsc -p .; npx tsc -p . --module commonjs --outDir cjs",
+        "build": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
+        "tsc": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
         "test-sdk": "npx jest -c jest.config.sdk.js --runInBand",
         "test": "npm run test-sdk",
         "lint": "eslint 'src/**'",
@@ -59,8 +59,7 @@
     },
     "dependencies": {
         "chart.js": "4.2.1",
-        "lodash": "^4.17.21",
-        "tsc": "^2.0.4"
+        "lodash": "^4.17.21"
     },
     "prettier": "./prettier-config",
     "browserslist": [
