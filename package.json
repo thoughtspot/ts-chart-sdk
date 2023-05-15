@@ -1,7 +1,7 @@
 {
     "name": "@thoughtspot/ts-chart-sdk",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.0.1-alpha",
     "module": "lib/index",
     "main": "lib/index",
     "types": "lib/index",
@@ -19,7 +19,7 @@
         "ci": "npm-run-all lint test",
         "docgen": "typedoc --tsconfig tsconfig.json",
         "dev": "npm run dev:bar",
-        "dev:bar": "vite serve example/custom-bar-chart"
+        "dev:bar": "vite serve example/custom-bar-chart --port 3000"
     },
     "devDependencies": {
         "@types/jest": "^27.0.3",
