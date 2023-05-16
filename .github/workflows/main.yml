@@ -22,10 +22,10 @@ jobs:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v3
 
-            # Use NodeJS v16.19.0
+            # Use NodeJS v18.15.0
             - uses: actions/setup-node@v3
               with:
-                  node-version: '16.19.0'
+                  node-version: '18.15.0'
 
             # Run npm install
             - name: Run npm install
@@ -43,7 +43,7 @@ jobs:
             - uses: 5monkeys/cobertura-action@master
               continue-on-error: true
               with:
-                  path: coverage/sdk/*.xml
+                  path: coverage/sdk/cobertura-coverage.xml
                   repo_token: ${{ secrets.GITHUB_TOKEN }}
                   minimum_coverage: 0
 
