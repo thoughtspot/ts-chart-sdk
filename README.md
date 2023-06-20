@@ -248,7 +248,7 @@ To create a Highchart version of the data set, the above-mentioned headers must 
 
 The `getDefaultChartConfig` method must be included in chartContext to define the configuration of the columns that are required to map the dataset into the chart. We assume that the order of the column is maintained in the chartModel.
 
-Note that to render the chart, you must send the default configuration. Else, the chart will not be rendered.
+To render the chart, the default configuration is required.
 
 ```jsx
 getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
