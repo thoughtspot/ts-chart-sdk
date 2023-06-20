@@ -55,7 +55,7 @@ To create and test the application, this tutorial uses a Vite project setup.
      npm run dev
      ```
 
-5. Go to the [localhost](http://localhost) link and check if the following page shows up.
+5. Go to the localhost link and check if the following page shows up.
 
      ![initial-setup](assets/images/initial-setup.png)
 
