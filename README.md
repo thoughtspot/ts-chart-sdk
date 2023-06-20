@@ -57,7 +57,7 @@ To create and test the application, this tutorial uses a Vite project setup.
 
 5. Go to the [localhost](http://localhost) link and check if the following page shows up.
 
-     ![Snip20230615_10.png](images/Snip20230615_10.png)
+     ![initial-setup](assets/images/initial-setup.png)
 
 ### Install Highcharts and lodash
 
@@ -112,11 +112,11 @@ This tutorial uses the implementation code of the Gantt chart from the following
     </html>
     ```
 4.  Refresh the application URL and check if the chart imported into your application code is rendered:
-    ![demo-chart-render](images/demo-chart-render.png)
+    ![demo-chart-render](assets/images/demo-chart-render.png)
 5. Delete the unwanted files from your project folder
    The folder structure in your project at this point includes many files as shown in this figure.
 
-    ![folder-structure](images/folder-structure.png)
+    ![folder-structure](assets/images/folder-structure.png)
 
     You can remove the following files.
 
@@ -388,7 +388,7 @@ To run the chart and test your implementation, you need a Playground.
 * App Url : `<your localhost url with port>`
 * Chart Model: `Gantt - 3 Attribute - 2 Date - 1 Measure`
 
-![Playground](images/playground.png)
+![Playground](assets/images/playground.png)
 
 In the next step, you need to bring your data into the chart.
 

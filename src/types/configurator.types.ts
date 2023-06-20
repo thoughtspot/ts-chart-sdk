@@ -2,12 +2,12 @@
  * @file Column Configuration Definition
  * @fileoverview
  * Developers will use this to define the axis configuration that any
- * creator of the chart can use the define the expected chart configuration.
+ * creator of the chart can use it to define the expected chart configuration.
  *
  * This will also be validated with the overall expectation
  * of the chart developer using validate flow.
  *
- * Developer is expected to use this to be able to define the data queries
+ * Developers are expected to use this to define the data queries
  * required for the chart.
  * @author Chetan Agrawal <chetan.agrawal@thoughtspot.com>
  *
@@ -20,7 +20,7 @@
  */
 export interface ChartConfigSection {
     /**
-     * key to persist the columns
+     * Key to persist the columns
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -33,9 +33,9 @@ export interface ChartConfigSection {
     label: string;
 
     /**
-     * In the UI, the following values will only prevent from dropping unnecessary
-     * columns on the section config or prevent from opening a drop down in case of
-     * multiple queries. Validation is still expected to be done by developer.
+     * In the UI, the following values will only prevent dropping unnecessary
+     * columns on the section config or prevent users from opening a drop-down in case of
+     * multiple queries. Developers must validate this flow.
      */
 
     /**
@@ -76,7 +76,7 @@ export interface ChartConfigSection {
  */
 export interface ChartConfigEditorDefinition {
     /**
-     * key to store the chart config
+     * Key to store the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -94,7 +94,7 @@ export interface ChartConfigEditorDefinition {
      */
     descriptionText?: string;
     /**
-     * Following will define all the column sections for the chart config
+     * Defines all the column sections for the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */

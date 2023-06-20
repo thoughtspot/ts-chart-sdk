@@ -3,7 +3,7 @@ import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 const TIMEOUT_THRESHOLD = 30000; // 30sec
 
 /**
- * method to listen to messages using postMessage from parent.
+ * method to listen to messages using postMessage from the parent.
  *
  * @param  {any} handleMessageEvent
  */
@@ -23,7 +23,7 @@ const destroy = (handleMessageEvent: any) => {
 /**
  * @param  {string} componentId This is required to send the event to the
  *          right chart component in case of multiple components
- * @param  {string} hostUrl The host application url
+ * @param  {string} hostUrl The host application URL
  * @param  {any} eventPayload payload for the event
  * @param  {ChartToTSEvent} eventType type of the event
  * @returns Promise

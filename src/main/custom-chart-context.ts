@@ -63,7 +63,7 @@ export type CustomChartContextProps = {
      */
     renderChart: (ctx: CustomChartContext) => Promise<void>;
     /**
-     * required to validate the current chart configuration
+     * Required to validate the current chart configuration
      * that chart user has updated on the chart config editor
      *
      * @version SDK: 0.1 | ThoughtSpot:
@@ -77,7 +77,7 @@ export type CustomChartContextProps = {
     ) => ValidationResponse;
 
     /**
-     * required to validate the custom visual props that
+     * Required to validate the custom visual props that
      * the chart user has updated on the chart settings editor.
      *
      * @param updatedVisualProps
@@ -120,8 +120,8 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
 
 export class CustomChartContext {
     /**
-     * Id to map to the parent chart component.
-     * This is used to differentiate between multiple chart componenets rendered on the
+     * ID to map to the parent chart component.
+     * This is used to differentiate between multiple chart components rendered on the
      * parent app Example: liveboards with multiple charts
      *
      * @hidden
@@ -481,8 +481,8 @@ export class CustomChartContext {
     };
 
     /**
-     * private function is going to initialize the flow from TS app and send back
-     * the coinfiguration back to ts app to complete the handshake.
+     * Private function is going to initialize the flow from TS app and send back
+     * the configuration back to ts app to complete the handshake.
      *
      * @param  {InitializeEventPayload} payload
      * @returns InitializeEventResponsePayload
@@ -547,8 +547,8 @@ export class CustomChartContext {
         let response;
         if (_.isArray(this.eventListeners[event.data.eventType])) {
             this.eventListeners[event.data.eventType].forEach((callback) => {
-                // this is a problem today if we have multipe callbacks
-                // registered. only the last responsed will be sent back to the
+                // this is a problem today if we have multiple callbacks
+                // registered. only the last response will be sent back to the
                 // server
                 response = callback(payload);
             });

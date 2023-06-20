@@ -39,6 +39,6 @@
         "Classes",
         "Interfaces"
       ],
-      "blockTags": ["@version","@returns", "@param"]
+      "blockTags": ["@version","@returns", "@param"],
   }
 }

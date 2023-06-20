@@ -11,7 +11,7 @@ import { ChartConfigEditorDefinition } from './configurator.types';
 import { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
- * All the events sent from TS application to Custom Chart App
+ * All the events sent from the ThoughtSpot application to Custom Chart App
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group ThoughtSpot to Chart Events
@@ -113,7 +113,7 @@ export interface InitializeEventPayload {
     chartModel: ChartModel;
 
     /**
-     * Additional App Configuration
+     * Additional app configuration
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -121,13 +121,13 @@ export interface InitializeEventPayload {
 
     /**
      * This is a unique component id that the context should send in every
-     * post message payload. This helps in identifying between multiple app components.
+     * post message payload. This helps in identifying multiple app components.
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     componentId: string;
     /**
-     * The host url of the parent to send the post message requests to.
+     * The host URL of the parent to send the post message requests to.
      * We cannot use the window.parent object details to fetch this.
      * Hence sending in init flow.
      *
