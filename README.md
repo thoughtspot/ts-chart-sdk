@@ -6,17 +6,17 @@
 
 # ThoughtSpot Charts SDK <br/>
 
-ThoughtSpot Charts SDK allows developers to integrate custom charts into ThoughtSpot. Developers can use this SDK to create custom charts in Javascript using charting libraries such as HighCharts and upload them to ThoughtSpot.   
+ThoughtSpot Charts SDK allows developers to integrate custom charts into ThoughtSpot. Developers can create custom charts in Javascript using charting libraries such as HighCharts and upload them to ThoughtSpot.   
 
 
 # Get started
-This tutorial demonstrates how to create a Gantt chart demo using HighCharts. 
+This tutorial demonstrates how to create a Gantt chart using HighCharts. 
 <insert links and fiddle links above>
 
 <Should node.js and npm installation be added as prereq? Any specific versions to consider?>
 
 ## Prerequisites
-Before you begin, check the following requirements:
+Before you begin, check for the following requirements:
 
 * Access to a ThoughtSpot Cloud application instance
 * A Development Environment (IDE) for building custom charts
@@ -36,7 +36,7 @@ To create and test the application, this tutorial uses a Vite project setup.
      cd gantt
      ```
 
-2. Create a Vite project
+2. Create a Vite project.
      ```bash
      $ npm create vite@latest
      ```
@@ -48,7 +48,7 @@ To create and test the application, this tutorial uses a Vite project setup.
      ✔ Select a framework: › Vanilla
      ✔ Select a variant: › TypeScript
      ```
-4. Initialize your application
+4. Initialize your application.
 
      ```bash
      npm install
@@ -75,17 +75,17 @@ npm install --save @thoughtspot/ts-chart-sdk
 
 Render a chart in the application created from the preceding steps.
 
-This tutorial uses the [demo chart from the Highcharts library](https://www.highcharts.com/demo/gantt/progress-indicator) to create a custom Gantt chart.
+This tutorial uses the  [chart from the Highcharts library](https://www.highcharts.com/demo/gantt/progress-indicator) to create a custom Gantt chart. 
 
 ### Implement the chart code
 
-Implement the chart code.
-This tutorial uses the implementation code of the Gantt chart from the following demo.
-[https://www.highcharts.com/demo/gantt/progress-indicator](https://www.highcharts.com/demo/gantt/progress-indicator).
+This tutorial uses the implementation code of the Gantt chart from the [Highcharts site](https://www.highcharts.com/demo/gantt/progress-indicator).
 
-1. To copy the implementation code from the Highcharts library, select a chart type and click **Copy JS Code** and paste this code into the `main.ts` file in your `src` folder.
+To implement the chart code in your application, complete these steps:
 
-2. import the dependencies for Highcharts and Highcharts Gantt module into your application code as shown in this example:
+1. To copy the implementation code from the Highcharts library, select a chart type and click **Copy JS Code**. 
+2. Paste this code into the `main.ts` file in your `src` folder.
+3. Import the dependencies for Highcharts and Highcharts Gantt module into your application code as shown in this example:
 
     ```bash
     import Highcharts from 'highcharts/es-modules/masters/highcharts.src';
@@ -93,7 +93,7 @@ This tutorial uses the implementation code of the Gantt chart from the following
     ```
     Note the order of import.
 
-3. Replace the content of `index.html` with the following snippet:
+4. Replace the content of `index.html` with the following snippet:
 
     Note that we have replaced the div id `app` with `container` because the code copied from Highcharts points to `container`.
 
@@ -111,9 +111,9 @@ This tutorial uses the implementation code of the Gantt chart from the following
       </body>
     </html>
     ```
-4.  Refresh the application URL and check if the chart imported into your application code is rendered:
+5. Refresh the application URL and check if the chart imported into your application code is rendered:
     ![demo-chart-render](assets/images/demo-chart-render.png)
-5. Delete the unwanted files from your project folder
+6. Delete the unwanted files from your project folder
    The folder structure in your project at this point includes many files as shown in this figure.
 
     ![folder-structure](assets/images/folder-structure.png)
@@ -126,13 +126,11 @@ This tutorial uses the implementation code of the Gantt chart from the following
 
 ## Integrate ThoughtSpot Chart SDK 
 
-The chart imported into your application has static data. To add ThoughtSpot capabilities such as drill, you need to fetch data from your ThoughtSpot application.
+The chart imported into your application has static data. To add ThoughtSpot capabilities such as drill, you need to fetch data from your ThoughtSpot application. To add ThoughtSpot capabilities and data to the chart code in your application, integrate ThoughtSpot Chart SDK and complete these steps:
 
-To add ThoughtSpot capabilities and data to the chart code in your application, integrate ThoughtSpot Chart SDK and complete these steps:
-
-1. Initialize the Chart Context
-2. Create a data model from input data
-3. Plug data into the Highcharts datasets
+1. [Initialize the Chart Context](#initialize-the-chart-context)
+2. [Create a data model from input data](#Create-a-data-model-from-input-data)
+3. [Plug data into the Highcharts datasets](#plug-data-into-the-highcharts-datasets)
 
 ### Initialize the Chart Context
 
@@ -209,12 +207,12 @@ const init = async () => {
 
 init();
 ```
+> NOTE: 
+>For more information about the chart context component, refer to the following documentation resources:
+  >  * [https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html](https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html)
+  > * [https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40](https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40)
 
-For more information about the chart context component, refer to the following documentation resources:
-* [https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html](https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html)
-* [https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40](https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40)
-
-The custom chart context component must include the following three mandatory properties to function:
+The custom chart context component must include the following mandatory properties to function:
 
 * [`getDefaultChartConfig (Doc)`](#getDefaultChartConfig-(Doc))
 * [`getQueriesFromChartConfig (Doc)`](#getQueriesFromChartConfig-(Doc))
@@ -224,7 +222,7 @@ The custom chart context component must include the following three mandatory pr
 
 This function takes in a [ChartModel](https://ts-chart-sdk-docs.vercel.app/interfaces/ChartModel.html) object and returns a well-formed point configuration definition.
 
-The point for the demo Gantt chart used in this tutorial looks like this:
+The point for the Gantt chart used in this tutorial looks like this:
 
 ```bash
 // Project 1 - Project Name
@@ -244,9 +242,9 @@ Project Name, Task, Start Date, End Date, Completion
 "Project 1", "Start prototype", "2014-10-18", "2014-10-25", 0.25
 ```
 
-To create a Highchart version of the data set, the above-mentioned headers must be presented as columns from ThoughtSpot. The query on the ThoughtSpot Answer page should have all the above columns to plot a Gantt chart.
+To create a Highcharts version of the data set, the above-mentioned headers must be presented as columns from ThoughtSpot. The query on the ThoughtSpot Answer page should have all the above columns to plot a Gantt chart.
 
-The `getDefaultChartConfig` method must be included in chartContext to define the configuration of the columns that are required to map the dataset into the chart. We assume that the order of the column is maintained in the chartModel.
+Ensure that the `getDefaultChartConfig` method is included in chartContext to define the configuration of the columns that are required to map the dataset into the chart. We assume that the order of the column is maintained in the chartModel.
 
 To render the chart, the default configuration is required.
 
@@ -329,7 +327,7 @@ getQueriesFromChartConfig: (
 
 #### renderChart (Doc)
 
-This `renderChart (Doc)` function is required to render the chart implemented in your code. This function ensures that every time `chartContext` tries to re-render the chart due to some data or chart model changes, the rendered chart is updated.
+This `renderChart (Doc)` function is required to render the chart implemented in your code. This function ensures that every time `chartContext` tries to re-render the chart due to the changes in data or chart model, the chart rendered in your application is updated.
 
 > **Note**:
 You can control render and re-render by implementing more granular control for the updates on data, visual props, or chart model.
@@ -508,7 +506,7 @@ However, the data retrieved from the chart model includes an array of column typ
 }
 ```
 
-You can transform the above structure to the point and series format that Highcharts can understand and interpret. Use the following code snippet to create a data model and plug data values in the chart.
+You can transform the above structure to the point and series format that Highcharts can understand and interpret. Use the following code snippet to create a data model and plug data values into the chart.
 
 ```jsx
 const getDataModel = (chartModel: any) => {
@@ -561,15 +559,14 @@ const getDataModel = (chartModel: any) => {
 
 ## Plug data into the Highcharts datasets
 
-Use the data model created from the above function and plug the values in the Highchart configuration to render the chart.
+Use the data model created from the above function and plug the values into the Highchart configuration to render the chart.
 
-1. Create a Data Model.   
+1. Create a data model object.   
    In your `renderChart` code, add the following line:
 
     ```jsx
     const dataModel = getDataModel(chartModel);
     ```
-
 2. Replace X Axis min and max values.
 
 ```jsx
@@ -578,7 +575,6 @@ xAxis: {
     max: dataModel.maxDate,
 },
 ```
-
 3. Replace the series.
 
 ```jsx
@@ -587,7 +583,7 @@ series: dataModel.dataSeries,
 
 The chart implemented in your code now shows up on the playground with the data values you just plugged in. 
 
-The following example shows the entire chart code for the Gantt chart implementation:
+The following example shows the entire chart code for the Gantt chart implementation described in this tutorial:
 
 ```jsx
 /* eslint-disable simple-import-sort/imports */
@@ -766,7 +762,7 @@ init();
 
 If the chart creation is successful, you can host it on a server and make it available for use:
 
-You can use Vercel or Netlify or any server that can render an HTML page to deploy your charts. For information, see <a href="https://vercel.com/docs/frameworks/vite" target="_blank">Vite documentation</a>.
+To deploy your charts, you can use Vercel, Netlify, or any server that can render an HTML page. For information, see <a href="https://vercel.com/docs/frameworks/vite" target="_blank">Vite documentation</a>.
 
 To deploy the chart on a test domain in Vercel, install <a href="https://vercel.com/docs/cli" target="_blank">Vercel CLI</a> and run the following command:
 
