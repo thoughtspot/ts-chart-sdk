@@ -12,8 +12,8 @@ ThoughtSpot Charts SDK allows developers to integrate custom charts into Thought
 # Get started
 This tutorial demonstrates how to create a Gantt chart using HighCharts. 
 <insert links and fiddle links above>
-
-<Should node.js and npm installation be added as prereq? Any specific versions to consider?>
+* [Highchart demo link](https://www.highcharts.com/demo/gantt/progress-indicator)
+* [JSFiddle link](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/gantt/demo/progress-indicator)
 
 ## Prerequisites
 Before you begin, check for the following requirements:
