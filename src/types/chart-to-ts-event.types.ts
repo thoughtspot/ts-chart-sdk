@@ -108,7 +108,7 @@ export interface Point {
 export interface CustomAction {
     id: string; // ID of the user-defined action
     label: string; // Developer should i18n this
-    icon: string; // Icon string to show on the context/axis menu
+    icon?: string; // Icon string to show on the context/axis menu
 
     /**
      * This function will need to have a defined set of arguments.
@@ -125,17 +125,7 @@ export interface CustomAction {
  * @group Chart to ThoughtSpot Events
  */
 export interface OpenContextMenuEventPayload {
-    event: Pick<
-        PointerEvent,
-        | 'x'
-        | 'y'
-        | 'clientX'
-        | 'clientY'
-        | 'pageX'
-        | 'pageY'
-        | 'screenX'
-        | 'screenY'
-    >;
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
     clickedPoint: Point;
     selectedPoints?: Point[];
     customActions?: CustomAction[];
