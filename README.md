@@ -291,10 +291,12 @@ getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
 },
 ```
 
+<!--
 > There is a better way to be able to configure the dimensions and columns in dimensions. But that is relatively a more advanced topic and not required for this demo. You can use the link below to look into the details of the same.
 >
 
 [TBD: Link to the Custom Chart Configuration Definition]
+-->
 
 #### getQueriesFromChartConfig (Doc)
 
