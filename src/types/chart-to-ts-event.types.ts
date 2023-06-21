@@ -31,7 +31,7 @@ export enum ChartToTSEvent {
 }
 
 /**
- * This map defines the event type and its corresponding payload needed by event
+ * This map defines the event type and its corresponding payload needed by the event
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group Chart to ThoughtSpot Events
@@ -87,10 +87,10 @@ type UpdateVisualPropsEventPayload = VisualProps;
  */
 // start - open context menu payload
 export interface PointVal {
-    // column id of the column associated with the value
+    // Column ID of the column associated with the value
     columnId: string;
-    // value of the point clicked on, mostly makes sense for attributes.
-    // this can be an array of values as well.
+    // Value of the point clicked on, mostly makes sense for attributes.
+    // This can be an array of values as well.
     value: any;
 }
 /**
@@ -106,16 +106,16 @@ export interface Point {
  * @group Chart to ThoughtSpot Events / Context Menu
  */
 export interface CustomAction {
-    id: string; // id of the action user defined
-    label: string; // developer should i18n this
-    icon: string; // icon string to show on the context/axis menu
+    id: string; // ID of the user-defined action
+    label: string; // Developer should i18n this
+    icon: string; // Icon string to show on the context/axis menu
 
     /**
-     * This function will need to have a defined set of args.
-     * For e.g., pointClick Event, point details and chart model in case on context menu
-     * For axis menu, it would be different.
+     * This function will need to have a defined set of arguments.
+     * For example, pointClick Event, point details and chart model in case of context menu
+     * For Axis menu, it would be different.
      *
-     * Callback will be triggered via postMessage api contract.
+     * Callback will be triggered via postMessage API contract.
      */
     onClick: (...args: any[]) => void;
 }

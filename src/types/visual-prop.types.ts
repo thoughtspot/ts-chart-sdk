@@ -16,7 +16,7 @@
 export interface TextInputFormDetail {
     type: 'text';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -35,7 +35,7 @@ export interface TextInputFormDetail {
      */
     password?: boolean;
     /**
-     * Allow multiline text
+     * Allows multiline text
      *
      * @default false
      * @version SDK: 0.1 | ThoughtSpot:
@@ -63,7 +63,7 @@ export interface TextInputFormDetail {
 export interface ToggleFormDetail {
     type: 'toggle';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -90,7 +90,7 @@ export interface ToggleFormDetail {
 export interface CheckboxFormDetail {
     type: 'checkbox';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -117,7 +117,7 @@ export interface CheckboxFormDetail {
 export interface RadioButtonFormDetail {
     type: 'radio';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -135,7 +135,7 @@ export interface RadioButtonFormDetail {
      */
     defaultValue?: string;
     /**
-     * list fo values to select from
+     * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -150,7 +150,7 @@ export interface RadioButtonFormDetail {
 export interface DropDownFormDetail {
     type: 'dropdown';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -168,7 +168,7 @@ export interface DropDownFormDetail {
      */
     defaultValue?: string;
     /**
-     * list fo values to select from
+     * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -176,14 +176,14 @@ export interface DropDownFormDetail {
 }
 
 /**
- * Element to define sections of form for the visual props editor
+ * Element to define sections of the form for the visual props editor
  *
  * @group Visual Properties Editor
  */
 export interface Section {
     type: 'section';
     /**
-     * key to define & store the children's parent
+     * Key to define & store the children's parent
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -201,7 +201,7 @@ export interface Section {
      */
     children?: PropElement[];
     /**
-     * defines form alignment in the view for the section
+     * Defines form alignment in the view for the section
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */

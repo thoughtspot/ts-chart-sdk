@@ -18,13 +18,13 @@ import { ChartColumn, DataType } from './answer-column.types';
  */
 export interface ChartConfigDimension {
     /**
-     * key fo the dimension in the chart config
+     * Key for the dimension in the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     key: string;
     /**
-     * list of columns added for the dimension
+     * List of columns added for the dimension
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -40,8 +40,8 @@ export interface ChartConfigDimension {
  */
 export interface ChartConfig {
     /**
-     * key of the custom chart config defined in the chart config editor definition
-     * this is used to differentiate between different custom chart configurations
+     * Key of the custom chart config defined in the chart config editor definition
+     * This is used to differentiate between different custom chart configurations
      * within the same chart
      *
      * @version SDK: 0.1 | ThoughtSpot:
@@ -56,20 +56,20 @@ export interface ChartConfig {
 }
 
 /**
- * Data Array inteface to define each column data
+ * Data Array interface to define data for each column
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group Chart Model
  */
 export type DataArray = {
     /**
-     * column id associated with the data array
+     * Column ID associated with the data array
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     columnId: string;
     /**
-     * type of data
+     * Type of data
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -84,7 +84,7 @@ export type DataArray = {
 
 /**
  * For each query defined by the user, a query data object is sent
- * in the following format
+ * in this format.
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group Chart Model
@@ -109,7 +109,7 @@ export type QueryData = {
     samplingRatio: number;
 
     /**
-     * number of rows of data fetched for the query
+     * Number of rows of data fetched for the query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -130,7 +130,7 @@ export interface ChartModel {
      */
     columns: ChartColumn[];
     /**
-     * Array of Datasets for each query
+     * Array of datasets for each query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -152,14 +152,14 @@ export type ValidationResponse = {
 /**
  * Custom Visual props is the stored metadata for the visual props definition
  * configured by the user in the visual prop editor
- * The JSON is defined by the visual prop types. See VisualPropEditorDefinition
+ * The JSON is defined by the visual prop types. See VisualPropEditorDefinition.
  *
  * @group Chart Model
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export type VisualProps = JSON;
 
-// Todo: this should be imported from custom style config package.
+// Todo: this should be imported from the custom style config package.
 type CustomStylingConfig = any;
 
 export interface AppConfig {

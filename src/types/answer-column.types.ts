@@ -72,14 +72,14 @@ export enum CurrencyFormatType {
 }
 
 /**
- * Currency Format for the columm defined in the worksheet
+ * Currency format for the column defined in the worksheet
  *
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export interface CurrencyFormat {
     type: CurrencyFormatType;
     /**
-     * column id of the column in case of currency formatted by a column
+     * column ID of the column in case of currency formatted by a column
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -118,13 +118,13 @@ export interface ColumnFormat {
 
 export interface ChartColumn {
     /**
-     * Column Id
+     * Column ID
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     id: string;
     /**
-     * Column Name
+     * Column name
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -137,7 +137,7 @@ export interface ChartColumn {
     type: ColumnType;
 
     /**
-     * Type of the time based aggregation
+     * Type of the time-based aggregation
      * when the column data is of type Date, Datetime, Time
      *
      * @version SDK: 0.1 | ThoughtSpot:

@@ -25,20 +25,20 @@
     "lib"
   ],
   "typedocOptions": {
-      "entryPoints": ["./src/index.ts"],
-      "out": "./docs",
-      "excludePrivate": true,
-      "excludeProtected": true,
-      "excludeInternal": true,
-      "hideGenerator": true,
-      "sort": ["kind", "alphabetical"],
-      "defaultCategory": "Others",
-      "categorizeByGroup": true,
-      "categoryOrder": [
-        "Chart Model",
-        "Classes",
-        "Interfaces"
-      ],
-      "blockTags": ["@version","@returns", "@param"]
+    "entryPoints": ["./src/index.ts"],
+    "out": "./docs",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeInternal": true,
+    "hideGenerator": true,
+    "sort": ["kind", "alphabetical"],
+    "defaultCategory": "Others",
+    "categorizeByGroup": true,
+    "categoryOrder": [
+      "Chart Model",
+      "Classes",
+      "Interfaces"
+    ],
+    "blockTags": ["@version","@returns", "@param"]
   }
 }
