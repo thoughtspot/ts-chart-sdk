@@ -7,6 +7,7 @@
  */
 import _ from 'lodash';
 import {
+    ChartToTSEvent,
     ChartToTSEventsPayloadMap,
     ErrorType,
 } from '../types/chart-to-ts-event.types';
@@ -194,7 +195,7 @@ export class CustomChartContext {
             ...chartContextProps,
         };
         this.registerEventProcessor();
-        this.hasInitializedPromise = new Promise((resolve) => {
+        this.hasInitializedPromise = new Promise((resolve, reject) => {
             this.triggerInitResolve = resolve;
         });
     }
@@ -277,18 +278,18 @@ export class CustomChartContext {
      */
     public emitEvent<T extends keyof ChartToTSEventsPayloadMap>(
         eventType: T,
-        eventPayload: ChartToTSEventsPayloadMap[T],
+        ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
         if (!isInitialized) {
             console.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
-            return Promise.reject();
+            return Promise.reject(new Error('Context not initialized'));
         }
         return PostMessageEventBridge.postMessageToHostApp(
             this.componentId,
             this.hostUrl,
-            eventPayload,
+            eventPayload?.[0] ?? null,
             eventType,
         );
     }
@@ -358,6 +359,13 @@ export class CustomChartContext {
         );
 
         /**
+         * This event is triggered when the TS app initialization is complete.
+         */
+        this.onInternal(TSToChartEvent.InitializeComplete, () =>
+            this.initializationComplete(),
+        );
+
+        /**
          * This event is triggered when the TS app asks for validating the updated visual
          * props If {validateVisualProps} is not defined, default is always returned as
          * true.
@@ -419,8 +427,8 @@ export class CustomChartContext {
         /**
          * This event is triggered when the TS app re-renders the chart
          */
-        this.onInternal(TSToChartEvent.TriggerRenderChart, async () => {
-            await this.chartContextProps.renderChart(this);
+        this.onInternal(TSToChartEvent.TriggerRenderChart, () => {
+            this.chartContextProps.renderChart(this);
         });
 
         // Register External Events
@@ -494,13 +502,15 @@ export class CustomChartContext {
         this.hostUrl = payload.hostUrl;
         this.chartModel = payload.chartModel;
 
+        return this.publishChartContextPropsToHost();
+    };
+
+    private initializationComplete = (): void => {
         // context is now initialized
         isInitialized = true;
 
         // TODO: following can be done behind a promise
         this.triggerInitResolve();
-
-        return this.publishChartContextPropsToHost();
     };
 
     private publishChartContextPropsToHost =

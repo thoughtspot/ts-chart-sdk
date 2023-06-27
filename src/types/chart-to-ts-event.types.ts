@@ -42,38 +42,38 @@ export interface ChartToTSEventsPayloadMap {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.OpenContextMenu]: OpenContextMenuEventPayload;
+    [ChartToTSEvent.OpenContextMenu]: [OpenContextMenuEventPayload];
     /**
      * Trigger to close Context Menu
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.CloseContextMenu]: null;
+    [ChartToTSEvent.CloseContextMenu]: [];
 
     /**
      * Trigger to notify the render start
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.RenderStart]: null;
+    [ChartToTSEvent.RenderStart]: [];
     /**
      * Trigger to notify the render completion
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.RenderComplete]: null;
+    [ChartToTSEvent.RenderComplete]: [];
     /**
      * Trigger to notify the render error
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.RenderError]: RenderErrorEventPayload;
+    [ChartToTSEvent.RenderError]: [RenderErrorEventPayload];
     /**
      * Trigger to update the visual props
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.UpdateVisualProps]: UpdateVisualPropsEventPayload;
+    [ChartToTSEvent.UpdateVisualProps]: [UpdateVisualPropsEventPayload];
 }
 
 /**

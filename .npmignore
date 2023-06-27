@@ -1,3 +1,6 @@
 example/
 **/*.spec.*
 ReadMe.md
+playground/
+assets/
+coverage/

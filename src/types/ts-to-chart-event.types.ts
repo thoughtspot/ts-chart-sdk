@@ -21,6 +21,10 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     Initialize = 'Initialize',
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    InitializeComplete = 'InitializeComplete',
 
     /**
      * @version SDK: 0.1 | ThoughtSpot:
@@ -84,6 +88,8 @@ export interface TSToChartInternalEventsPayloadMap {
     [TSToChartEvent.Initialize]: (
         payload: InitializeEventPayload,
     ) => InitializeEventResponsePayload;
+
+    [TSToChartEvent.InitializeComplete]: () => void;
 
     [TSToChartEvent.GetDataQuery]: (
         payload: GetDataQueryPayload,
