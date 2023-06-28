@@ -1,6 +1,7 @@
 coverage/
 dist/
 cjs/
+package-lock.json
 docs/
 lib/
 node_modules/
