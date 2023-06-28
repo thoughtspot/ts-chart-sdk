@@ -1,0 +1,21 @@
+{
+  "name": "custom-bar-chart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "author": "Chetan Agrawal (chetan.agrawal@thoughtspot.com)",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^4.3.5"
+  },
+  "dependencies": {
+    "@thoughtspot/ts-chart-sdk": "^0.0.1-alpha.0",
+    "chart.js": "^4.3.0",
+    "lodash": "^4.17.21"
+  }
+}
