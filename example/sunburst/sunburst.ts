@@ -20,25 +20,24 @@ import {
     ChartToTSEvent,
     ColumnType,
     CustomChartContext,
-    DataArray,
+    DataPointsArray,
     getChartContext,
     Query,
 } from '@thoughtspot/ts-chart-sdk';
 import { PointOptionsObject } from 'highcharts';
 
-function getDataForColumn(column: ChartColumn, dataArr: DataArray[]) {
-    const colId = column.id;
-    const idx = _.findIndex(
-        dataArr,
-        (dataObj: any) => dataObj.columnId === colId,
-    );
-    return dataArr[idx].dataValue;
+function getDataForColumn(
+    column: ChartColumn,
+    dataArr: DataPointsArray | undefined,
+) {
+    const idx = _.findIndex(dataArr?.columns, (colId) => column.id === colId);
+    return _.map(dataArr?.dataValue, (row) => row[idx]);
 }
 
 function getDataModel(chartModel: ChartModel) {
     const configDimensions =
         chartModel.config?.chartConfig?.[0].dimensions ?? [];
-    const dataArr = chartModel.data?.[0].data ?? [];
+    const dataArr = chartModel.data?.[0].data ?? undefined;
 
     // this should be handled in a better way
     const xAxisColumns = configDimensions?.[0].columns ?? [];
@@ -46,7 +45,7 @@ function getDataModel(chartModel: ChartModel) {
 
     const dataMap: Record<string, PointOptionsObject> = {};
     const yAxisColData = getDataForColumn(yAxisColumns[0], dataArr);
-    dataArr[0].dataValue.forEach((dataRow, idx) => {
+    dataArr?.dataValue.forEach((_dataRow, idx) => {
         let parent = '';
         xAxisColumns.forEach((xCol, dataRowIdx) => {
             const colData = getDataForColumn(xCol, dataArr);

@@ -1,7 +1,9 @@
 /* eslint-disable simple-import-sort/imports */
 import {
+    ChartColumn,
     ChartConfig,
     ChartModel,
+    DataPointsArray,
     Query,
     getChartContext,
 } from '@thoughtspot/ts-chart-sdk';
@@ -9,26 +11,32 @@ import Highcharts from 'highcharts/es-modules/masters/highcharts.src';
 import 'highcharts/es-modules/masters/modules/gantt.src';
 import _ from 'lodash';
 
+function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    return _.map(dataArr.dataValue, (row) => row[idx]);
+}
+
 const getDataModel = (chartModel: any) => {
-    const dataArr = chartModel.data[0].data;
+    const columns = chartModel.columns;
+    const dataArr: DataPointsArray = chartModel.data[0].data;
 
     // create point from data
-    const points = dataArr[0].dataValue.map((_val: string, idx: number) => {
+    const points = dataArr.dataValue.map((row: any[], idx: number) => {
         return {
-            id: `${dataArr[0].dataValue[idx]} ${dataArr[1].dataValue[idx]}`,
-            parent: dataArr[0].dataValue[idx],
-            name: dataArr[1].dataValue[idx],
-            start: new Date(dataArr[2].dataValue[idx]).getTime(),
-            end: new Date(dataArr[3].dataValue[idx]).getTime(),
+            id: `${row[0]} ${row[1]}`,
+            parent: row[0],
+            name: row[1],
+            start: new Date(row[2]).getTime(),
+            end: new Date(row[3]).getTime(),
             completed: {
-                amount: dataArr[4].dataValue[idx],
+                amount: row[4],
             },
-            dependency: `${dataArr[0].dataValue[idx]} ${dataArr[5].dataValue[idx]}`,
+            dependency: `${row[0]} ${row[5]}`,
         };
     });
 
     // create projects from points & data
-    const projects = _.uniq(dataArr[0].dataValue);
+    const projects = _.uniq(getDataForColumn(columns[0], dataArr));
     const dataSeries = projects.map((project) => {
         const filteredPoints = points.filter(
             (point: any) => point.parent === project,
@@ -46,8 +54,14 @@ const getDataModel = (chartModel: any) => {
     });
 
     // get max and min date
-    const maxDate = _.max([...dataArr[2].dataValue, ...dataArr[3].dataValue]);
-    const minDate = _.min([...dataArr[2].dataValue, ...dataArr[3].dataValue]);
+    const maxDate = _.max([
+        ...getDataForColumn(columns[2], dataArr),
+        ...getDataForColumn(columns[3], dataArr),
+    ]);
+    const minDate = _.min([
+        ...getDataForColumn(columns[2], dataArr),
+        ...getDataForColumn(columns[3], dataArr),
+    ]);
 
     return {
         dataSeries,
