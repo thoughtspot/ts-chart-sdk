@@ -28,9 +28,9 @@ Chart.register(ChartDataLabels);
 
 let globalChartReference: Chart;
 
-const color = ['red', 'green', 'blue'];
+const availableColor = ['red', 'green', 'blue'];
 
-const indexCol = {
+const visualPropKeyMap = {
     0: 'color',
     1: 'accordion.Color2',
     2: 'accordion.datalabels',
@@ -60,10 +60,14 @@ function getColumnDataModel(configDimensions, dataArr, type, visualProps) {
                 type: `${type}`,
                 backgroundColor: _.get(
                     visualProps,
-                    indexCol?.[idx],
-                    color[idx],
+                    visualPropKeyMap?.[idx],
+                    availableColor[idx],
                 ),
-                borderColor: _.get(visualProps, indexCol?.[idx], color[idx]),
+                borderColor: _.get(
+                    visualProps,
+                    visualPropKeyMap?.[idx],
+                    availableColor[idx],
+                ),
                 datalabels: {
                     anchor: 'end',
                 },
@@ -119,7 +123,11 @@ function getParsedEvent(evt: any) {
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const dataModel = getDataModel(chartModel);
-    const allowLabels = _.get(chartModel.visualProps, indexCol[2], false);
+    const allowLabels = _.get(
+        chartModel.visualProps,
+        visualPropKeyMap[2],
+        false,
+    );
     if (!dataModel) {
         return;
     }
