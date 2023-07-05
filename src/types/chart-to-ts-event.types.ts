@@ -80,9 +80,7 @@ export interface ChartToTSEventsPayloadMap {
  *
  * @group Chart to ThoughtSpot Events
  */
-interface UpdateVisualPropsEventPayload {
-    visualProps: VisualProps;
-}
+type UpdateVisualPropsEventPayload = VisualProps;
 
 /**
  * @group Chart to ThoughtSpot Events / Context Menu
