@@ -6,7 +6,7 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-import { ChartColumn, DataType } from './answer-column.types';
+import { ChartColumn } from './answer-column.types';
 
 /**
  * List of Columns for a dimension in the Custom Chart Config.
@@ -56,30 +56,27 @@ export interface ChartConfig {
 }
 
 /**
- * Data Array interface to define data for each column
+ * Data Points Array interface to define data for each row and column.
+ * Data is ordered as per the columns in the query and the rows are sorted
+ * as per the search query.
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group Chart Model
  */
-export type DataArray = {
+export type DataPointsArray = {
     /**
-     * Column ID associated with the data array
+     * Array of column IDs ordered as per the data query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnId: string;
+    columns: string[];
+
     /**
-     * Type of data
+     * Array of rows of data ordered by the columns
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnDataType: DataType;
-    /**
-     * The array of data values associated with the column
-     *
-     * @version SDK: 0.1 | ThoughtSpot:
-     */
-    dataValue: any[];
+    dataValue: any[][];
 };
 
 /**
@@ -95,18 +92,18 @@ export type QueryData = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    data: DataArray[];
+    data: DataPointsArray;
 
     /**
      * @hidden
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    completionRatio: number;
+    completionRatio?: number;
     /**
      * @hidden
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    samplingRatio: number;
+    samplingRatio?: number;
 
     /**
      * Number of rows of data fetched for the query
