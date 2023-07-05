@@ -21,9 +21,20 @@ import {
     Query,
 } from '@thoughtspot/ts-chart-sdk';
 import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 
+Chart.register(ChartDataLabels);
+
 let globalChartReference: Chart;
+
+const color = ['red', 'green', 'blue'];
+
+const indexCol = {
+    0: 'color',
+    1: 'accordion.Color2',
+    2: 'accordion.datalabels',
+};
 
 function getDataForColumn(column: ChartColumn, dataArr: DataArray[]) {
     const colId = column.id;
@@ -34,7 +45,7 @@ function getDataForColumn(column: ChartColumn, dataArr: DataArray[]) {
     return dataArr[idx].dataValue;
 }
 
-function getColumnDataModel(configDimensions, dataArr, type) {
+function getColumnDataModel(configDimensions, dataArr, type, visualProps) {
     // this should be handled in a better way
     const xAxisColumns = configDimensions?.[0].columns ?? [];
     const yAxisColumns = configDimensions?.[1].columns ?? [];
@@ -47,6 +58,15 @@ function getColumnDataModel(configDimensions, dataArr, type) {
                 data: getDataForColumn(col, dataArr),
                 yAxisID: `${type}-y${idx.toString()}`,
                 type: `${type}`,
+                backgroundColor: _.get(
+                    visualProps,
+                    indexCol?.[idx],
+                    color[idx],
+                ),
+                borderColor: _.get(visualProps, indexCol?.[idx], color[idx]),
+                datalabels: {
+                    anchor: 'end',
+                },
             })),
         getScales: () =>
             _.reduce(
@@ -80,12 +100,13 @@ function getColumnDataModel(configDimensions, dataArr, type) {
     };
 }
 
-function getDataModel(chartModel) {
+function getDataModel(chartModel: ChartModel) {
     // column chart model
     const columnChartModel = getColumnDataModel(
         chartModel.config?.chartConfig?.[0].dimensions ?? [],
         chartModel.data?.[0].data ?? [],
         'bar',
+        chartModel.visualProps,
     );
 
     return columnChartModel;
@@ -98,7 +119,7 @@ function getParsedEvent(evt: any) {
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const dataModel = getDataModel(chartModel);
-
+    const allowLabels = _.get(chartModel.visualProps, indexCol[2], false);
     if (!dataModel) {
         return;
     }
@@ -116,6 +137,23 @@ function render(ctx: CustomChartContext) {
             },
             options: {
                 scales: dataModel.getScales(),
+                plugins: {
+                    // Change options for ALL labels of THIS CHART
+                    datalabels: {
+                        display: allowLabels,
+                        color: 'blue',
+                        labels: {
+                            title: {
+                                font: {
+                                    weight: 'bold',
+                                },
+                            },
+                            value: {
+                                color: 'green',
+                            },
+                        },
+                    },
+                },
                 // responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
@@ -242,6 +280,37 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 ],
             },
         ],
+        visualPropEditorDefinition: {
+            elements: [
+                {
+                    key: 'color',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Colors',
+                },
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'Color2',
+                            type: 'radio',
+                            defaultValue: 'blue',
+                            values: ['blue', 'white', 'red'],
+                            label: 'Color2',
+                        },
+                        {
+                            key: 'datalabels',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Data Labels',
+                        },
+                    ],
+                },
+            ],
+        },
     });
 
     renderChart(ctx);
