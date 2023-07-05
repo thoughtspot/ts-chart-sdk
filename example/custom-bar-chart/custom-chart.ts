@@ -15,7 +15,7 @@ import {
     ChartToTSEvent,
     ColumnType,
     CustomChartContext,
-    DataArray,
+    DataPointsArray,
     getChartContext,
     PointVal,
     Query,
@@ -36,16 +36,12 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
-function getDataForColumn(column: ChartColumn, dataArr: DataArray[]) {
-    const colId = column.id;
-    const idx = _.findIndex(
-        dataArr,
-        (dataObj: any) => dataObj.columnId === colId,
-    );
-    return dataArr[idx].dataValue;
+function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 
-function getColumnDataModel(configDimensions, dataArr, type, visualProps) {
+function getColumnDataModel(configDimensions, dataArr: DataPointsArray, type) {
     // this should be handled in a better way
     const xAxisColumns = configDimensions?.[0].columns ?? [];
     const yAxisColumns = configDimensions?.[1].columns ?? [];
