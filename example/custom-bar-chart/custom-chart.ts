@@ -19,6 +19,7 @@ import {
     getChartContext,
     PointVal,
     Query,
+    VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -41,7 +42,12 @@ function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 
-function getColumnDataModel(configDimensions, dataArr: DataPointsArray, type) {
+function getColumnDataModel(
+    configDimensions,
+    dataArr: DataPointsArray,
+    type,
+    visualProps: VisualProps,
+) {
     // this should be handled in a better way
     const xAxisColumns = configDimensions?.[0].columns ?? [];
     const yAxisColumns = configDimensions?.[1].columns ?? [];
