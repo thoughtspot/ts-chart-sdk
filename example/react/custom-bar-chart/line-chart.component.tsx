@@ -7,7 +7,6 @@ import {
     PointVal,
     RenderErrorEventPayload,
     VisualProps,
-    VisualPropsUpdateEventPayload,
 } from '@thoughtspot/ts-chart-sdk';
 import {
     CategoryScale,
@@ -19,12 +18,14 @@ import {
     Title,
     Tooltip,
 } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
+    ChartDataLabels,
     LinearScale,
     PointElement,
     LineElement,
@@ -59,6 +60,7 @@ const availableColor = ['red', 'green', 'blue'];
 const visualPropKeyMap = {
     0: 'color',
     1: 'accordion.Color2',
+    2: 'accordion.datalabels',
 };
 
 const getColumnDataModel = (
@@ -70,8 +72,10 @@ const getColumnDataModel = (
     // this should be handled in a better way
     const xAxisColumns = configDimensions?.[0].columns ?? [];
     const yAxisColumns = configDimensions?.[1].columns ?? [];
+    const allowLabels = _.get(visualProps, visualPropKeyMap[2], false);
 
     return {
+        getAllowLabels: () => allowLabels,
         getLabels: () => getDataForColumn(xAxisColumns[0], dataArr),
         getDatasets: () =>
             _.map(yAxisColumns, (col, idx: number) => ({
@@ -135,8 +139,6 @@ export const LineChart = ({
     emitOpenContextMenu,
 }: LineChartProps) => {
     const dataModel = useMemo(() => {
-        console.log("LineChart", chartModel?.visualProps);
-        // column chart model
         const columnChartModel = getColumnDataModel(
             chartModel.config?.chartConfig?.[0].dimensions ?? [],
             chartModel.data?.[0].data as DataPointsArray,
@@ -153,6 +155,7 @@ export const LineChart = ({
     //     // TODO: off event for this above function
     // }, []);
     console.log('render');
+    console.log(dataModel.getAllowLabels());
     return (
         <Line
             data={{
@@ -162,6 +165,23 @@ export const LineChart = ({
             ref={chartRef}
             options={{
                 scales: dataModel.getScales(),
+                plugins: {
+                    // Change options for ALL labels of THIS CHART
+                    datalabels: {
+                        display: dataModel.getAllowLabels(),
+                        color: 'blue',
+                        labels: {
+                            title: {
+                                font: {
+                                    weight: 'bold',
+                                },
+                            },
+                            value: {
+                                color: 'green',
+                            },
+                        },
+                    },
+                },
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
@@ -208,8 +228,6 @@ export const RenderChart = ({
     }, [hasInitialized]);
 
     if (!hasInitialized || !chartModel) {
-        console.log(hasInitialized);
-        console.log(chartModel);
         return <div>Loading...</div>;
     }
 

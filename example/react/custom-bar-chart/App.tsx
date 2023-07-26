@@ -132,11 +132,6 @@ const App: React.FC = () => {
         emitRenderComplete,
     } = useChartContext({
         ...contextChartProps,
-        // renderChart: (cx) => {
-        //     chartModel = cx.getChartModel();
-
-        //     return Promise.resolve();
-        // },
     });
     useEffect(() => {
         console.log(chartModel);

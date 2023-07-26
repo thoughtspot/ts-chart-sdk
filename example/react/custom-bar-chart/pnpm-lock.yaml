@@ -7,6 +7,7 @@ specifiers:
   '@types/react-dom': ^17.0.11
   '@vitejs/plugin-react': ^4.0.0
   chart.js: ^4.0.0
+  chartjs-plugin-datalabels: ^2.2.0
   lodash: ^4.17.21
   react: ^17.0.2
   react-chartjs-2: ^5.2.0
@@ -17,6 +18,7 @@ specifiers:
 dependencies:
   '@thoughtspot/ts-chart-sdk': link:../../..
   chart.js: 4.3.0
+  chartjs-plugin-datalabels: 2.2.0_chart.js@4.3.0
   lodash: 4.17.21
   react: 17.0.2
   react-chartjs-2: 5.2.0_jnlvncesk5nuqyewzsoqj2jiom
@@ -573,6 +575,14 @@ packages:
     engines: {pnpm: '>=7'}
     dependencies:
       '@kurkle/color': 0.3.2
+    dev: false
+
+  /chartjs-plugin-datalabels/2.2.0_chart.js@4.3.0:
+    resolution: {integrity: sha512-14ZU30lH7n89oq+A4bWaJPnAG8a7ZTk7dKf48YAzMvJjQtjrgg5Dpk9f+LbjCF6bpx3RAGTeL13IXpKQYyRvlw==}
+    peerDependencies:
+      chart.js: '>=3.0.0'
+    dependencies:
+      chart.js: 4.3.0
     dev: false
 
   /color-convert/1.9.3:
