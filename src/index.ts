@@ -5,4 +5,4 @@ export * from './types/answer-column.types';
 export * from './types/chart-to-ts-event.types';
 export * from './types/ts-to-chart-event.types';
 export * from './main/custom-chart-context';
-export * from './react/custom-chart.context';
+export * from './react/custom-chart-context-service';

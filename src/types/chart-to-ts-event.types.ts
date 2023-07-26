@@ -80,7 +80,7 @@ export interface ChartToTSEventsPayloadMap {
  *
  * @group Chart to ThoughtSpot Events
  */
-interface UpdateVisualPropsEventPayload {
+export interface UpdateVisualPropsEventPayload {
     visualProps: VisualProps;
 }
 
@@ -137,7 +137,7 @@ export interface OpenContextMenuEventPayload {
 /**
  * @group Chart to ThoughtSpot Events
  */
-interface RenderErrorEventPayload {
+export interface RenderErrorEventPayload {
     hasError: boolean;
     error: any;
 }

@@ -1,193 +1,162 @@
 import {
-    ChartColumn,
-    ChartContext,
+    ChartConfig,
     ChartModel,
-    DataPointsArray,
-    OpenContextMenuEventPayload,
-    PointVal,
-    VisualProps,
+    ColumnType,
+    CustomChartContextProps,
+    Query,
+    useChartContext,
 } from '@thoughtspot/ts-chart-sdk';
-import {
-    CategoryScale,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    LineElement,
-    PointElement,
-    Title,
-    Tooltip,
-} from 'chart.js';
 import _ from 'lodash';
-import React, { useContext, useRef } from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useEffect, useRef } from 'react';
+import { RenderChart } from './line-chart.component';
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+const contextChartProps: CustomChartContextProps = {
+    getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
+        const cols = chartModel.columns;
 
-function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
-    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => row[idx]);
-}
+        const measureColumns = _.filter(
+            cols,
+            (col) => col.type === ColumnType.MEASURE,
+        );
 
-const availableColor = ['red', 'green', 'blue'];
+        const attributeColumns = _.filter(
+            cols,
+            (col) => col.type === ColumnType.ATTRIBUTE,
+        );
 
-const visualPropKeyMap = {
-    0: 'color',
-    1: 'accordion.Color2',
-};
-
-function getColumnDataModel(
-    configDimensions: any,
-    dataArr: DataPointsArray,
-    type: string,
-    visualProps: VisualProps,
-) {
-    // this should be handled in a better way
-    const xAxisColumns = configDimensions?.[0].columns ?? [];
-    const yAxisColumns = configDimensions?.[1].columns ?? [];
-
-    return {
-        getLabels: () => getDataForColumn(xAxisColumns[0], dataArr),
-        getDatasets: () =>
-            _.map(yAxisColumns, (col, idx: number) => ({
-                label: col.name,
-                data: getDataForColumn(col, dataArr),
-                yAxisID: `${type}-y${idx.toString()}`,
-                type: `${type}`,
-                backgroundColor: _.get(
-                    visualProps,
-                    visualPropKeyMap?.[idx],
-                    availableColor[idx],
-                ),
-                borderColor: _.get(
-                    visualProps,
-                    visualPropKeyMap?.[idx],
-                    availableColor[idx],
-                ),
-                datalabels: {
-                    anchor: 'end',
+        const axisConfig: ChartConfig = {
+            key: 'column',
+            dimensions: [
+                {
+                    key: 'x',
+                    columns: [attributeColumns[0]],
                 },
-            })),
-        getScales: () =>
-            _.reduce(
-                yAxisColumns,
-                (obj: any, _val, idx: number) => {
-                    // eslint-disable-next-line no-param-reassign
-                    obj[`${type}-y${idx.toString()}`] = {
-                        grid: {
-                            display: true,
-                        },
-                        position: idx === 0 ? 'left' : 'right',
-                        title: {
-                            display: true,
-                            text: `${_val.name}`,
-                        },
-                    };
-                    return obj;
+                {
+                    key: 'y',
+                    columns: measureColumns.slice(0, 2),
                 },
-                {},
-            ),
-        getPointDetails: (xPos: number, yPos: number): PointVal[] => [
+            ],
+        };
+        return [axisConfig];
+    },
+    getQueriesFromChartConfig: (chartConfig: ChartConfig[]): Array<Query> => {
+        const queries = chartConfig.map(
+            (config: ChartConfig): Query =>
+                _.reduce(
+                    config.dimensions,
+                    (acc: Query, dimension) => ({
+                        queryColumns: [
+                            ...acc.queryColumns,
+                            ...dimension.columns,
+                        ],
+                    }),
+                    {
+                        queryColumns: [],
+                    } as Query,
+                ),
+        );
+        return queries;
+    },
+    chartConfigEditorDefinition: [
+        {
+            key: 'column',
+            label: 'Custom Column',
+            descriptionText:
+                'X Axis can only have attributes, Y Axis can only have measures, Color can only have attributes. ' +
+                'Should have just 1 column in Y axis with colors columns.',
+            columnSections: [
+                {
+                    key: 'x',
+                    label: 'Custom X Axis',
+                    allowAttributeColumns: true,
+                    allowMeasureColumns: false,
+                    allowTimeSeriesColumns: true,
+                    maxColumnCount: 1,
+                },
+                {
+                    key: 'y',
+                    label: 'Custom Y Axis',
+                    allowAttributeColumns: false,
+                    allowMeasureColumns: true,
+                    allowTimeSeriesColumns: false,
+                },
+            ],
+        },
+    ],
+    visualPropEditorDefinition: {
+        elements: [
             {
-                columnId: xAxisColumns[0].id,
-                value: getDataForColumn(xAxisColumns[0], dataArr)[xPos],
+                key: 'color',
+                type: 'radio',
+                defaultValue: 'red',
+                values: ['red', 'green', 'yellow'],
+                label: 'Colors',
             },
             {
-                columnId: yAxisColumns[yPos].id,
-                value: getDataForColumn(yAxisColumns[yPos], dataArr)[xPos],
+                type: 'section',
+                key: 'accordion',
+                label: 'Accordion',
+                children: [
+                    {
+                        key: 'Color2',
+                        type: 'radio',
+                        defaultValue: 'blue',
+                        values: ['blue', 'white', 'red'],
+                        label: 'Color2',
+                    },
+                    {
+                        key: 'datalabels',
+                        type: 'toggle',
+                        defaultValue: false,
+                        label: 'Data Labels',
+                    },
+                ],
             },
         ],
-    };
-}
+    },
+    renderChart: (cx) => {
+        return Promise.resolve();
+    },
+};
 
-function getDataModel(chartModel: ChartModel, visualProps: any) {
-    // column chart model
-    const columnChartModel = getColumnDataModel(
-        chartModel.config?.chartConfig?.[0].dimensions ?? [],
-        chartModel.data?.[0].data ?? [],
-        'line',
-        chartModel.visualProps,
-    );
+const App: React.FC = () => {
+    const ref = useRef(null);
 
-    return columnChartModel;
-}
+    const {
+        chartModel,
+        WrapperComponent,
+        hasInitialized,
+        emitOpenContextMenu,
+        emitRenderStart,
+        emitRenderError,
+        emitRenderComplete,
+    } = useChartContext({
+        ...contextChartProps,
+        // renderChart: (cx) => {
+        //     chartModel = cx.getChartModel();
 
-function getParsedEvent(evt: any) {
-    return _.pick(evt.native, ['clientX', 'clientY']);
-}
-
-function renderChart(
-    chartModel: ChartModel,
-    onOpenContextMenu: (args: [OpenContextMenuEventPayload]) => Promise<void>,
-    chartRef: any,
-) {
-    const visualProps = chartModel.visualProps;
-    const dataModel = getDataModel(chartModel, visualProps);
-    const data = {
-        labels: dataModel.getLabels(),
-        datasets: dataModel.getDatasets() as any,
-    };
-    return (
-        <Line
-            data={data}
-            ref={chartRef}
-            options={{
-                scales: dataModel.getScales(),
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'point',
-                    intersect: true,
-                },
-                onClick: (e: any) => {
-                    const activeElement = e.chart.getActiveElements()[0];
-                    const dataX = activeElement.index;
-                    const dataY = activeElement.datasetIndex;
-
-                    console.log(
-                        'ChartPoint',
-                        dataX,
-                        dataY,
-                        dataModel.getPointDetails(dataX, dataY),
-                    );
-                    onOpenContextMenu({
-                        event: getParsedEvent(e),
-                        clickedPoint: {
-                            tuple: dataModel.getPointDetails(dataX, dataY),
-                        },
-                    });
-                },
-            }}
-        />
-    );
-}
-
-const App = () => {
-    const chartRef = useRef();
-    const { chartModel, hasInitialized, emitOpenContextMenu } =
-        useContext(ChartContext);
-
-    if (!hasInitialized || !chartModel) {
-        return <div>Loading...</div>;
-    }
-
+        //     return Promise.resolve();
+        // },
+    });
+    useEffect(() => {
+        console.log(chartModel);
+    }, [chartModel?.visualProps]);
     return (
         <div
             data-testid="line-chart"
             style={{ width: '99vw', height: '95vh', position: 'relative' }}
         >
-            {renderChart(
-                chartModel as ChartModel,
-                emitOpenContextMenu,
-                chartRef,
-            )}
+            <WrapperComponent>
+                <RenderChart
+                    chartRef={ref}
+                    chartModel={chartModel}
+                    hasInitialized={hasInitialized}
+                    emitRenderStart={emitRenderStart}
+                    emitRenderError={emitRenderError}
+                    emitRenderComplete={emitRenderComplete}
+                    emitOpenContextMenu={emitOpenContextMenu}
+                />
+            </WrapperComponent>
         </div>
     );
 };

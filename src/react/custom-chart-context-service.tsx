@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { createContext, useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     CustomChartContext,
     CustomChartContextProps,
@@ -29,20 +29,18 @@ export type TSToChartEventListener = {
     ) => Promise<void>;
 };
 
+interface WrapperComponentProps {
+    children: React.ReactNode;
+}
+
 interface ChartContextProps
     extends ChartToTSEventEmitters,
         TSToChartEventListener {
     hasInitialized: boolean;
     chartModel: ChartModel | undefined;
-}
-
-interface ChartProviderProps {
-    contextProps: CustomChartContextProps;
-    children: React.ReactElement;
-}
-
-export interface AppChartRef {
-    render: () => void;
+    WrapperComponent: ({
+        children,
+    }: WrapperComponentProps) => React.JSX.Element;
 }
 
 const emitter = (ctx: CustomChartContext) => {
@@ -59,7 +57,6 @@ const emitter = (ctx: CustomChartContext) => {
             acc[emitterKey] = (
                 args: ChartToTSEventsPayloadMap[typeof eventName],
             ): Promise<void> => {
-                console.log("sds");
                 return ctx.emitEvent(eventName, ...args);
             };
         }
@@ -71,7 +68,7 @@ const emitter = (ctx: CustomChartContext) => {
     );
 };
 
-const eventListener = (ctx: CustomChartContext) => {
+const eventListener = (ctx: CustomChartContext): TSToChartEventListener => {
     function reducerFn(
         acc: TSToChartEventListener,
         eventKey: string,
@@ -96,75 +93,103 @@ const eventListener = (ctx: CustomChartContext) => {
     );
 };
 
-const ChartContext = createContext<ChartContextProps>({} as ChartContextProps);
-
-const ChartProvider: React.FC<ChartProviderProps> = ({
-    contextProps,
-    children,
-}: ChartProviderProps) => {
+export const useChartContext = (props: CustomChartContextProps) => {
     const [hasInitialized, setHasInitialized] = useState(false);
+    const [key, setKey] = useState(0);
     const [ctx, setContextState] = useState<CustomChartContext>(
         {} as CustomChartContext,
     );
     const [chartModel, setChartModel] = useState<ChartModel>();
+    const [emitters, setEmitters] = useState<ChartToTSEventEmitters>(
+        emitter({
+            emitEvent: () => {
+                /* do nothing */
+            },
+        } as any),
+    );
+    const [listeners, setListeners] = useState<TSToChartEventListener>(
+        eventListener({
+            on: () => {
+                /* do nothing */
+            },
+        } as any),
+    );
 
     const initializeProvider = async (context: CustomChartContext) => {
         return context.initialize().then(() => {
             setHasInitialized(true);
             setContextState(context);
+            setChartModel(context.getChartModel());
+            setEmitters(emitter(context));
+            setListeners(eventListener(context));
+            // update chart Model
+            listeners.onChartModelUpdate(
+                (payload: ChartModelUpdateEventPayload) => {
+                    setChartModel(context.getChartModel());
+                },
+            );
+            // update visual properties
+            listeners.onVisualPropsUpdate(
+                (payload: VisualPropsUpdateEventPayload) => {
+                    setChartModel(context.getChartModel());
+                    return {
+                        triggerRenderChart: true,
+                    };
+                },
+            );
+            // update data
+            listeners.onDataUpdate((payload: DataUpdateEventPayload) => {
+                setChartModel(context.getChartModel());
+            });
             return true;
         });
     };
 
-    const getChartContextValues = useCallback(
-        (ctx: CustomChartContext): ChartContextProps => ({
-            hasInitialized,
-            chartModel,
-            ...emitter(ctx),
-            ...eventListener(ctx),
-        }),
-        [ctx, chartModel],
+    // const getChartContextValues = useCallback(
+    //     (ctx: CustomChartContext): ChartContextProps => ({
+    //         hasInitialized,
+    //         chartModel,
+    //         ...emitter(ctx),
+    //         ...eventListener(ctx),
+    //         WrapperComponent: ({ children }: WrapperComponentProps) => {
+    //             console.log(key);
+    //             return <div key={key}>{children}</div>;
+    //         },
+    //     }),
+    //     [ctx, chartModel, key],
+    // );
+
+    const renderChart = useCallback(
+        (ctx: CustomChartContext) => {
+            console.log('Here', key);
+            setKey(key + 1);
+            return Promise.resolve();
+        },
+        [key],
     );
 
-    React.useEffect(() => {
+    const WrapperComponent = useCallback(
+        ({ children }: WrapperComponentProps) => {
+            console.log(key);
+            return <div key={key}>{children}</div>;
+        },
+        [key],
+    );
+
+    useEffect(() => {
         const context = new CustomChartContext({
-            ...contextProps,
+            ...props,
+            renderChart,
         });
         initializeProvider(context);
-        // update chart Model
-        getChartContextValues(context).onChartModelUpdate(
-            (payload: ChartModelUpdateEventPayload) => {
-                setChartModel(payload.chartModel);
-            },
-        );
-        // update visual properties
-        getChartContextValues(context).onVisualPropsUpdate(
-            (payload: VisualPropsUpdateEventPayload) => {
-                setChartModel({
-                    ...context.getChartModel(),
-                    visualProps: payload.visualProps,
-                });
-                return {
-                    triggerRenderChart: true,
-                };
-            },
-        );
-        // update data
-        getChartContextValues(context).onDataUpdate(
-            (payload: DataUpdateEventPayload) => {
-                setChartModel({
-                    ...context.getChartModel(),
-                    data: payload.data,
-                });
-            },
-        );
     }, []);
 
-    return (
-        <ChartContext.Provider value={getChartContextValues(ctx)}>
-            {children}
-        </ChartContext.Provider>
-    );
+    // return getChartContextValues(ctx);
+    return {
+        hasInitialized,
+        chartModel,
+        ...emitters,
+        ...listeners,
+        WrapperComponent,
+    };
 };
-
-export { ChartContext, ChartProvider };
