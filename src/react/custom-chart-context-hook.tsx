@@ -195,16 +195,7 @@ export const useChartContext = (
                 ...eventListener(ctx),
                 WrapperComponent: ({ children }: WrapperComponentProps) => {
                     return (
-                        <div
-                            style={{
-                                width: '99vw',
-                                height: '95vh',
-                                position: 'relative',
-                            }}
-                            key={key}
-                        >
-                            {children}
-                        </div>
+                        <React.Fragment key={key}>{children}</React.Fragment>
                     );
                 },
             };
