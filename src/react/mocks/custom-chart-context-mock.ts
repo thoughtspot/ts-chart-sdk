@@ -1,20 +1,10 @@
-import {
-    ChartConfig,
-    ChartModel,
-    ColumnType,
-    CustomChartContextProps,
-    Query,
-    useChartContext,
-} from '@thoughtspot/ts-chart-sdk';
 import _ from 'lodash';
-import React, { useRef } from 'react';
-import { RenderChart } from './line-chart.component';
+import { CustomChartContextProps } from '../../main/custom-chart-context';
+import { ColumnType } from '../../types/answer-column.types';
+import { ChartConfig, ChartModel } from '../../types/common.types';
+import { Query } from '../../types/ts-to-chart-event.types';
 
-/**
- * @type {CustomChartContextProps}
- * Represents the context chart props used in the application.
- */
-const contextChartProps: CustomChartContextProps = {
+export const contextChartProps: CustomChartContextProps = {
     getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
         const cols = chartModel.columns;
 
@@ -122,46 +112,3 @@ const contextChartProps: CustomChartContextProps = {
         return Promise.resolve();
     },
 };
-
-/**
- * The main application component.
- * @function
- * @name App
- * @returns {React.FC} - The main application functional component.
- */
-const App: React.FC = () => {
-    const ref = useRef(null);
-
-    const {
-        chartModel,
-        WrapperComponent,
-        hasInitialized,
-        emitOpenContextMenu,
-        emitRenderStart,
-        emitRenderError,
-        emitRenderComplete,
-    } = useChartContext({
-        ...contextChartProps,
-    });
-
-    return (
-        <div
-            data-testid="line-chart"
-            style={{ width: '99vw', height: '95vh', position: 'relative' }}
-        >
-            <WrapperComponent>
-                <RenderChart
-                    chartRef={ref}
-                    chartModel={chartModel}
-                    hasInitialized={hasInitialized}
-                    emitRenderStart={emitRenderStart}
-                    emitRenderError={emitRenderError}
-                    emitRenderComplete={emitRenderComplete}
-                    emitOpenContextMenu={emitOpenContextMenu}
-                />
-            </WrapperComponent>
-        </div>
-    );
-};
-
-export default App;

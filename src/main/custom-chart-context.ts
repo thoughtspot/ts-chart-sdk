@@ -36,8 +36,6 @@ import {
 import { VisualPropEditorDefinition } from '../types/visual-prop.types';
 import * as PostMessageEventBridge from './post-message-event-bridge';
 
-let isInitialized = false;
-
 export type CustomChartContextProps = {
     /**
      * Generate the default axis configuration for rendering the chart on first load.
@@ -184,6 +182,8 @@ export class CustomChartContext {
      */
     private triggerInitResolve: () => void = _.noop;
 
+    private isInitialized = false;
+
     /**
      * Constructor to only accept context props as payload
      *
@@ -258,7 +258,7 @@ export class CustomChartContext {
      */
     public destroy() {
         PostMessageEventBridge.destroyMessageListener(this.eventProcessor);
-        isInitialized = false;
+        this.isInitialized = false;
     }
 
     /**
@@ -280,7 +280,7 @@ export class CustomChartContext {
         eventType: T,
         ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
-        if (!isInitialized) {
+        if (!this.isInitialized) {
             console.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
@@ -299,7 +299,7 @@ export class CustomChartContext {
      * Process all the functions via the eventProcess callback
      */
     private registerEventProcessor = () => {
-        if (isInitialized) {
+        if (this.isInitialized) {
             console.error(
                 'The context is already initialized. you cannot have multiple contexts',
             );
@@ -507,7 +507,7 @@ export class CustomChartContext {
 
     private initializationComplete = (): void => {
         // context is now initialized
-        isInitialized = true;
+        this.isInitialized = true;
 
         // TODO: following can be done behind a promise
         this.triggerInitResolve();
