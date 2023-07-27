@@ -1,13 +1,13 @@
 import { render, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
+import { resetInitialized } from '../main/custom-chart-context';
 import * as PostMessageEventBridge from '../main/post-message-event-bridge';
 import { mockInitializeContextPayload } from '../test/test-utils';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
 import { useChartContext } from './custom-chart-context-hook';
 import { contextChartProps } from './mocks/custom-chart-context-mock';
-import { resetInitialized } from '../main/custom-chart-context';
 
 jest.mock('../main/post-message-event-bridge');
 
