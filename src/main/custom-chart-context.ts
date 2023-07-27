@@ -36,6 +36,8 @@ import {
 import { VisualPropEditorDefinition } from '../types/visual-prop.types';
 import * as PostMessageEventBridge from './post-message-event-bridge';
 
+let isInitialized = false;
+
 export type CustomChartContextProps = {
     /**
      * Generate the default axis configuration for rendering the chart on first load.
@@ -182,8 +184,6 @@ export class CustomChartContext {
      */
     private triggerInitResolve: () => void = _.noop;
 
-    private isInitialized = false;
-
     /**
      * Constructor to only accept context props as payload
      *
@@ -258,7 +258,7 @@ export class CustomChartContext {
      */
     public destroy() {
         PostMessageEventBridge.destroyMessageListener(this.eventProcessor);
-        this.isInitialized = false;
+        isInitialized = false;
     }
 
     /**
@@ -280,7 +280,7 @@ export class CustomChartContext {
         eventType: T,
         ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
-        if (!this.isInitialized) {
+        if (!isInitialized) {
             console.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
@@ -299,7 +299,7 @@ export class CustomChartContext {
      * Process all the functions via the eventProcess callback
      */
     private registerEventProcessor = () => {
-        if (this.isInitialized) {
+        if (isInitialized) {
             console.error(
                 'The context is already initialized. you cannot have multiple contexts',
             );
@@ -507,7 +507,7 @@ export class CustomChartContext {
 
     private initializationComplete = (): void => {
         // context is now initialized
-        this.isInitialized = true;
+        isInitialized = true;
 
         // TODO: following can be done behind a promise
         this.triggerInitResolve();
@@ -594,4 +594,11 @@ export const getChartContext = async (
     await ctx.initialize();
 
     return ctx;
+};
+
+/**
+ * Only to be used in unit testing
+ */
+export const resetInitialized = () => {
+    isInitialized = false;
 };

@@ -7,6 +7,7 @@ import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
 import { useChartContext } from './custom-chart-context-hook';
 import { contextChartProps } from './mocks/custom-chart-context-mock';
+import { resetInitialized } from '../main/custom-chart-context';
 
 jest.mock('../main/post-message-event-bridge');
 
@@ -35,6 +36,7 @@ describe('useChartContext initialization', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        resetInitialized();
     });
 
     test('should initialize the context only after intialize completes', async () => {
@@ -124,6 +126,7 @@ describe('useChartContext emit', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        resetInitialized();
     });
 
     test('should trigger the emitter correctly when context is initialized', async () => {
@@ -212,6 +215,7 @@ describe('useChartContext on listeners', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        resetInitialized();
     });
 
     test('should trigger the onEvent correctly when context is initialized', async () => {
@@ -291,7 +295,6 @@ describe('useChartContext on React Wrapper component', () => {
     let eventProcessor: any;
     let mockInitMessage;
     let mockPostMessageToHost;
-    const mockedChartModel = { columns: [], config: {} };
     beforeEach(() => {
         mockInitMessage = jest.spyOn(
             PostMessageEventBridge,
@@ -312,6 +315,7 @@ describe('useChartContext on React Wrapper component', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        resetInitialized();
     });
     test('WrapperComponent renders children and should not increase counter for useEffect on chartModel if visualProps is updated', async () => {
         const CustomChartComponent = () => {
