@@ -595,10 +595,3 @@ export const getChartContext = async (
 
     return ctx;
 };
-
-/**
- * Only to be used in unit testing
- */
-export const resetInitialized = () => {
-    isInitialized = false;
-};

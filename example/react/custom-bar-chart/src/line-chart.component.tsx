@@ -186,8 +186,6 @@ export const LineChart = ({
     //     });
     //     // TODO: off event for this above function
     // }, []);
-    console.log('render');
-    console.log(dataModel.getAllowLabels());
     return (
         <Line
             data={{
@@ -260,6 +258,7 @@ export const RenderChart = ({
 }: RenderChartProps) => {
     useEffect(() => {
         if (hasInitialized) {
+            emitRenderStart([]);
             emitRenderComplete([]);
         }
     }, [hasInitialized]);
@@ -267,8 +266,6 @@ export const RenderChart = ({
     if (!hasInitialized || !chartModel) {
         return <div>Loading...</div>;
     }
-
-    emitRenderStart([]);
 
     // add an error boundry to trigger render error
     return (

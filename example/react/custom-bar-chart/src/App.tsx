@@ -14,7 +14,7 @@ import { RenderChart } from './line-chart.component';
  * @type {CustomChartContextProps}
  * Represents the context chart props used in the application.
  */
-const contextChartProps: CustomChartContextProps = {
+const contextChartProps: Omit<CustomChartContextProps, 'renderChart'> = {
     getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
         const cols = chartModel.columns;
 
@@ -118,9 +118,6 @@ const contextChartProps: CustomChartContextProps = {
             },
         ],
     },
-    renderChart: (cx) => {
-        return Promise.resolve();
-    },
 };
 
 /**
@@ -140,9 +137,7 @@ const App: React.FC = () => {
         emitRenderStart,
         emitRenderError,
         emitRenderComplete,
-    } = useChartContext({
-        ...contextChartProps,
-    });
+    } = useChartContext(contextChartProps);
 
     return (
         <div

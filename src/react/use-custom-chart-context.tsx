@@ -24,59 +24,12 @@ import {
     TSToChartEventsPayloadMap,
     VisualPropsUpdateEventPayload,
 } from '../types/ts-to-chart-event.types';
-
-/**
- * All event emmiter which can be called from Chart App
- * prefixed with emit
- * @returns Promise<void>
- */
-export type ChartToTSEventEmitters = {
-    [key in keyof ChartToTSEventsPayloadMap as `emit${Capitalize<key>}`]: (
-        args: ChartToTSEventsPayloadMap[key],
-    ) => Promise<void>;
-};
-
-/**
- * All external event listener which can be listened in chart App
- * prefixed with on
- * @returns Promise<void>
- */
-export type TSToChartEventListener = {
-    [key in keyof TSToChartEventsPayloadMap as `on${Capitalize<key>}`]: (
-        args: TSToChartEventsPayloadMap[key],
-    ) => Promise<void>;
-};
-
-interface WrapperComponentProps {
-    /**
-     * Child App which renders chart
-     * wrapper is used to control rendering of child app
-     */
-    children: React.ReactNode;
-}
-
-interface ChartContextProps
-    extends ChartToTSEventEmitters,
-        TSToChartEventListener {
-    /**
-     * decides if the chart context is initialzed
-     */
-    hasInitialized: boolean;
-    /**
-     * chart model to be used by client having
-     * config, data and visual props
-     */
-    chartModel: ChartModel | undefined;
-    /**
-     * Parent component wrapped around chart app
-     * for controlling re-rendering of chart
-     * @param children
-     * @returns React.JSX.Element
-     */
-    WrapperComponent: ({
-        children,
-    }: WrapperComponentProps) => React.JSX.Element;
-}
+import {
+    ChartContextProps,
+    ChartToTSEventEmitters,
+    TSToChartEventListener,
+    WrapperComponentProps,
+} from './use-custom-chart-types';
 
 /**
  *
@@ -95,7 +48,8 @@ const emitter = (ctx: CustomChartContext): ChartToTSEventEmitters => {
             args: ChartToTSEventsPayloadMap[keyof ChartToTSEventsPayloadMap],
         ): Promise<void> => {
             if (!ctx || _.isEmpty(ctx)) {
-                return Promise.resolve();
+                console.log('Context is not initialized');
+                return Promise.reject(new Error('Context not initialized'));
             }
             return ctx.emitEvent(eventName, ...args);
         };
@@ -131,12 +85,13 @@ const eventListener = (ctx: CustomChartContext): TSToChartEventListener => {
 /**
  * A custom hook to manage the Chart Context state and provide necessary
  * chart-related functionality.
- * @param {CustomChartContextProps} props - The custom chart context properties to initialize the chart context.
+ * @param {CustomChartContextProps} props - The custom chart context properties
+ * to initialize the chart context.
  * @returns {ChartContextProps} The chart context values, including initialized state,
  * chart model, emitter, event listener, and WrapperComponent.
  */
 export const useChartContext = (
-    props: CustomChartContextProps,
+    props: Omit<CustomChartContextProps, 'renderChart'>,
 ): ChartContextProps => {
     /**
      * State to keep track of whether the context has been initialized.
@@ -144,7 +99,7 @@ export const useChartContext = (
      */
     const [hasInitialized, setHasInitialized] = useState(false);
     /**
-     * State to manage the key used to force re-render the chart.
+     * State to manage the key used to re-render the chart.
      * @type {number}
      */
     const [key, setKey] = useState(0);
@@ -162,35 +117,18 @@ export const useChartContext = (
     const [chartModel, setChartModel] = useState<ChartModel>();
 
     /**
-     * Initializes the chart context provider.
-     * @param {CustomChartContext} context - The custom chart context to be initialized.
-     * @returns {Promise<boolean>} A promise that resolves to `true` after successful initialization.
-     */
-    const initializeProvider = async (context: CustomChartContext) => {
-        return context
-            .initialize()
-            .then(() => {
-                setHasInitialized(true);
-                setContextState(context);
-                setChartModel(context.getChartModel());
-                return true;
-            })
-            .catch((e) => {
-                console.log('Error in context initialization', e);
-            });
-    };
-
-    /**
      * Retrieves the chart context values.
      * @param {CustomChartContext} ctx - The custom chart context.
      * @returns {ChartContextProps} The chart context values,
-     * including initialized state, chart model, emitter, event listener, and WrapperComponent.
+     * including initialized state, chart model, emitter,
+     * event listener, and WrapperComponent.
      */
     const getChartContextValues = useCallback(
         (ctx: CustomChartContext): ChartContextProps => {
             return {
                 hasInitialized,
                 chartModel,
+                destroy: () => ctx?.destroy(),
                 ...emitter(ctx),
                 ...eventListener(ctx),
                 WrapperComponent: ({ children }: WrapperComponentProps) => {
@@ -200,20 +138,7 @@ export const useChartContext = (
                 },
             };
         },
-        [chartModel, key, hasInitialized],
-    );
-
-    /**
-     * Renders the chart by updating the `key` state to force re-rendering.
-     * @param {CustomChartContext} ctx - The custom chart context.
-     * @returns {Promise<void>} A promise that resolves after the chart has been rendered.
-     */
-    const renderChart = useCallback(
-        (ctx: CustomChartContext) => {
-            setKey((prevKey) => prevKey + 1);
-            return Promise.resolve();
-        },
-        [key],
+        [chartModel, key, hasInitialized, ctx],
     );
 
     /**
@@ -237,6 +162,40 @@ export const useChartContext = (
         getChartContextValues(context).onDataUpdate(commonUpdateHandler);
     }, []);
 
+    /**
+     * Initializes the chart context provider.
+     * @param {CustomChartContext} context - The custom chart context to be initialized.
+     * @returns {Promise<boolean>} A promise that resolves to
+     * `true` after successful initialization.
+     */
+    const initializeProvider = async (context: CustomChartContext) => {
+        return context
+            .initialize()
+            .then(() => {
+                setHasInitialized(true);
+                setContextState(context);
+                setChartModel(context.getChartModel());
+                return true;
+            })
+            .catch((e) => {
+                console.log('Error in context initialization', e);
+            });
+    };
+
+    /**
+     * Renders the chart by updating the `key` state to force re-rendering.
+     * @param {CustomChartContext} ctx - The custom chart context.
+     * @returns {Promise<void>} A promise that resolves after the
+     * chart has been rendered.
+     */
+    const renderChart = useCallback(
+        (ctx: CustomChartContext) => {
+            setKey((prevKey) => prevKey + 1);
+            return Promise.resolve();
+        },
+        [key],
+    );
+
     useEffect(() => {
         // Create a new custom chart context with the provided props and
         // renderChart function.
@@ -246,7 +205,6 @@ export const useChartContext = (
         });
         // Initialize the chart context provider.
         initializeProvider(context);
-        // Register External Event listeners
         setupEventListeners(context);
     }, []);
 

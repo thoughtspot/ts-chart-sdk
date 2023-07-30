@@ -1,13 +1,12 @@
 import { render, waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
-import { resetInitialized } from '../main/custom-chart-context';
 import * as PostMessageEventBridge from '../main/post-message-event-bridge';
 import { mockInitializeContextPayload } from '../test/test-utils';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
-import { useChartContext } from './custom-chart-context-hook';
 import { contextChartProps } from './mocks/custom-chart-context-mock';
+import { useChartContext } from './use-custom-chart-context';
 
 jest.mock('../main/post-message-event-bridge');
 
@@ -36,7 +35,6 @@ describe('useChartContext initialization', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
-        resetInitialized();
     });
 
     test('should initialize the context only after intialize completes', async () => {
@@ -74,6 +72,7 @@ describe('useChartContext initialization', () => {
             expect(result.current.hasInitialized).toBe(true);
             expect(result.current.chartModel).toEqual(mockedChartModel);
         });
+        result.current?.destroy();
     });
 
     test('should make sure hasInitialized to remain false when context initialization failed', async () => {
@@ -86,6 +85,7 @@ describe('useChartContext initialization', () => {
                 on: jest.fn(),
                 getChartModel: jest.fn(),
                 renderChart: jest.fn(),
+                destroy: jest.fn(),
             })),
         }));
 
@@ -126,7 +126,6 @@ describe('useChartContext emit', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
-        resetInitialized();
     });
 
     test('should trigger the emitter correctly when context is initialized', async () => {
@@ -166,6 +165,7 @@ describe('useChartContext emit', () => {
             contextPayload,
             ChartToTSEvent.OpenContextMenu,
         );
+        result.current?.destroy();
     });
 
     test('should not defined emitter when context is not initialized', async () => {
@@ -185,7 +185,8 @@ describe('useChartContext emit', () => {
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(false);
         });
-        result.current.emitRenderStart([]);
+        const promise = result.current.emitRenderStart([]);
+        await expect(promise).rejects.toThrow('Context not initialized');
         expect(mockPostMessageToHost).not.toHaveBeenCalled();
     });
 });
@@ -215,7 +216,6 @@ describe('useChartContext on listeners', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
-        resetInitialized();
     });
 
     test('should trigger the onEvent correctly when context is initialized', async () => {
@@ -288,6 +288,7 @@ describe('useChartContext on listeners', () => {
                 color: 'red',
             });
         });
+        result.current?.destroy();
     });
 });
 
@@ -295,6 +296,7 @@ describe('useChartContext on React Wrapper component', () => {
     let eventProcessor: any;
     let mockInitMessage;
     let mockPostMessageToHost;
+    const mockedChartModel = { columns: [], config: {} };
     beforeEach(() => {
         mockInitMessage = jest.spyOn(
             PostMessageEventBridge,
@@ -315,12 +317,11 @@ describe('useChartContext on React Wrapper component', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
-        resetInitialized();
     });
     test('WrapperComponent renders children and should not increase counter for useEffect on chartModel if visualProps is updated', async () => {
         const CustomChartComponent = () => {
             const [counter, setCounter] = React.useState(0);
-            const { WrapperComponent, chartModel } =
+            const { WrapperComponent, chartModel, hasInitialized } =
                 useChartContext(contextChartProps);
             React.useEffect(() => {
                 setCounter((prevCount) => prevCount + 1);
@@ -335,16 +336,31 @@ describe('useChartContext on React Wrapper component', () => {
             );
         };
 
-        const { getByTestId } = render(<CustomChartComponent />);
+        const { getByTestId, rerender } = render(<CustomChartComponent />);
+
+        const mockPostMessage = jest.fn();
+        eventProcessor({
+            data: {
+                payload: {
+                    componentId: 'COMPONENT_ID',
+                    hostUrl: 'https://some.chart.app',
+                    chartModel: mockedChartModel,
+                },
+                eventType: TSToChartEvent.Initialize,
+                source: 'ts-host-app',
+            },
+            ports: [{ postMessage: mockPostMessage }],
+        });
+        rerender(<CustomChartComponent />);
 
         // Check if the child element is rendered
-        const childElement = getByTestId('child-element');
         await waitFor(() => {
-            expect(childElement.textContent).toBe('Child Element counter: 1');
+            console.log(getByTestId('child-element'));
+            expect(getByTestId('child-element').textContent).toBe(
+                'Child Element counter: 1',
+            );
         });
 
-        // Re-render the component with a new key
-        const mockPostMessage = jest.fn();
         eventProcessor({
             data: {
                 payload: { visualProps: { color: 'red' } },
@@ -353,6 +369,8 @@ describe('useChartContext on React Wrapper component', () => {
             },
             ports: [{ postMessage: mockPostMessage }],
         });
+
+        // Re-render the component with a new key
         // Check if the child element is still in the document after re-render
         const updatedChildElement = getByTestId('child-element');
         await waitFor(() => {
@@ -365,7 +383,7 @@ describe('useChartContext on React Wrapper component', () => {
     test('WrapperComponent renders children should increase counter for useEffect on chartModel.visualProps if visualProps is updated', async () => {
         const CustomChartComponent = () => {
             const [counter, setCounter] = React.useState(0);
-            const { WrapperComponent, chartModel } =
+            const { WrapperComponent, chartModel, hasInitialized } =
                 useChartContext(contextChartProps);
             React.useEffect(() => {
                 setCounter((prevCount) => prevCount + 1);
@@ -390,6 +408,18 @@ describe('useChartContext on React Wrapper component', () => {
 
         // Re-render the component with a new key
         const mockPostMessage = jest.fn();
+        eventProcessor({
+            data: {
+                payload: {
+                    componentId: 'COMPONENT_ID',
+                    hostUrl: 'https://some.chart.app',
+                    chartModel: mockedChartModel,
+                },
+                eventType: TSToChartEvent.Initialize,
+                source: 'ts-host-app',
+            },
+            ports: [{ postMessage: mockPostMessage }],
+        });
         eventProcessor({
             data: {
                 payload: { visualProps: { color: 'red' } },

@@ -152,7 +152,7 @@ describe('CustomChartContext', () => {
             } catch (err: any) {
                 error = err.message;
             }
-            expect(error).toEqual(ErrorType.MultipleContextsNotSupported);
+            expect(error).toBe(ErrorType.MultipleContextsNotSupported);
 
             try {
                 await getChartContext({
