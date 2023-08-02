@@ -44,7 +44,7 @@ const postMessageToHostApp = (
                 reject(error);
             } else {
                 console.log('ChartContext: message success:', res.data);
-                resolve(null);
+                resolve(res.data);
             }
         };
 
