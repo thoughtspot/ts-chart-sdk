@@ -1,4 +1,5 @@
 import { VisualProps } from './common.types';
+import { Query } from './ts-to-chart-event.types';
 
 /**
  *
@@ -25,9 +26,20 @@ export enum ChartToTSEvent {
     RenderComplete = 'RenderComplete',
 
     /**
-     * Visual Props Update
+     * Visual props update
      */
     UpdateVisualProps = 'UpdateVisualProps',
+
+    /**
+     * TML events
+     */
+    GetTMLString = 'GetTMLString',
+    SetTMLString = 'SetTMLString',
+
+    /**
+     * Fetch data for custom query
+     */
+    GetDataForQuery = 'GetDataForQuery',
 }
 
 /**
@@ -74,6 +86,24 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     [ChartToTSEvent.UpdateVisualProps]: [UpdateVisualPropsEventPayload];
+
+    /**
+     * Trigger to get the TML string
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    [ChartToTSEvent.GetTMLString]: [];
+    /**
+     * Trigger to set the TML string
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    [ChartToTSEvent.SetTMLString]: [SetTMLStringEventPayload];
+    /**
+     * Trigger to get the data for custom query
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    [ChartToTSEvent.GetDataForQuery]: [GetDataForQueryEventPayload];
 }
 
 /**
@@ -82,6 +112,15 @@ export interface ChartToTSEventsPayloadMap {
  */
 interface UpdateVisualPropsEventPayload {
     visualProps: VisualProps;
+}
+
+/**
+ *
+ * @group Chart to ThoughtSpot Events
+ */
+export interface SetTMLStringEventPayload {
+    // TML string to be set
+    tmlString: string;
 }
 
 /**
@@ -140,6 +179,13 @@ export interface OpenContextMenuEventPayload {
 interface RenderErrorEventPayload {
     hasError: boolean;
     error: any;
+}
+
+/**
+ * @group Chart to ThoughtSpot Events
+ */
+export interface GetDataForQueryEventPayload {
+    queries: Query[];
 }
 
 /**
