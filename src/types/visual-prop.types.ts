@@ -8,14 +8,57 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-interface InputValidation {
+/**
+ * Configuration for input validation rules
+ */
+export interface InputValidation {
+    /**
+     * Determines if the input is required.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     required: boolean;
+    /**
+     * Error message to display when input is required but not provided.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     requiredError: string;
+    /**
+     * Regular expression pattern to validate the input against.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     regex: string;
+    /**
+     * Error message to display when input doesn't match the regex pattern.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     regexError: string;
+    /**
+     * Minimum length required for the input.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     minLength: number;
+    /**
+     * Error message to display when input length is less than the required minimum.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     minLengthError: string;
+    /**
+     * Range of values allowed for the input.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     range: string;
+    /**
+     * Error message to display when input value is outside the allowed range.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
     rangeError: string;
 }
 
@@ -65,7 +108,7 @@ export interface TextInputFormDetail {
      */
     defaultValue?: string;
     /**
-     * inputValidation
+     * inputValidation config for input field
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
@@ -225,6 +268,7 @@ export interface Section {
     alignment?: 'row' | 'column';
     /**
      * Defines form layout in the view for the section
+     * Default none will be considered.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
