@@ -8,6 +8,17 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+interface InputValidation {
+    required: boolean;
+    requiredError: string;
+    regex: string;
+    regexError: string;
+    minLength: number;
+    minLengthError: string;
+    range: string;
+    rangeError: string;
+}
+
 /**
  * Text Form Element for the visual props editor
  *
@@ -53,6 +64,12 @@ export interface TextInputFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: string;
+    /**
+     * inputValidation
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    inputValidation?: InputValidation;
 }
 
 /**
@@ -206,6 +223,12 @@ export interface Section {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     alignment?: 'row' | 'column';
+    /**
+     * Defines form layout in the view for the section
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    layoutType?: 'accordion' | 'tab' | 'none';
 }
 
 /**
