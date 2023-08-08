@@ -46,7 +46,7 @@ const emitter = (ctx: CustomChartContext): ChartToTSEventEmitters => {
         const emitterKey = `emit${eventKey}` as keyof ChartToTSEventEmitters;
 
         acc[emitterKey] = (
-            args: ChartToTSEventsPayloadMap[keyof ChartToTSEventsPayloadMap],
+            ...args: ChartToTSEventsPayloadMap[keyof ChartToTSEventsPayloadMap]
         ): Promise<void> => {
             if (!ctx || _.isEmpty(ctx)) {
                 console.log('Context is not initialized');

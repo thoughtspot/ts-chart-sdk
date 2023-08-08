@@ -158,7 +158,7 @@ describe('useChartContext emit', () => {
             clickedPoint: { tuple: [{ columnId: '123', value: 12 }] },
             event: {} as any,
         };
-        result.current.emitOpenContextMenu([contextPayload]);
+        result.current.emitOpenContextMenu(contextPayload);
         expect(mockPostMessageToHost).toHaveBeenCalledWith(
             mockInitializeContextPayload.componentId,
             mockInitializeContextPayload.hostUrl,
@@ -185,7 +185,7 @@ describe('useChartContext emit', () => {
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(false);
         });
-        const promise = result.current.emitRenderStart([]);
+        const promise = result.current.emitRenderStart();
         await expect(promise).rejects.toThrow('Context not initialized');
         expect(mockPostMessageToHost).not.toHaveBeenCalled();
     });

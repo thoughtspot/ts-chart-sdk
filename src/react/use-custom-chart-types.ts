@@ -10,7 +10,7 @@ import { TSToChartEventsPayloadMap } from '../types/ts-to-chart-event.types';
  */
 export type ChartToTSEventEmitters = {
     [key in keyof ChartToTSEventsPayloadMap as `emit${Capitalize<key>}`]: (
-        args: ChartToTSEventsPayloadMap[key],
+        ...args: ChartToTSEventsPayloadMap[key]
     ) => Promise<void>;
 };
 

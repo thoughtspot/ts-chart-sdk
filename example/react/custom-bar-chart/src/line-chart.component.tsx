@@ -37,7 +37,7 @@ ChartJS.register(
 
 interface LineChartProps {
     chartModel: ChartModel;
-    emitOpenContextMenu: (args: [OpenContextMenuEventPayload]) => Promise<void>;
+    emitOpenContextMenu: (args: OpenContextMenuEventPayload) => Promise<void>;
     onVisualPropsUpdate: (
         args: (payload: VisualPropsUpdateEventPayload) => void,
     ) => Promise<void>;
@@ -48,10 +48,10 @@ interface LineChartProps {
 interface RenderChartProps {
     hasInitialized: boolean;
     chartModel: ChartModel | undefined;
-    emitOpenContextMenu: (args: [OpenContextMenuEventPayload]) => Promise<void>;
-    emitRenderStart: (args: []) => Promise<void>;
-    emitRenderError: (args: [RenderErrorEventPayload]) => Promise<void>;
-    emitRenderComplete: (args: []) => Promise<void>;
+    emitOpenContextMenu: (args: OpenContextMenuEventPayload) => Promise<void>;
+    emitRenderStart: () => Promise<void>;
+    emitRenderError: (args: RenderErrorEventPayload) => Promise<void>;
+    emitRenderComplete: () => Promise<void>;
     offVisualPropsUpdate: () => Promise<void>;
     onVisualPropsUpdate: (
         args: (payload: VisualPropsUpdateEventPayload) => void,
@@ -248,14 +248,12 @@ export const LineChart = ({
                         dataY,
                         dataModel.getPointDetails(dataX, dataY),
                     );
-                    emitOpenContextMenu([
-                        {
+                    emitOpenContextMenu({
                             event: getParsedEvent(e),
                             clickedPoint: {
                                 tuple: dataModel.getPointDetails(dataX, dataY),
                             },
-                        },
-                    ]);
+                    });
                 },
             }}
         />
@@ -279,8 +277,8 @@ export const RenderChart = ({
 }: RenderChartProps) => {
     useEffect(() => {
         if (hasInitialized) {
-            emitRenderStart([]);
-            emitRenderComplete([]);
+            emitRenderStart();
+            emitRenderComplete();
         }
     }, [hasInitialized]);
 
