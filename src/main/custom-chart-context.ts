@@ -233,6 +233,21 @@ export class CustomChartContext {
     }
 
     /**
+     * Removes specific event listeners on the chart context.
+     *
+     * @param  {T} eventType
+     * @returns void
+     */
+    public off<T extends keyof TSToChartEventsPayloadMap>(eventType: T): void {
+        if (_.isNil(this.eventListeners[eventType])) {
+            console.log('No event listener found to remove');
+            this.eventListeners[eventType] = [];
+            return;
+        }
+        this.eventListeners[eventType].splice(0, 1);
+    }
+
+    /**
      * Add internal event listeners on the chart context with the required callback.
      *
      * @param  {T} eventType

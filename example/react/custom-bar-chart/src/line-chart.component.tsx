@@ -7,6 +7,7 @@ import {
     PointVal,
     RenderErrorEventPayload,
     VisualProps,
+    VisualPropsUpdateEventPayload,
 } from '@thoughtspot/ts-chart-sdk';
 import {
     CategoryScale,
@@ -20,7 +21,7 @@ import {
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
@@ -37,6 +38,10 @@ ChartJS.register(
 interface LineChartProps {
     chartModel: ChartModel;
     emitOpenContextMenu: (args: [OpenContextMenuEventPayload]) => Promise<void>;
+    onVisualPropsUpdate: (
+        args: (payload: VisualPropsUpdateEventPayload) => void,
+    ) => Promise<void>;
+    offVisualPropsUpdate: () => Promise<void>;
     chartRef: React.ForwardedRef<any>;
 }
 
@@ -47,6 +52,10 @@ interface RenderChartProps {
     emitRenderStart: (args: []) => Promise<void>;
     emitRenderError: (args: [RenderErrorEventPayload]) => Promise<void>;
     emitRenderComplete: (args: []) => Promise<void>;
+    offVisualPropsUpdate: () => Promise<void>;
+    onVisualPropsUpdate: (
+        args: (payload: VisualPropsUpdateEventPayload) => void,
+    ) => Promise<void>;
     chartRef: React.ForwardedRef<any>;
 }
 
@@ -169,23 +178,33 @@ export const LineChart = ({
     chartModel,
     chartRef,
     emitOpenContextMenu,
+    onVisualPropsUpdate,
+    offVisualPropsUpdate,
 }: LineChartProps) => {
+    const [visualProp, setVisualProp] = useState(chartModel?.visualProps);
     const dataModel = useMemo(() => {
         const columnChartModel = getColumnDataModel(
             chartModel.config?.chartConfig?.[0].dimensions ?? [],
             chartModel.data?.[0].data as DataPointsArray,
             'line',
-            chartModel?.visualProps,
+            visualProp,
         );
 
         return columnChartModel;
-    }, [chartModel.config, chartModel.data, chartModel.visualProps]);
-    // useEffect(() => {
-    //     onVizPropUpdate((vizProp) => {
-    //         // do viz porp updat and chang stat
-    //     });
-    //     // TODO: off event for this above function
-    // }, []);
+    }, [chartModel.config, chartModel.data]);
+
+    useEffect(() => {
+        onVisualPropsUpdate(({ visualProps }) => {
+            setVisualProp(visualProps);
+            return {
+                triggerRenderChart: true,
+            };
+        });
+        return () => {
+            // Call the offVisual Prop Update.
+            offVisualPropsUpdate();
+        };
+    }, []);
     return (
         <Line
             data={{
@@ -255,6 +274,8 @@ export const RenderChart = ({
     emitRenderStart,
     emitRenderComplete,
     emitOpenContextMenu,
+    offVisualPropsUpdate,
+    onVisualPropsUpdate,
 }: RenderChartProps) => {
     useEffect(() => {
         if (hasInitialized) {
@@ -273,6 +294,8 @@ export const RenderChart = ({
             chartModel={chartModel}
             chartRef={chartRef}
             emitOpenContextMenu={emitOpenContextMenu}
+            offVisualPropsUpdate={offVisualPropsUpdate}
+            onVisualPropsUpdate={onVisualPropsUpdate}
         />
     );
 };

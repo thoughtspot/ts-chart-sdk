@@ -28,6 +28,7 @@ import {
     ChartContextProps,
     ChartToTSEventEmitters,
     TSToChartEventListener,
+    TSToChartEventOffListener,
     WrapperComponentProps,
 } from './use-custom-chart-types';
 
@@ -74,12 +75,44 @@ const eventListener = (ctx: CustomChartContext): TSToChartEventListener => {
         acc[emitterKey] = (
             callbackFn: TSToChartEventsPayloadMap[keyof TSToChartEventsPayloadMap],
         ): Promise<void> => {
+            if (!ctx || _.isEmpty(ctx)) {
+                console.log('Context is not initialized');
+                return Promise.reject(new Error('Context not initialized'));
+            }
             ctx.on(eventName, callbackFn);
             return Promise.resolve();
         };
 
         return acc;
     }, {} as TSToChartEventListener);
+};
+
+/**
+ *
+ * @param ctx Custom Chart Context
+ * @returns List of event listeners
+ */
+const evenOfftListener = (
+    ctx: CustomChartContext,
+): TSToChartEventOffListener => {
+    const validEvents = Object.keys(
+        TSToChartEvent,
+    ) as (keyof TSToChartEventsPayloadMap)[];
+    return validEvents.reduce((acc, eventKey) => {
+        const eventName = eventKey as keyof TSToChartEventsPayloadMap;
+        const emitterKey = `off${eventKey}` as keyof TSToChartEventOffListener;
+
+        acc[emitterKey] = (): Promise<void> => {
+            if (!ctx || _.isEmpty(ctx)) {
+                console.log('Context is not initialized');
+                return Promise.reject(new Error('Context not initialized'));
+            }
+            ctx.off(eventName);
+            return Promise.resolve();
+        };
+
+        return acc;
+    }, {} as TSToChartEventOffListener);
 };
 
 /**
@@ -131,6 +164,7 @@ export const useChartContext = (
                 destroy: () => ctx?.destroy(),
                 ...emitter(ctx),
                 ...eventListener(ctx),
+                ...evenOfftListener(ctx),
                 WrapperComponent: ({ children }: WrapperComponentProps) => {
                     return (
                         <React.Fragment key={key}>{children}</React.Fragment>
@@ -168,7 +202,7 @@ export const useChartContext = (
      * @returns {Promise<boolean>} A promise that resolves to
      * `true` after successful initialization.
      */
-    const initializeProvider = async (context: CustomChartContext) => {
+    const initializeContext = async (context: CustomChartContext) => {
         return context
             .initialize()
             .then(() => {
@@ -190,7 +224,7 @@ export const useChartContext = (
      */
     const renderChart = useCallback(
         (ctx: CustomChartContext) => {
-            setKey((prevKey) => prevKey + 1);
+            setKey((prevKey: number) => prevKey + 1);
             return Promise.resolve();
         },
         [key],
@@ -204,7 +238,7 @@ export const useChartContext = (
             renderChart,
         });
         // Initialize the chart context provider.
-        initializeProvider(context);
+        initializeContext(context);
         setupEventListeners(context);
     }, []);
 

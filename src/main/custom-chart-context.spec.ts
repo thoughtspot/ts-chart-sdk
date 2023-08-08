@@ -380,6 +380,122 @@ describe('CustomChartContext', () => {
         });
     });
 
+    describe('off', () => {
+        let customChartContext: CustomChartContext;
+
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+        });
+
+        afterEach(() => {
+            // Destroy the chart context after each test
+            customChartContext.destroy();
+            eventProcessor = null;
+            jest.resetAllMocks();
+        });
+
+        test('should remove the event listener for the specified event type', () => {
+            // Define a test event type and callback function
+            const TEST_EVENT_TYPE = 'testEventType' as any;
+            const testCallbackFn = jest.fn();
+            // Call the on function with the test event type and callback
+            // function to add the event listener
+            customChartContext.on(TEST_EVENT_TYPE, testCallbackFn);
+
+            // mock the event trigger for the test event type
+            const mockPostMessage = jest.fn();
+            eventProcessor({
+                data: {
+                    payload: mockInitializeContextPayload,
+                    eventType: TEST_EVENT_TYPE,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+
+            // Call the off function to remove the event listener
+            customChartContext.off(TEST_EVENT_TYPE);
+
+            // Check that the event listener was not called
+            expect(testCallbackFn).toHaveBeenCalled();
+            expect(
+                (customChartContext as any).eventListeners[TEST_EVENT_TYPE],
+            ).toHaveLength(0);
+        });
+
+        test('should remove a specific event listener without affecting others', () => {
+            // Define two test event types and callback functions
+            const TEST_EVENT_TYPE_1: any = 'testEventType1';
+            const TEST_EVENT_TYPE_2: any = 'testEventType2';
+            const testCallbackFn1 = jest.fn();
+            const testCallbackFn2 = jest.fn();
+
+            // Add event listeners with the test event types and callback
+            // functions
+            customChartContext.on(TEST_EVENT_TYPE_1, testCallbackFn1);
+            customChartContext.on(TEST_EVENT_TYPE_2, testCallbackFn2);
+
+            // Verify that both event listeners are in the eventListeners array
+            expect(
+                (customChartContext as any).eventListeners[TEST_EVENT_TYPE_1],
+            ).toHaveLength(1);
+            expect(
+                (customChartContext as any).eventListeners[TEST_EVENT_TYPE_2],
+            ).toHaveLength(1);
+
+            // Emit events for both event types
+            const mockPostMessage = jest.fn();
+            eventProcessor({
+                data: {
+                    payload: {},
+                    eventType: TEST_EVENT_TYPE_1,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            eventProcessor({
+                data: {
+                    payload: {},
+                    eventType: TEST_EVENT_TYPE_2,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+
+            // Check that both callback functions were called
+            expect(testCallbackFn1).toHaveBeenCalled();
+            expect(testCallbackFn2).toHaveBeenCalled();
+
+            // Remove the first event listener (TEST_EVENT_TYPE_1)
+            customChartContext.off(TEST_EVENT_TYPE_1);
+
+            // Verify that the first event listener is removed while the second
+            // is still present
+            expect(
+                (customChartContext as any).eventListeners[TEST_EVENT_TYPE_1],
+            ).toHaveLength(0);
+            expect(
+                (customChartContext as any).eventListeners[TEST_EVENT_TYPE_2],
+            ).toHaveLength(1);
+        });
+
+        test('should make sure not to throw error when off is called before', () => {
+            // Define two test event types and callback functions
+            const TEST_EVENT_TYPE_1: any = 'testEventType1';
+            customChartContext.off(TEST_EVENT_TYPE_1);
+
+            // Verify that the first event listener is removed while the second
+            // is still present
+            expect(
+                (customChartContext as any).eventListeners[TEST_EVENT_TYPE_1],
+            ).toHaveLength(0);
+        });
+    });
+
     describe('emitEvent', () => {
         let customChartContext: CustomChartContext;
 

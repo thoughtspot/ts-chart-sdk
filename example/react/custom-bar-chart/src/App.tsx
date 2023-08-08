@@ -7,7 +7,7 @@ import {
     useChartContext,
 } from '@thoughtspot/ts-chart-sdk';
 import _ from 'lodash';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { RenderChart } from './line-chart.component';
 
 /**
@@ -137,8 +137,13 @@ const App: React.FC = () => {
         emitRenderStart,
         emitRenderError,
         emitRenderComplete,
+        onVisualPropsUpdate,
+        offVisualPropsUpdate,
     } = useChartContext(contextChartProps);
 
+    useEffect(() => {
+        console.log(chartModel?.visualProps);
+    }, [chartModel?.visualProps]);
     return (
         <div
             data-testid="line-chart"
@@ -153,6 +158,8 @@ const App: React.FC = () => {
                     emitRenderError={emitRenderError}
                     emitRenderComplete={emitRenderComplete}
                     emitOpenContextMenu={emitOpenContextMenu}
+                    onVisualPropsUpdate={onVisualPropsUpdate}
+                    offVisualPropsUpdate={offVisualPropsUpdate}
                 />
             </WrapperComponent>
         </div>

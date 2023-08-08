@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChartToTSEventsPayloadMap } from '../types/chart-to-ts-event.types';
 import { ChartModel } from '../types/common.types';
 import { TSToChartEventsPayloadMap } from '../types/ts-to-chart-event.types';
@@ -24,6 +25,15 @@ export type TSToChartEventListener = {
     ) => Promise<void>;
 };
 
+/**
+ * For all events that we trigger from TS Host to React Chart,
+ * this enum provides the event listener on functions for each external event listener.
+ * All the event listener functions have a prefix of on.
+ */
+export type TSToChartEventOffListener = {
+    [key in keyof TSToChartEventsPayloadMap as `off${Capitalize<key>}`]: () => Promise<void>;
+};
+
 export interface WrapperComponentProps {
     /**
      * Child App which renders chart
@@ -34,7 +44,8 @@ export interface WrapperComponentProps {
 
 export interface ChartContextProps
     extends ChartToTSEventEmitters,
-        TSToChartEventListener {
+        TSToChartEventListener,
+        TSToChartEventOffListener {
     /**
      * decides if the chart context is initialzed
      */
