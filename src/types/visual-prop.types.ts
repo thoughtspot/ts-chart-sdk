@@ -9,6 +9,60 @@
  */
 
 /**
+ * Configuration for input validation rules
+ */
+export interface InputValidation {
+    /**
+     * Determines if the input is required.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    required: boolean;
+    /**
+     * Error message to display when input is required but not provided.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    requiredError: string;
+    /**
+     * Regular expression pattern to validate the input against.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    regex: string;
+    /**
+     * Error message to display when input doesn't match the regex pattern.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    regexError: string;
+    /**
+     * Minimum length required for the input.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    minLength: number;
+    /**
+     * Error message to display when input length is less than the required minimum.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    minLengthError: string;
+    /**
+     * Range of values allowed for the input.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    range: string;
+    /**
+     * Error message to display when input value is outside the allowed range.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    rangeError: string;
+}
+
+/**
  * Text Form Element for the visual props editor
  *
  * @group Visual Properties Editor
@@ -53,6 +107,12 @@ export interface TextInputFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: string;
+    /**
+     * inputValidation config for input field
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    inputValidation?: InputValidation;
 }
 
 /**
@@ -206,6 +266,14 @@ export interface Section {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     alignment?: 'row' | 'column';
+    /**
+     * Defines form layout in the view for the section.
+     * default will be 'accordion' for first section if nothing specified
+     * and will be 'none' for all nested section.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    layoutType?: 'accordion' | 'tab' | 'none';
 }
 
 /**
