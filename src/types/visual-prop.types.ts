@@ -267,8 +267,9 @@ export interface Section {
      */
     alignment?: 'row' | 'column';
     /**
-     * Defines form layout in the view for the section
-     * Default none will be considered.
+     * Defines form layout in the view for the section.
+     * default will be 'accordion' for first section if nothing specified
+     * and will be 'none' for all nested section.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
