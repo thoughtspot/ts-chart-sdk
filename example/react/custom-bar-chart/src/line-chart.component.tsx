@@ -38,10 +38,10 @@ ChartJS.register(
 interface LineChartProps {
     chartModel: ChartModel;
     emitOpenContextMenu: (args: OpenContextMenuEventPayload) => Promise<void>;
-    onVisualPropsUpdate: (
+    setOffVisualPropsUpdate: () => Promise<void>;
+    setOnVisualPropsUpdate: (
         args: (payload: VisualPropsUpdateEventPayload) => void,
     ) => Promise<void>;
-    offVisualPropsUpdate: () => Promise<void>;
     chartRef: React.ForwardedRef<any>;
 }
 
@@ -52,11 +52,11 @@ interface RenderChartProps {
     emitRenderStart: () => Promise<void>;
     emitRenderError: (args: RenderErrorEventPayload) => Promise<void>;
     emitRenderComplete: () => Promise<void>;
-    offVisualPropsUpdate: () => Promise<void>;
-    onVisualPropsUpdate: (
+    setOffVisualPropsUpdate: () => Promise<void>;
+    setOnVisualPropsUpdate: (
         args: (payload: VisualPropsUpdateEventPayload) => void,
     ) => Promise<void>;
-    chartRef: React.ForwardedRef<any>;
+    chartRef: React.MutableRefObject<null>;
 }
 
 /**
@@ -178,8 +178,8 @@ export const LineChart = ({
     chartModel,
     chartRef,
     emitOpenContextMenu,
-    onVisualPropsUpdate,
-    offVisualPropsUpdate,
+    setOnVisualPropsUpdate,
+    setOffVisualPropsUpdate,
 }: LineChartProps) => {
     const [visualProp, setVisualProp] = useState(chartModel?.visualProps);
     const dataModel = useMemo(() => {
@@ -191,19 +191,15 @@ export const LineChart = ({
         );
 
         return columnChartModel;
-    }, [chartModel.config, chartModel.data]);
+    }, [chartModel.config, chartModel.data, visualProp]);
 
     useEffect(() => {
-        onVisualPropsUpdate(({ visualProps }) => {
+        setOnVisualPropsUpdate(({ visualProps }) => {
             setVisualProp(visualProps);
             return {
                 triggerRenderChart: true,
             };
         });
-        return () => {
-            // Call the offVisual Prop Update.
-            offVisualPropsUpdate();
-        };
     }, []);
     return (
         <Line
@@ -272,15 +268,20 @@ export const RenderChart = ({
     emitRenderStart,
     emitRenderComplete,
     emitOpenContextMenu,
-    offVisualPropsUpdate,
-    onVisualPropsUpdate,
+    setOffVisualPropsUpdate,
+    setOnVisualPropsUpdate,
 }: RenderChartProps) => {
     useEffect(() => {
         if (hasInitialized) {
             emitRenderStart();
-            emitRenderComplete();
         }
     }, [hasInitialized]);
+
+    useEffect(() => {
+        if (chartRef?.current) {
+            emitRenderComplete();
+        }
+    }, [chartRef?.current]);
 
     if (!hasInitialized || !chartModel) {
         return <div>Loading...</div>;
@@ -292,8 +293,8 @@ export const RenderChart = ({
             chartModel={chartModel}
             chartRef={chartRef}
             emitOpenContextMenu={emitOpenContextMenu}
-            offVisualPropsUpdate={offVisualPropsUpdate}
-            onVisualPropsUpdate={onVisualPropsUpdate}
+            setOffVisualPropsUpdate={setOffVisualPropsUpdate}
+            setOnVisualPropsUpdate={setOnVisualPropsUpdate}
         />
     );
 };

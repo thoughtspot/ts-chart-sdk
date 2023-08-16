@@ -27,9 +27,9 @@ import {
 import {
     ChartContextProps,
     ChartToTSEventEmitters,
+    TSChartContextProps,
     TSToChartEventListener,
     TSToChartEventOffListener,
-    WrapperComponentProps,
 } from './use-custom-chart-types';
 
 /**
@@ -70,7 +70,7 @@ const eventListener = (ctx: CustomChartContext): TSToChartEventListener => {
     ) as (keyof TSToChartEventsPayloadMap)[];
     return validEvents.reduce((acc, eventKey) => {
         const eventName = eventKey as keyof TSToChartEventsPayloadMap;
-        const emitterKey = `on${eventKey}` as keyof TSToChartEventListener;
+        const emitterKey = `setOn${eventKey}` as keyof TSToChartEventListener;
 
         acc[emitterKey] = (
             callbackFn: TSToChartEventsPayloadMap[keyof TSToChartEventsPayloadMap],
@@ -100,7 +100,8 @@ const evenOfftListener = (
     ) as (keyof TSToChartEventsPayloadMap)[];
     return validEvents.reduce((acc, eventKey) => {
         const eventName = eventKey as keyof TSToChartEventsPayloadMap;
-        const emitterKey = `off${eventKey}` as keyof TSToChartEventOffListener;
+        const emitterKey =
+            `setOff${eventKey}` as keyof TSToChartEventOffListener;
 
         acc[emitterKey] = (): Promise<void> => {
             if (!ctx || _.isEmpty(ctx)) {
@@ -121,7 +122,7 @@ const evenOfftListener = (
  * @param {CustomChartContextProps} props - The custom chart context properties
  * to initialize the chart context.
  * @returns {ChartContextProps} The chart context values, including initialized state,
- * chart model, emitter, event listener, and WrapperComponent.
+ * chart model, emitter, event listener, and TSChartContext.
  */
 export const useChartContext = (
     props: Omit<CustomChartContextProps, 'renderChart'>,
@@ -154,7 +155,7 @@ export const useChartContext = (
      * @param {CustomChartContext} ctx - The custom chart context.
      * @returns {ChartContextProps} The chart context values,
      * including initialized state, chart model, emitter,
-     * event listener, and WrapperComponent.
+     * event listener, and TSChartContext.
      */
     const getChartContextValues = useCallback(
         (ctx: CustomChartContext): ChartContextProps => {
@@ -165,7 +166,7 @@ export const useChartContext = (
                 ...emitter(ctx),
                 ...eventListener(ctx),
                 ...evenOfftListener(ctx),
-                WrapperComponent: ({ children }: WrapperComponentProps) => {
+                TSChartContext: ({ children }: TSChartContextProps) => {
                     return (
                         <React.Fragment key={key}>{children}</React.Fragment>
                     );
@@ -191,9 +192,13 @@ export const useChartContext = (
             };
         };
 
-        getChartContextValues(context).onChartModelUpdate(commonUpdateHandler);
-        getChartContextValues(context).onVisualPropsUpdate(commonUpdateHandler);
-        getChartContextValues(context).onDataUpdate(commonUpdateHandler);
+        getChartContextValues(context).setOnChartModelUpdate(
+            commonUpdateHandler,
+        );
+        getChartContextValues(context).setOnVisualPropsUpdate(
+            commonUpdateHandler,
+        );
+        getChartContextValues(context).setOnDataUpdate(commonUpdateHandler);
     }, []);
 
     /**

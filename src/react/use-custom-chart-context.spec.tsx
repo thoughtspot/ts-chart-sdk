@@ -191,7 +191,7 @@ describe('useChartContext emit', () => {
     });
 });
 
-describe('useChartContext on listeners', () => {
+describe('useChartContext setOn listeners', () => {
     let eventProcessor: any;
     let mockInitMessage;
     let mockPostMessageToHost;
@@ -218,7 +218,7 @@ describe('useChartContext on listeners', () => {
         jest.clearAllMocks();
     });
 
-    test('should trigger the onEvent correctly when context is initialized', async () => {
+    test('should trigger the setOnEvent correctly when context is initialized', async () => {
         // Render the hook with the custom chart context props
         const { result, waitFor } = renderHook(() =>
             useChartContext(contextChartProps),
@@ -290,6 +290,31 @@ describe('useChartContext on listeners', () => {
         });
         result.current?.destroy();
     });
+
+    test('should not defined setOnEvent when context is not initialized', async () => {
+        // Render the hook with the custom chart context props
+        const { result, waitFor } = renderHook(() =>
+            useChartContext(contextChartProps),
+        );
+        const mockPostMessage = jest.fn();
+        eventProcessor({
+            data: {
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
+                source: 'ts-host-app',
+            },
+            ports: [{ postMessage: mockPostMessage }],
+        });
+        await waitFor(() => {
+            expect(result.current.hasInitialized).toBe(false);
+        });
+        const promise = result.current.setOnVisualPropsUpdate((payload) => {
+            console.log(payload.visualProps);
+        });
+        await expect(promise).rejects.toThrow('Context not initialized');
+        const offPromise = result.current.setOffVisualPropsUpdate();
+        await expect(offPromise).rejects.toThrow('Context not initialized');
+    });
 });
 
 describe('useChartContext on React Wrapper component', () => {
@@ -318,21 +343,21 @@ describe('useChartContext on React Wrapper component', () => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
     });
-    test('WrapperComponent renders children and should not increase counter for useEffect on chartModel if visualProps is updated', async () => {
+    test('TSChartContext renders children and should not increase counter for useEffect on chartModel if visualProps is updated', async () => {
         const CustomChartComponent = () => {
             const [counter, setCounter] = React.useState(0);
-            const { WrapperComponent, chartModel, hasInitialized } =
+            const { TSChartContext, chartModel, hasInitialized } =
                 useChartContext(contextChartProps);
             React.useEffect(() => {
                 setCounter((prevCount) => prevCount + 1);
             }, [chartModel]);
             return (
-                <WrapperComponent>
+                <TSChartContext>
                     <div data-testid="child-element">
                         Child Element counter: {counter}
                         {(chartModel?.visualProps as any)?.color ?? ''}
                     </div>
-                </WrapperComponent>
+                </TSChartContext>
             );
         };
 
@@ -380,21 +405,21 @@ describe('useChartContext on React Wrapper component', () => {
         });
     });
 
-    test('WrapperComponent renders children should increase counter for useEffect on chartModel.visualProps if visualProps is updated', async () => {
+    test('TSChartContext renders children should increase counter for useEffect on chartModel.visualProps if visualProps is updated', async () => {
         const CustomChartComponent = () => {
             const [counter, setCounter] = React.useState(0);
-            const { WrapperComponent, chartModel, hasInitialized } =
+            const { TSChartContext, chartModel, hasInitialized } =
                 useChartContext(contextChartProps);
             React.useEffect(() => {
                 setCounter((prevCount) => prevCount + 1);
             }, [chartModel?.visualProps]);
             return (
-                <WrapperComponent>
+                <TSChartContext>
                     <div data-testid="child-element">
                         Child Element counter: {counter}
                         {(chartModel?.visualProps as any)?.color ?? ''}
                     </div>
-                </WrapperComponent>
+                </TSChartContext>
             );
         };
 
@@ -437,4 +462,39 @@ describe('useChartContext on React Wrapper component', () => {
             );
         });
     });
+
+    // test.only('TSChartContext renders children should increase counter for
+    // setOnVisualPropUpdated if visualProps is updated', async () => { let
+    // promise; let offPromise;
+    //     const CustomChartComponent = () => {
+    //         const [counter, setCounter] = React.useState(0);
+    //         const {
+    //             TSChartContext,
+    //             chartModel,
+    //             setOnVisualPropsUpdate,
+    //             setOffVisualPropsUpdate,
+    //             hasInitialized,
+    //         } = useChartContext(contextChartProps);
+    //         React.useEffect(() => {
+    //             promise = setOnVisualPropsUpdate((payload) => {
+    //                 setCounter((prevCount) => prevCount + 1);
+    //             });
+    //             return () => {
+    //                 offPromise = setOffVisualPropsUpdate();
+    //             };
+    //         }, []);
+    //         return (
+    //             <TSChartContext>
+    //                 <div data-testid="child-element">
+    //                     Child Element counter: {counter}
+    //                     {(chartModel?.visualProps as any)?.color ?? ''}
+    //                 </div>
+    //             </TSChartContext>
+    //         );
+    //     };
+
+    //     render(<CustomChartComponent />);
+    //     await expect(promise).rejects.toThrow('Context not initialized');
+    //     await expect(offPromise).rejects.toThrow('Context not initialized');
+    // });
 });

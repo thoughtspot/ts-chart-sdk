@@ -131,14 +131,14 @@ const App: React.FC = () => {
 
     const {
         chartModel,
-        WrapperComponent,
+        TSChartContext,
         hasInitialized,
         emitOpenContextMenu,
         emitRenderStart,
         emitRenderError,
         emitRenderComplete,
-        onVisualPropsUpdate,
-        offVisualPropsUpdate,
+        setOnVisualPropsUpdate,
+        setOffVisualPropsUpdate,
     } = useChartContext(contextChartProps);
 
     useEffect(() => {
@@ -149,7 +149,7 @@ const App: React.FC = () => {
             data-testid="line-chart"
             style={{ width: '99vw', height: '95vh', position: 'relative' }}
         >
-            <WrapperComponent>
+            <TSChartContext>
                 <RenderChart
                     chartRef={ref}
                     chartModel={chartModel}
@@ -158,10 +158,10 @@ const App: React.FC = () => {
                     emitRenderError={emitRenderError}
                     emitRenderComplete={emitRenderComplete}
                     emitOpenContextMenu={emitOpenContextMenu}
-                    onVisualPropsUpdate={onVisualPropsUpdate}
-                    offVisualPropsUpdate={offVisualPropsUpdate}
+                    setOnVisualPropsUpdate={setOnVisualPropsUpdate}
+                    setOffVisualPropsUpdate={setOffVisualPropsUpdate}
                 />
-            </WrapperComponent>
+            </TSChartContext>
         </div>
     );
 };

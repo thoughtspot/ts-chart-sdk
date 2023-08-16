@@ -20,7 +20,7 @@ export type ChartToTSEventEmitters = {
  * All the event listener functions have a prefix of on.
  */
 export type TSToChartEventListener = {
-    [key in keyof TSToChartEventsPayloadMap as `on${Capitalize<key>}`]: (
+    [key in keyof TSToChartEventsPayloadMap as `setOn${Capitalize<key>}`]: (
         args: TSToChartEventsPayloadMap[key],
     ) => Promise<void>;
 };
@@ -31,10 +31,10 @@ export type TSToChartEventListener = {
  * All the event listener functions have a prefix of on.
  */
 export type TSToChartEventOffListener = {
-    [key in keyof TSToChartEventsPayloadMap as `off${Capitalize<key>}`]: () => Promise<void>;
+    [key in keyof TSToChartEventsPayloadMap as `setOff${Capitalize<key>}`]: () => Promise<void>;
 };
 
-export interface WrapperComponentProps {
+export interface TSChartContextProps {
     /**
      * Child App which renders chart
      * wrapper is used to control rendering of child app
@@ -66,7 +66,5 @@ export interface ChartContextProps
      * @param children
      * @returns React.JSX.Element
      */
-    WrapperComponent: ({
-        children,
-    }: WrapperComponentProps) => React.JSX.Element;
+    TSChartContext: ({ children }: TSChartContextProps) => React.JSX.Element;
 }
