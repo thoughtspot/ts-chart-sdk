@@ -40,6 +40,16 @@ export enum ChartToTSEvent {
      * Fetch data for custom query
      */
     GetDataForQuery = 'GetDataForQuery',
+
+    /**
+     * Show Tooltip events
+     */
+    ShowToolTip = 'ShowToolTip',
+
+    /**
+     * Hide Tooltip events
+     */
+    HideToolTip = 'HideToolTip',
 }
 
 /**
@@ -104,6 +114,18 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     [ChartToTSEvent.GetDataForQuery]: [GetDataForQueryEventPayload];
+    /**
+     * Trigger to update the visual props
+     *
+     * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
+     */
+    [ChartToTSEvent.ShowToolTip]: [ShowToolTipEventPayload];
+    /**
+     * Trigger to update the visual props
+     *
+     * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
+     */
+    [ChartToTSEvent.HideToolTip]: [];
 }
 
 /**
@@ -172,6 +194,13 @@ export interface OpenContextMenuEventPayload {
     customActions?: CustomAction[];
 }
 // end - open context menu payload
+
+export interface ShowToolTipEventPayload {
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    customTooltipContent?: string[];
+    point?: Point;
+}
+// end - tooltip payload
 
 /**
  * @group Chart to ThoughtSpot Events
