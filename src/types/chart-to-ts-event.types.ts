@@ -195,9 +195,25 @@ export interface OpenContextMenuEventPayload {
 }
 // end - open context menu payload
 
+/**
+ * Payload for the event triggered to show a tooltip
+ */
 export interface ShowToolTipEventPayload {
+    /**
+     * The pointer event that triggered the tooltip display
+     * It includes the client's X and Y coordinates.
+     */
     event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    /**
+     * Optional custom content to display in the tooltip.
+     */
     customTooltipContent?: string[];
+    /**
+     * Information about the data point associated
+     * with the tooltip
+     * User can also include both point and customTooltipContent
+     * depending upon the requirement
+     */
     point?: Point;
 }
 // end - tooltip payload
