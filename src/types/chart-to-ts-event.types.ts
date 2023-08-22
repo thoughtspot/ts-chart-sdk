@@ -40,6 +40,16 @@ export enum ChartToTSEvent {
      * Fetch data for custom query
      */
     GetDataForQuery = 'GetDataForQuery',
+
+    /**
+     * Show Tooltip events
+     */
+    ShowToolTip = 'ShowToolTip',
+
+    /**
+     * Hide Tooltip events
+     */
+    HideToolTip = 'HideToolTip',
 }
 
 /**
@@ -104,6 +114,18 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     [ChartToTSEvent.GetDataForQuery]: [GetDataForQueryEventPayload];
+    /**
+     * Trigger to update the visual props
+     *
+     * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
+     */
+    [ChartToTSEvent.ShowToolTip]: [ShowToolTipEventPayload];
+    /**
+     * Trigger to update the visual props
+     *
+     * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
+     */
+    [ChartToTSEvent.HideToolTip]: [];
 }
 
 /**
@@ -172,6 +194,29 @@ export interface OpenContextMenuEventPayload {
     customActions?: CustomAction[];
 }
 // end - open context menu payload
+
+/**
+ * Payload for the event triggered to show a tooltip
+ */
+export interface ShowToolTipEventPayload {
+    /**
+     * The pointer event that triggered the tooltip display
+     * It includes the client's X and Y coordinates.
+     */
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    /**
+     * Optional custom content to display in the tooltip.
+     */
+    customTooltipContent?: string[];
+    /**
+     * Information about the data point associated
+     * with the tooltip
+     * User can also include both point and customTooltipContent
+     * depending upon the requirement
+     */
+    point?: Point;
+}
+// end - tooltip payload
 
 /**
  * @group Chart to ThoughtSpot Events
