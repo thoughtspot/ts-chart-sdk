@@ -273,6 +273,7 @@ export const RenderChart = ({
 }: RenderChartProps) => {
     useEffect(() => {
         if (hasInitialized) {
+            // TODO Use afterrender from chart.js
             emitRenderStart();
         }
     }, [hasInitialized]);

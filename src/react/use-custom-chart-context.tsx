@@ -104,6 +104,7 @@ export const useChartContext = (
             };
         };
 
+        // Register all external event listeners here
         getChartContextValues(context).setOnChartModelUpdate(
             commonUpdateHandler,
         );
@@ -111,6 +112,11 @@ export const useChartContext = (
             commonUpdateHandler,
         );
         getChartContextValues(context).setOnDataUpdate(commonUpdateHandler);
+
+        // Register all external event off listeners here
+        getChartContextValues(ctx).setOffChartModelUpdate();
+        getChartContextValues(ctx).setOffDataUpdate();
+        getChartContextValues(ctx).setOffVisualPropsUpdate();
     }, []);
 
     /**

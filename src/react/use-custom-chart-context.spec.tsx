@@ -308,9 +308,7 @@ describe('useChartContext setOn listeners', () => {
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(false);
         });
-        const promise = result.current.setOnVisualPropsUpdate((payload) => {
-            console.log(payload.visualProps);
-        });
+        const promise = result.current.setOnVisualPropsUpdate((payload) => {});
         await expect(promise).rejects.toThrow('Context not initialized');
         const offPromise = result.current.setOffVisualPropsUpdate();
         await expect(offPromise).rejects.toThrow('Context not initialized');
@@ -380,7 +378,6 @@ describe('useChartContext on React Wrapper component', () => {
 
         // Check if the child element is rendered
         await waitFor(() => {
-            console.log(getByTestId('child-element'));
             expect(getByTestId('child-element').textContent).toBe(
                 'Child Element counter: 1',
             );
