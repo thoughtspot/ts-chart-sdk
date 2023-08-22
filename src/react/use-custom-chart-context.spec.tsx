@@ -308,7 +308,9 @@ describe('useChartContext setOn listeners', () => {
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(false);
         });
-        const promise = result.current.setOnVisualPropsUpdate((payload) => {});
+        const promise = result.current.setOnVisualPropsUpdate((payload) => {
+            //
+        });
         await expect(promise).rejects.toThrow('Context not initialized');
         const offPromise = result.current.setOffVisualPropsUpdate();
         await expect(offPromise).rejects.toThrow('Context not initialized');
