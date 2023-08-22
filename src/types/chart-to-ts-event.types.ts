@@ -195,6 +195,13 @@ export interface OpenContextMenuEventPayload {
 }
 // end - open context menu payload
 
+export interface ShowToolTipEventPayload {
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    customTooltipContent?: string[];
+    point?: Point;
+}
+// end - tooltip payload
+
 /**
  * Payload for the event triggered to show a tooltip
  */

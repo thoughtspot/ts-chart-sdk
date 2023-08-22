@@ -74,7 +74,7 @@ const getDataForColumn = (column: ChartColumn, dataArr: DataPointsArray) => {
  * Array containing available colors for the chart.
  * @type {string[]}
  */
-const availableColor = ['red', 'green', 'blue'];
+const availableColor = ['red', 'blue', 'green'];
 
 /**
  * A mapping of index to visual property key.

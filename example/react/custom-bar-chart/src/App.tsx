@@ -105,7 +105,7 @@ const contextChartProps: Omit<CustomChartContextProps, 'renderChart'> = {
                         key: 'Color2',
                         type: 'radio',
                         defaultValue: 'blue',
-                        values: ['blue', 'white', 'red'],
+                        values: ['blue', 'black', 'red'],
                         label: 'Color2',
                     },
                     {

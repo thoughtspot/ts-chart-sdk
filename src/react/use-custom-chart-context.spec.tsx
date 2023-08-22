@@ -462,39 +462,4 @@ describe('useChartContext on React Wrapper component', () => {
             );
         });
     });
-
-    // test.only('TSChartContext renders children should increase counter for
-    // setOnVisualPropUpdated if visualProps is updated', async () => { let
-    // promise; let offPromise;
-    //     const CustomChartComponent = () => {
-    //         const [counter, setCounter] = React.useState(0);
-    //         const {
-    //             TSChartContext,
-    //             chartModel,
-    //             setOnVisualPropsUpdate,
-    //             setOffVisualPropsUpdate,
-    //             hasInitialized,
-    //         } = useChartContext(contextChartProps);
-    //         React.useEffect(() => {
-    //             promise = setOnVisualPropsUpdate((payload) => {
-    //                 setCounter((prevCount) => prevCount + 1);
-    //             });
-    //             return () => {
-    //                 offPromise = setOffVisualPropsUpdate();
-    //             };
-    //         }, []);
-    //         return (
-    //             <TSChartContext>
-    //                 <div data-testid="child-element">
-    //                     Child Element counter: {counter}
-    //                     {(chartModel?.visualProps as any)?.color ?? ''}
-    //                 </div>
-    //             </TSChartContext>
-    //         );
-    //     };
-
-    //     render(<CustomChartComponent />);
-    //     await expect(promise).rejects.toThrow('Context not initialized');
-    //     await expect(offPromise).rejects.toThrow('Context not initialized');
-    // });
 });
