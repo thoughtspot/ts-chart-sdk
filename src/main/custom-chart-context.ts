@@ -106,7 +106,7 @@ export type CustomChartContextProps = {
      *
      * @param chartModel
      * @returns {@link VisualPropEditorDefinition}
-     * @version SDK: 0.1 | ThoughtSpot:
+     * @version SDK: 0.0.1-alpha.6 | ThoughtSpot:
      */
     visualPropEditorDefinition?: (
         chartModel: ChartModel,
