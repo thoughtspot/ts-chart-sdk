@@ -18,6 +18,7 @@ import {
     DataPointsArray,
     getChartContext,
     PointVal,
+    PropElement,
     Query,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
@@ -32,9 +33,8 @@ let globalChartReference: Chart;
 const availableColor = ['red', 'green', 'blue'];
 
 const visualPropKeyMap = {
-    0: 'color',
-    1: 'accordion.Color2',
-    2: 'accordion.datalabels',
+    0: 'colorAccordion',
+    2: 'labelAccordion.datalabels',
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
@@ -62,12 +62,12 @@ function getColumnDataModel(
                 type: `${type}`,
                 backgroundColor: _.get(
                     visualProps,
-                    visualPropKeyMap?.[idx],
+                    `${visualPropKeyMap?.[0]}.${col.id}`,
                     availableColor[idx],
                 ),
                 borderColor: _.get(
                     visualProps,
-                    visualPropKeyMap?.[idx],
+                    `${visualPropKeyMap?.[0]}.${col.id}`,
                     availableColor[idx],
                 ),
                 datalabels: {
@@ -146,6 +146,9 @@ function render(ctx: CustomChartContext) {
                 datasets: dataModel.getDatasets() as any,
             },
             options: {
+                animation: {
+                    duration: 0,
+                },
                 scales: dataModel.getScales(),
                 plugins: {
                     // Change options for ALL labels of THIS CHART
@@ -201,7 +204,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
         globalChartReference.destroy();
     }
     try {
-        ctx.emitEvent(ChartToTSEvent.RenderStart, null);
+        ctx.emitEvent(ChartToTSEvent.RenderStart);
         render(ctx);
     } catch (e) {
         ctx.emitEvent(ChartToTSEvent.RenderError, {
@@ -209,7 +212,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             error: e,
         });
     } finally {
-        ctx.emitEvent(ChartToTSEvent.RenderComplete, null);
+        ctx.emitEvent(ChartToTSEvent.RenderComplete);
     }
 };
 
@@ -290,36 +293,47 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 ],
             },
         ],
-        visualPropEditorDefinition: {
-            elements: [
-                {
-                    key: 'color',
-                    type: 'radio',
-                    defaultValue: 'red',
-                    values: ['red', 'green', 'yellow'],
-                    label: 'Colors',
-                },
-                {
-                    type: 'section',
-                    key: 'accordion',
-                    label: 'Accordion',
-                    children: [
-                        {
-                            key: 'Color2',
-                            type: 'radio',
-                            defaultValue: 'blue',
-                            values: ['blue', 'white', 'red'],
-                            label: 'Color2',
-                        },
-                        {
-                            key: 'datalabels',
-                            type: 'toggle',
-                            defaultValue: false,
-                            label: 'Data Labels',
-                        },
-                    ],
-                },
-            ],
+        getVisualPropEditorDefinition: (chartModel: ChartModel) => {
+            const cols = chartModel.columns;
+
+            const measureColumns = _.filter(
+                cols,
+                (col) => col.type === ColumnType.MEASURE,
+            );
+            const colorElement: PropElement[] = measureColumns
+                .slice(0, 2)
+                .map((col) => {
+                    return {
+                        key: col.id,
+                        type: 'radio',
+                        defaultValue: 'red',
+                        values: ['red', 'green', 'yellow'],
+                        label: col.name,
+                    };
+                });
+            return {
+                elements: [
+                    {
+                        type: 'section',
+                        key: 'colorAccordion',
+                        label: 'Color Configure',
+                        children: colorElement,
+                    },
+                    {
+                        type: 'section',
+                        key: 'labelAccordion',
+                        label: 'DataLabel Configure',
+                        children: [
+                            {
+                                key: 'datalabels',
+                                type: 'toggle',
+                                defaultValue: false,
+                                label: 'Data Labels',
+                            },
+                        ],
+                    },
+                ],
+            };
         },
     });
 
