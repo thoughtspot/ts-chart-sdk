@@ -104,9 +104,13 @@ export type CustomChartContextProps = {
      * on the TS app. If not provided, visual properties will not be configurable in
      * editor
      *
+     * @param chartModel
+     * @returns {@link VisualPropEditorDefinition}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    visualPropEditorDefinition?: VisualPropEditorDefinition;
+    visualPropEditorDefinition?: (
+        chartModel: ChartModel,
+    ) => VisualPropEditorDefinition;
 };
 
 /**
