@@ -104,9 +104,13 @@ export type CustomChartContextProps = {
      * on the TS app. If not provided, visual properties will not be configurable in
      * editor
      *
-     * @version SDK: 0.1 | ThoughtSpot:
+     * @param chartModel
+     * @returns {@link VisualPropEditorDefinition}
+     * @version SDK: 0.0.1-alpha.6 | ThoughtSpot:
      */
-    visualPropEditorDefinition?: VisualPropEditorDefinition;
+    getVisualPropEditorDefinition: (
+        chartModel: ChartModel,
+    ) => VisualPropEditorDefinition;
 };
 
 /**
@@ -116,7 +120,6 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
-    visualPropEditorDefinition: undefined,
 };
 
 export class CustomChartContext {
@@ -556,7 +559,9 @@ export class CustomChartContext {
                 chartConfigEditorDefinition:
                     this.chartContextProps.chartConfigEditorDefinition,
                 visualPropEditorDefinition:
-                    this.chartContextProps.visualPropEditorDefinition,
+                    this.chartContextProps.getVisualPropEditorDefinition(
+                        this.chartModel,
+                    ),
             };
         };
 

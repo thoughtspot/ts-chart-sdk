@@ -20,6 +20,7 @@ describe('CustomChartContext', () => {
     let eventProcessor: any;
 
     let getDefaultChartConfig = jest.fn();
+    let getVisualPropEditorDefinition = jest.fn();
     let getQueriesFromChartConfig = jest.fn();
     let renderChart = jest.fn();
     const mockInitMessage = jest.spyOn(
@@ -33,6 +34,7 @@ describe('CustomChartContext', () => {
 
     beforeEach(() => {
         getDefaultChartConfig = jest.fn();
+        getVisualPropEditorDefinition = jest.fn();
         getQueriesFromChartConfig = jest.fn();
         renderChart = jest.fn();
 
@@ -52,6 +54,7 @@ describe('CustomChartContext', () => {
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
                 renderChart,
+                getVisualPropEditorDefinition,
             });
         });
 
@@ -147,6 +150,7 @@ describe('CustomChartContext', () => {
                 customChartContext = new CustomChartContext({
                     getDefaultChartConfig,
                     getQueriesFromChartConfig,
+                    getVisualPropEditorDefinition,
                     renderChart,
                 });
             } catch (err: any) {
@@ -158,6 +162,7 @@ describe('CustomChartContext', () => {
                 await getChartContext({
                     getDefaultChartConfig,
                     getQueriesFromChartConfig,
+                    getVisualPropEditorDefinition,
                     renderChart,
                 });
             } catch (err: any) {
@@ -173,6 +178,7 @@ describe('CustomChartContext', () => {
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
+                getVisualPropEditorDefinition,
                 renderChart,
             });
         });
@@ -387,6 +393,7 @@ describe('CustomChartContext', () => {
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
+                getVisualPropEditorDefinition,
                 renderChart,
             });
         });
@@ -503,6 +510,7 @@ describe('CustomChartContext', () => {
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
+                getVisualPropEditorDefinition,
                 renderChart,
             });
         });
