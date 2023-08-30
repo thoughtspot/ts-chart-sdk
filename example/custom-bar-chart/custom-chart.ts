@@ -18,7 +18,6 @@ import {
     DataPointsArray,
     getChartContext,
     PointVal,
-    PropElement,
     Query,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
@@ -33,8 +32,9 @@ let globalChartReference: Chart;
 const availableColor = ['red', 'green', 'blue'];
 
 const visualPropKeyMap = {
-    0: 'colorAccordion',
-    2: 'labelAccordion.datalabels',
+    0: 'color',
+    1: 'accordion.Color2',
+    2: 'accordion.datalabels',
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
@@ -62,12 +62,12 @@ function getColumnDataModel(
                 type: `${type}`,
                 backgroundColor: _.get(
                     visualProps,
-                    `${visualPropKeyMap?.[0]}.${col.id}`,
+                    visualPropKeyMap?.[idx],
                     availableColor[idx],
                 ),
                 borderColor: _.get(
                     visualProps,
-                    `${visualPropKeyMap?.[0]}.${col.id}`,
+                    visualPropKeyMap?.[idx],
                     availableColor[idx],
                 ),
                 datalabels: {
@@ -294,36 +294,27 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             },
         ],
         getVisualPropEditorDefinition: (chartModel: ChartModel) => {
-            const cols = chartModel.columns;
-
-            const measureColumns = _.filter(
-                cols,
-                (col) => col.type === ColumnType.MEASURE,
-            );
-            const colorElement: PropElement[] = measureColumns
-                .slice(0, 2)
-                .map((col) => {
-                    return {
-                        key: col.id,
-                        type: 'radio',
-                        defaultValue: 'red',
-                        values: ['red', 'green', 'yellow'],
-                        label: col.name,
-                    };
-                });
             return {
                 elements: [
                     {
-                        type: 'section',
-                        key: 'colorAccordion',
-                        label: 'Color Configure',
-                        children: colorElement,
+                        key: 'color',
+                        type: 'radio',
+                        defaultValue: 'red',
+                        values: ['red', 'green', 'yellow'],
+                        label: 'Colors',
                     },
                     {
                         type: 'section',
-                        key: 'labelAccordion',
-                        label: 'DataLabel Configure',
+                        key: 'accordion',
+                        label: 'Accordion',
                         children: [
+                            {
+                                key: 'Color2',
+                                type: 'radio',
+                                defaultValue: 'blue',
+                                values: ['blue', 'white', 'red'],
+                                label: 'Color2',
+                            },
                             {
                                 key: 'datalabels',
                                 type: 'toggle',
