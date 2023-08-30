@@ -17,49 +17,49 @@ export interface InputValidation {
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    required: boolean;
+    required?: boolean;
     /**
      * Error message to display when input is required but not provided.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    requiredError: string;
+    requiredError?: string;
     /**
      * Regular expression pattern to validate the input against.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    regex: string;
+    regex?: string;
     /**
      * Error message to display when input doesn't match the regex pattern.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    regexError: string;
+    regexError?: string;
     /**
      * Minimum length required for the input.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    minLength: number;
+    minLength?: number;
     /**
      * Error message to display when input length is less than the required minimum.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    minLengthError: string;
+    minLengthError?: string;
     /**
      * Range of values allowed for the input.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    range: string;
+    range?: string;
     /**
      * Error message to display when input value is outside the allowed range.
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    rangeError: string;
+    rangeError?: string;
 }
 
 /**
@@ -111,6 +111,39 @@ export interface TextInputFormDetail {
      * inputValidation config for input field
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    inputValidation?: InputValidation;
+}
+
+/**
+ * Number Form Element for the visual props editor
+ *
+ * @group Visual Properties Editor
+ */
+export interface NumberInputFormDetail {
+    type: 'number';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Default value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    defaultValue?: number;
+    /**
+     * inputValidation config for input field
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     inputValidation?: InputValidation;
 }
@@ -284,6 +317,7 @@ export interface Section {
 export type PropElement =
     | Section
     | TextInputFormDetail
+    | NumberInputFormDetail
     | ToggleFormDetail
     | CheckboxFormDetail
     | RadioButtonFormDetail
