@@ -552,16 +552,19 @@ export class CustomChartContext {
                         this.chartModel,
                     );
             }
-
+            let visualPropEditorDefinition;
+            if (this.chartContextProps.getVisualPropEditorDefinition) {
+                visualPropEditorDefinition =
+                    this.chartContextProps.getVisualPropEditorDefinition(
+                        this.chartModel,
+                    );
+            }
             return {
                 isConfigValid: isValid,
                 defaultChartConfig,
                 chartConfigEditorDefinition:
                     this.chartContextProps.chartConfigEditorDefinition,
-                visualPropEditorDefinition:
-                    this.chartContextProps.getVisualPropEditorDefinition(
-                        this.chartModel,
-                    ),
+                visualPropEditorDefinition,
             };
         };
 
