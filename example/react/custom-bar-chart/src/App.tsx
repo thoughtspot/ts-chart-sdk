@@ -139,6 +139,8 @@ const App: React.FC = () => {
         emitRenderComplete,
         setOnVisualPropsUpdate,
         setOffVisualPropsUpdate,
+        emitShowToolTip,
+        emitHideToolTip,
     } = useChartContext(contextChartProps);
 
     useEffect(() => {
@@ -160,6 +162,8 @@ const App: React.FC = () => {
                     emitOpenContextMenu={emitOpenContextMenu}
                     setOnVisualPropsUpdate={setOnVisualPropsUpdate}
                     setOffVisualPropsUpdate={setOffVisualPropsUpdate}
+                    emitShowToolTip={emitShowToolTip}
+                    emitHideToolTip={emitHideToolTip}
                 />
             </TSChartContext>
         </div>

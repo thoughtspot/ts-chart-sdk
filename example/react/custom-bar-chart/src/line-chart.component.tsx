@@ -6,6 +6,7 @@ import {
     OpenContextMenuEventPayload,
     PointVal,
     RenderErrorEventPayload,
+    ShowToolTipEventPayload,
     VisualProps,
     VisualPropsUpdateEventPayload,
 } from '@thoughtspot/ts-chart-sdk';
@@ -21,7 +22,7 @@ import {
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
@@ -37,6 +38,8 @@ ChartJS.register(
 
 interface LineChartProps {
     chartModel: ChartModel;
+    emitShowToolTip: (args_0: ShowToolTipEventPayload) => Promise<void>;
+    emitHideToolTip: () => Promise<void>;
     emitOpenContextMenu: (args: OpenContextMenuEventPayload) => Promise<void>;
     setOffVisualPropsUpdate: () => Promise<void>;
     setOnVisualPropsUpdate: (
@@ -57,6 +60,8 @@ interface RenderChartProps {
         args: (payload: VisualPropsUpdateEventPayload) => void,
     ) => Promise<void>;
     chartRef: React.MutableRefObject<null>;
+    emitShowToolTip: (args_0: ShowToolTipEventPayload) => Promise<void>;
+    emitHideToolTip: () => Promise<void>;
 }
 
 /**
@@ -177,6 +182,8 @@ const getParsedEvent = (evt: any) => {
 export const LineChart = ({
     chartModel,
     chartRef,
+    emitShowToolTip,
+    emitHideToolTip,
     emitOpenContextMenu,
     setOnVisualPropsUpdate,
     setOffVisualPropsUpdate,
@@ -201,6 +208,41 @@ export const LineChart = ({
             };
         });
     }, []);
+
+    const handleMouseOver = useCallback(
+        (e: any) => {
+            if (!e.chart) {
+                return;
+            }
+            const elements = e.chart.getActiveElements();
+            if (elements.length > 0) {
+                const activeElement = elements[0];
+                const dataX = activeElement?.index;
+                const dataY = activeElement?.datasetIndex;
+                if (!_.isNil(dataX) && !_.isNil(dataY)) {
+                    const point = dataModel.getPointDetails(dataX, dataY);
+                    emitShowToolTip({
+                        event: getParsedEvent(e),
+                        point: {
+                            tuple: point,
+                        },
+                        customTooltipContent: [],
+                    });
+                }
+            } else {
+                emitHideToolTip();
+            }
+        },
+        [dataModel],
+    );
+    const onHoverLegend = useCallback((e, item, legend) => {
+        emitShowToolTip({
+            event: getParsedEvent(e),
+            customTooltipContent: [
+                `<div><h3><a href="http://google.com">google</a>${item.text}</h3></div>`,
+            ],
+        });
+    }, []);
     return (
         <Line
             data={{
@@ -209,8 +251,20 @@ export const LineChart = ({
             }}
             ref={chartRef}
             options={{
+                animation: {
+                    duration: 0,
+                },
                 scales: dataModel.getScales(),
                 plugins: {
+                    tooltip: {
+                        enabled: false,
+                    },
+                    legend: {
+                        onHover: onHoverLegend,
+                        onLeave: () => {
+                            emitHideToolTip();
+                        },
+                    },
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
                         display: dataModel.getAllowLabels(),
@@ -245,13 +299,22 @@ export const LineChart = ({
                         dataModel.getPointDetails(dataX, dataY),
                     );
                     emitOpenContextMenu({
-                            event: getParsedEvent(e),
-                            clickedPoint: {
-                                tuple: dataModel.getPointDetails(dataX, dataY),
-                            },
+                        event: getParsedEvent(e),
+                        clickedPoint: {
+                            tuple: dataModel.getPointDetails(dataX, dataY),
+                        },
                     });
                 },
+                onHover: (event) => {
+                    if (event.type === 'mousemove') {
+                        handleMouseOver(event);
+                    }
+                    if (event.type === 'mouseout') {
+                        emitHideToolTip();
+                    }
+                },
             }}
+            onMouseOut={emitHideToolTip}
         />
     );
 };
@@ -268,6 +331,8 @@ export const RenderChart = ({
     emitRenderStart,
     emitRenderComplete,
     emitOpenContextMenu,
+    emitShowToolTip,
+    emitHideToolTip,
     setOffVisualPropsUpdate,
     setOnVisualPropsUpdate,
 }: RenderChartProps) => {
@@ -296,6 +361,8 @@ export const RenderChart = ({
             emitOpenContextMenu={emitOpenContextMenu}
             setOffVisualPropsUpdate={setOffVisualPropsUpdate}
             setOnVisualPropsUpdate={setOnVisualPropsUpdate}
+            emitShowToolTip={emitShowToolTip}
+            emitHideToolTip={emitHideToolTip}
         />
     );
 };
