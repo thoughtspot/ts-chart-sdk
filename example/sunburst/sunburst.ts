@@ -84,7 +84,11 @@ function render(ctx: CustomChartContext) {
             colors: ['transparent'].concat(
                 Highcharts.getOptions().colors as Array<any>,
             ),
-
+            plotOptions: {
+                series: {
+                    animation: false,
+                },
+            },
             series: [
                 {
                     type: 'sunburst',
@@ -147,7 +151,7 @@ function render(ctx: CustomChartContext) {
 
 const renderChart = async (ctx: CustomChartContext): Promise<void> => {
     try {
-        ctx.emitEvent(ChartToTSEvent.RenderStart, null);
+        ctx.emitEvent(ChartToTSEvent.RenderStart);
         render(ctx);
     } catch (e) {
         ctx.emitEvent(ChartToTSEvent.RenderError, {
@@ -155,7 +159,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             error: e,
         });
     } finally {
-        ctx.emitEvent(ChartToTSEvent.RenderComplete, null);
+        ctx.emitEvent(ChartToTSEvent.RenderComplete);
     }
 };
 

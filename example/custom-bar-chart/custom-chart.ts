@@ -146,6 +146,9 @@ function render(ctx: CustomChartContext) {
                 datasets: dataModel.getDatasets() as any,
             },
             options: {
+                animation: {
+                    duration: 0,
+                },
                 scales: dataModel.getScales(),
                 plugins: {
                     // Change options for ALL labels of THIS CHART
@@ -201,7 +204,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
         globalChartReference.destroy();
     }
     try {
-        ctx.emitEvent(ChartToTSEvent.RenderStart, null);
+        ctx.emitEvent(ChartToTSEvent.RenderStart);
         render(ctx);
     } catch (e) {
         ctx.emitEvent(ChartToTSEvent.RenderError, {
@@ -209,7 +212,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             error: e,
         });
     } finally {
-        ctx.emitEvent(ChartToTSEvent.RenderComplete, null);
+        ctx.emitEvent(ChartToTSEvent.RenderComplete);
     }
 };
 
