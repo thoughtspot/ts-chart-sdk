@@ -293,38 +293,36 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 ],
             },
         ],
-        getVisualPropEditorDefinition: (chartModel: ChartModel) => {
-            return {
-                elements: [
-                    {
-                        key: 'color',
-                        type: 'radio',
-                        defaultValue: 'red',
-                        values: ['red', 'green', 'yellow'],
-                        label: 'Colors',
-                    },
-                    {
-                        type: 'section',
-                        key: 'accordion',
-                        label: 'Accordion',
-                        children: [
-                            {
-                                key: 'Color2',
-                                type: 'radio',
-                                defaultValue: 'blue',
-                                values: ['blue', 'white', 'red'],
-                                label: 'Color2',
-                            },
-                            {
-                                key: 'datalabels',
-                                type: 'toggle',
-                                defaultValue: false,
-                                label: 'Data Labels',
-                            },
-                        ],
-                    },
-                ],
-            };
+        visualPropEditorDefinition: {
+            elements: [
+                {
+                    key: 'color',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Colors',
+                },
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'Color2',
+                            type: 'radio',
+                            defaultValue: 'blue',
+                            values: ['blue', 'white', 'red'],
+                            label: 'Color2',
+                        },
+                        {
+                            key: 'datalabels',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Data Labels',
+                        },
+                    ],
+                },
+            ],
         },
     });
 
