@@ -149,6 +149,40 @@ export interface NumberInputFormDetail {
 }
 
 /**
+ * Color Picker Form Element for the visual props editor
+ *
+ * @group Visual Properties Editor
+ */
+export interface ColorPickerFormDetail {
+    type: 'colorpicker';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Display selected color with font or with color only
+     *
+     * @default COLOR
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    selectorType?: 'FONT' | 'COLOR';
+    /**
+     * Default value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    defaultValue?: string;
+}
+
+/**
  * Toggle Form Element for the visual props editor
  *
  * @group Visual Properties Editor

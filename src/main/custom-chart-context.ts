@@ -106,11 +106,9 @@ export type CustomChartContextProps = {
      *
      * @param chartModel
      * @returns {@link VisualPropEditorDefinition}
-     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     * @version SDK: 0.1 | ThoughtSpot:
      */
-    getVisualPropEditorDefinition?: (
-        chartModel: ChartModel,
-    ) => VisualPropEditorDefinition;
+    visualPropEditorDefinition?: VisualPropEditorDefinition;
 };
 
 /**
@@ -552,19 +550,13 @@ export class CustomChartContext {
                         this.chartModel,
                     );
             }
-            let visualPropEditorDefinition;
-            if (this.chartContextProps.getVisualPropEditorDefinition) {
-                visualPropEditorDefinition =
-                    this.chartContextProps.getVisualPropEditorDefinition(
-                        this.chartModel,
-                    );
-            }
             return {
                 isConfigValid: isValid,
                 defaultChartConfig,
                 chartConfigEditorDefinition:
                     this.chartContextProps.chartConfigEditorDefinition,
-                visualPropEditorDefinition,
+                visualPropEditorDefinition:
+                    this.chartContextProps.visualPropEditorDefinition,
             };
         };
 
