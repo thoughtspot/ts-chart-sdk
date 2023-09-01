@@ -352,6 +352,7 @@ export type PropElement =
     | Section
     | TextInputFormDetail
     | NumberInputFormDetail
+    | ColorPickerFormDetail
     | ToggleFormDetail
     | CheckboxFormDetail
     | RadioButtonFormDetail
