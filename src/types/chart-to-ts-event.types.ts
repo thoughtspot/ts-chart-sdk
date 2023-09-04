@@ -42,13 +42,9 @@ export enum ChartToTSEvent {
     GetDataForQuery = 'GetDataForQuery',
 
     /**
-     * Show Tooltip events
+     * Tooltip events
      */
     ShowToolTip = 'ShowToolTip',
-
-    /**
-     * Hide Tooltip events
-     */
     HideToolTip = 'HideToolTip',
 }
 
@@ -126,6 +122,18 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
      */
     [ChartToTSEvent.HideToolTip]: [];
+    /**
+     * Trigger to open Axis Menu
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    [ChartToTSEvent.OpenAxisMenu]: [OpenAxisMenuEventPayload];
+    /**
+     *  Trigger to close Axis Menu
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    [ChartToTSEvent.CloseAxisMenu]: [];
 }
 
 /**
@@ -239,4 +247,95 @@ export interface GetDataForQueryEventPayload {
  */
 export enum ErrorType {
     MultipleContextsNotSupported = 'MultipleContextsNotSupported',
+}
+
+/**
+ * List of supported actions for the menu items in the axis menu
+ * @group Chart to ThoughtSpot Events
+ */
+export enum AxisMenuActions {
+    /**
+     * Change the aggregation of the column from the possible options.
+     * Only supported for numeric columns.
+     */
+    AGGREGATE = 'AGGREGATE',
+    /**
+     * Change the bucketing of the date or date time column from the possible options.
+     * Only supported for date or date time columns.
+     * */
+    TIME_BUCKET = 'TIME_BUCKET',
+    /**
+     * Add or update the filter for the column.
+     * */
+    FILTER = 'FILTER',
+    /**
+     * Sort the column in ascending or descending order.
+     * */
+    SORT = 'SORT',
+
+    /**
+     * These 2 methods are disabled currently as they are not supported by the backend.
+     * Following are the reasons for the same:
+     * 1. Remove is ambiguous as it can mean remove from the answer scope or remove from the chart.
+     * 2. Rename columns is not supported by the menu for now. If need be, this can be implemented.
+     */
+    // /**
+    //  * Rename the column.
+    //  * */
+    // RENAME = 'RENAME',
+    // /**
+    //  * Remove the column from the answer scope.
+    //  * */
+    // REMOVE = 'REMOVE',
+    /**
+     * Defines a separator element between the actions.
+     * Can be added multiple times.
+     * */
+    SEPARATOR = 'SEPARATOR',
+}
+
+export interface AxisMenuCustomAction {
+    /**
+     * ID of the custom action.
+     * */
+    id: string;
+    /**
+     * Label of the custom action.
+     * */
+    label: string;
+    /**
+     * Icon of the custom action.
+     * */
+    icon?: string;
+    /**
+     * Callback function that will be triggered when the custom action is clicked.
+     * */
+    onClick: (...args: any[]) => void;
+}
+
+export interface OpenAxisMenuEventPayload {
+    /**
+     * The pointer event that triggered the event to position the axis menu.
+     */
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    /**
+     * The column IDs of the columns that can be modified via the axis menu.
+     * This maps to the columns in chart model.
+     * The order of the column IDs is the same as the order of the columns in the axis menu.
+     * Atleast one column id is required.
+     * */
+    columnIds: string[];
+    /**
+     * The list of actions that are supported for the axis menu for each column.
+     * The order of the actions is the same as the order of the columns in the axis menu.
+     * If empty, all the supported actions in default order will be available.
+     * */
+    selectedActions?: AxisMenuActions[];
+    /**
+     * Custom action defined by the developer of the chart.
+     * This action will trigger the callback defined in the custom action payload.
+     * can be added multiple times.
+     * @hidden
+     * */
+    customActions?: AxisMenuCustomAction[];
 }
