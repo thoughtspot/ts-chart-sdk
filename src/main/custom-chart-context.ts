@@ -104,6 +104,8 @@ export type CustomChartContextProps = {
      * on the TS app. If not provided, visual properties will not be configurable in
      * editor
      *
+     * @param chartModel
+     * @returns {@link VisualPropEditorDefinition}
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
@@ -116,7 +118,6 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
-    visualPropEditorDefinition: undefined,
 };
 
 export class CustomChartContext {
@@ -230,6 +231,21 @@ export class CustomChartContext {
             this.eventListeners[eventType] = [];
         }
         this.eventListeners[eventType].push(callbackFn);
+    }
+
+    /**
+     * Removes specific event listeners on the chart context.
+     *
+     * @param  {T} eventType
+     * @returns void
+     */
+    public off<T extends keyof TSToChartEventsPayloadMap>(eventType: T): void {
+        if (_.isNil(this.eventListeners[eventType])) {
+            console.log('No event listener found to remove');
+            this.eventListeners[eventType] = [];
+            return;
+        }
+        this.eventListeners[eventType].splice(0, 1);
     }
 
     /**
@@ -534,7 +550,6 @@ export class CustomChartContext {
                         this.chartModel,
                     );
             }
-
             return {
                 isConfigValid: isValid,
                 defaultChartConfig,

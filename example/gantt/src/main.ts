@@ -90,7 +90,11 @@ const renderChart = (ctx: any) => {
             min: dataModel.minDate,
             max: dataModel.maxDate,
         },
-
+        plotOptions: {
+            series: {
+                animation: false,
+            },
+        },
         accessibility: {
             point: {
                 descriptionFormat:
@@ -178,6 +182,7 @@ const init = async () => {
         },
         renderChart: (context) => renderChart(context),
     });
+    await renderChart(ctx);
 };
 
 init();
