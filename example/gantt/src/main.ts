@@ -3,10 +3,13 @@ import {
     ChartColumn,
     ChartConfig,
     ChartModel,
+    ChartToTSEvent,
+    CustomChartContext,
     DataPointsArray,
     Query,
     getChartContext,
 } from '@thoughtspot/ts-chart-sdk';
+import { PointOptionsObject } from 'highcharts';
 import Highcharts from 'highcharts/es-modules/masters/highcharts.src';
 import 'highcharts/es-modules/masters/modules/gantt.src';
 import _ from 'lodash';
@@ -16,12 +19,19 @@ function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 
-const getDataModel = (chartModel: any) => {
-    const columns = chartModel.columns;
-    const dataArr: DataPointsArray = chartModel.data[0].data;
+function getParsedEvent(evt: any) {
+    return {
+        clientX: evt?.target?.plotX,
+        clientY: evt?.target?.plotY,
+    };
+}
 
+const getDataModel = (ctx: CustomChartContext) => {
+    const chartModel = ctx.getChartModel();
+    const columns = chartModel.columns;
+    const dataArr = chartModel?.data?.[0].data as DataPointsArray;
     // create point from data
-    const points = dataArr.dataValue.map((row: any[], idx: number) => {
+    const points = dataArr?.dataValue.map((row: any[], idx: number) => {
         return {
             id: `${row[0]} ${row[1]}`,
             parent: row[0],
@@ -31,8 +41,27 @@ const getDataModel = (chartModel: any) => {
             completed: {
                 amount: row[4],
             },
+            events: {
+                mouseOver: (e) => {
+                    ctx.emitEvent(ChartToTSEvent.ShowToolTip, {
+                        event: getParsedEvent(e),
+                        point: {
+                            tuple: [
+                                {
+                                    columnId: columns[idx].id,
+                                    value: row[1],
+                                },
+                            ],
+                        },
+                        customTooltipContent: [],
+                    });
+                },
+                mouseOut: () => {
+                    ctx.emitEvent(ChartToTSEvent.HideToolTip);
+                },
+            },
             dependency: `${row[0]} ${row[5]}`,
-        };
+        } as PointOptionsObject;
     });
 
     // create projects from points & data
@@ -71,11 +100,7 @@ const getDataModel = (chartModel: any) => {
 };
 
 const renderChart = (ctx: any) => {
-    const chartModel = ctx.getChartModel();
-    console.log('chartModel:', chartModel);
-    console.log('data:', chartModel.data);
-
-    const dataModel = getDataModel(chartModel);
+    const dataModel = getDataModel(ctx);
 
     console.log('dataModel:', dataModel);
 
@@ -85,7 +110,9 @@ const renderChart = (ctx: any) => {
             text: 'Gantt Chart with Progress Indicators',
             align: 'left',
         },
-
+        tooltip: {
+            enabled: false,
+        },
         xAxis: {
             min: dataModel.minDate,
             max: dataModel.maxDate,
@@ -127,7 +154,8 @@ const init = async () => {
             // following order.
             // [Project Name, Task, Start Date, End Date, Completion]
 
-            // TBD: do basic validation here to ensure that the chart is renderable
+            // TBD: do basic validation here to ensure that the chart is
+            // renderable
             if (columns.length < 4) {
                 // not possible to plot a chart
                 return [];

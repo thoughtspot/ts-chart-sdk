@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.5
+  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.8
   '@types/lodash': 4.14.175
   '@types/react': ^17.0.2
   '@types/react-dom': ^17.0.11
@@ -16,7 +16,7 @@ specifiers:
   vite: ^4.3.9
 
 dependencies:
-  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.5
+  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.8
   chart.js: 4.3.0
   chartjs-plugin-datalabels: 2.2.0_chart.js@4.3.0
   lodash: 4.17.21
@@ -498,8 +498,8 @@ packages:
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
     dev: false
 
-  /@thoughtspot/ts-chart-sdk/0.0.1-alpha.5:
-    resolution: {integrity: sha512-TVTD5mWl6AIipOWKM4WFOHQxi/6T3OtAjT+Tm+lMzkEzdqAQK0ZcrI3jqGitnO/XWzFAkhejUJjW5Mkn+yu3XA==}
+  /@thoughtspot/ts-chart-sdk/0.0.1-alpha.8:
+    resolution: {integrity: sha512-zBvI1X5BjiDWNSmMEeXqvm4KcxDN8XmVH4Tfo80lCh1Vip48BjYub0/soLC7htaMixBYc/TbZYE6RSZsGtbr1A==}
     dependencies:
       lodash: 4.17.21
       react: 17.0.2

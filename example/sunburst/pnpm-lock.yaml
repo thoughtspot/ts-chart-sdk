@@ -1,13 +1,13 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.7
+  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.8
   highcharts: ^11.0.1
   lodash: ^4.17.21
   vite: ^4.3.9
 
 dependencies:
-  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.7
+  '@thoughtspot/ts-chart-sdk': 0.0.1-alpha.8
   highcharts: 11.1.0
   lodash: 4.17.21
 
@@ -214,8 +214,8 @@ packages:
     dev: true
     optional: true
 
-  /@thoughtspot/ts-chart-sdk/0.0.1-alpha.7:
-    resolution: {integrity: sha512-qlqEkXKiclkK1KipWJrTiQeMD5Y9cb4gwrzW8MWT/ef3RLdHP1rCdYtkA0XKioVtbhdGJlV97zUGQ1LPXP9XdA==}
+  /@thoughtspot/ts-chart-sdk/0.0.1-alpha.8:
+    resolution: {integrity: sha512-zBvI1X5BjiDWNSmMEeXqvm4KcxDN8XmVH4Tfo80lCh1Vip48BjYub0/soLC7htaMixBYc/TbZYE6RSZsGtbr1A==}
     dependencies:
       lodash: 4.17.21
       react: 17.0.2

@@ -122,6 +122,30 @@ function getParsedEvent(evt: any) {
     return _.pick(evt.native, ['clientX', 'clientY']);
 }
 
+function handleMouseOver(e: any, dataModel, ctx: CustomChartContext) {
+    if (!e.chart) {
+        return;
+    }
+    const elements = e.chart.getActiveElements();
+    if (elements.length > 0) {
+        const activeElement = elements[0];
+        const dataX = activeElement?.index;
+        const dataY = activeElement?.datasetIndex;
+        if (!_.isNil(dataX) && !_.isNil(dataY)) {
+            const point = dataModel.getPointDetails(dataX, dataY);
+            ctx.emitEvent(ChartToTSEvent.ShowToolTip, {
+                event: getParsedEvent(e),
+                point: {
+                    tuple: point,
+                },
+                customTooltipContent: [],
+            });
+        }
+    } else {
+        ctx.emitEvent(ChartToTSEvent.HideToolTip);
+    }
+}
+
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const dataModel = getDataModel(chartModel);
@@ -166,6 +190,9 @@ function render(ctx: CustomChartContext) {
                             },
                         },
                     },
+                    tooltip: {
+                        enabled: false,
+                    },
                 },
                 // responsive: true,
                 maintainAspectRatio: false,
@@ -191,7 +218,16 @@ function render(ctx: CustomChartContext) {
                         },
                     });
                 },
+                onHover: (event) => {
+                    if (event.type === 'mousemove') {
+                        handleMouseOver(event, dataModel, ctx);
+                    }
+                    if (event.type === 'mouseout') {
+                        ctx.emitEvent(ChartToTSEvent.HideToolTip);
+                    }
+                },
             },
+            // onMouseOut: () => ctx.emitEvent(ChartToTSEvent.HideToolTip),
         });
     } catch (e) {
         console.error('renderfailed', e);
