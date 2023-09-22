@@ -34,7 +34,15 @@ function getDataForColumn(
     return _.map(dataArr?.dataValue, (row) => row[idx]);
 }
 
-function getDataModel(chartModel: ChartModel) {
+function getParsedEvent(evt: any) {
+    return {
+        clientX: evt?.target?.plotX,
+        clientY: evt?.target?.plotY,
+    };
+}
+
+function getDataModel(ctx: CustomChartContext) {
+    const chartModel = ctx.getChartModel();
     const configDimensions =
         chartModel.config?.chartConfig?.[0].dimensions ?? [];
     const dataArr = chartModel.data?.[0].data ?? undefined;
@@ -57,6 +65,22 @@ function getDataModel(chartModel: ChartModel) {
                 parent,
                 id: currentId,
                 name: colData[idx],
+                events: {
+                    mouseOver: (e) => {
+                        ctx.emitEvent(ChartToTSEvent.ShowToolTip, {
+                            event: getParsedEvent(e),
+                            point: {
+                                tuple: [
+                                    { columnId: xCol.id, value: colData[idx] },
+                                ],
+                            },
+                            customTooltipContent: [],
+                        });
+                    },
+                    mouseOut: () => {
+                        ctx.emitEvent(ChartToTSEvent.HideToolTip);
+                    },
+                },
             };
             if (dataRowIdx === xAxisColumns.length - 1) {
                 dataMap[currentId].value = yAxisColData[idx];
@@ -71,8 +95,7 @@ function getDataModel(chartModel: ChartModel) {
 }
 
 function render(ctx: CustomChartContext) {
-    const chartModel = ctx.getChartModel();
-    const dataModel = getDataModel(chartModel);
+    const dataModel = getDataModel(ctx);
 
     try {
         const chart = Highcharts.chart({
@@ -142,6 +165,9 @@ function render(ctx: CustomChartContext) {
                     ],
                 },
             ],
+            tooltip: {
+                enabled: false,
+            },
         });
     } catch (e) {
         console.error('renderfailed', e);
