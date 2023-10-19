@@ -5,10 +5,12 @@
  *
  * Copyright: ThoughtSpot Inc. 2023
  */
+import { CustomAction } from '@thoughtspot/ts-chart-sdk';
 import _ from 'lodash';
 import {
     ChartToTSEvent,
     ChartToTSEventsPayloadMap,
+    ContextMenuActionHandler,
     ErrorType,
 } from '../types/chart-to-ts-event.types';
 import {
@@ -21,6 +23,7 @@ import { ChartConfigEditorDefinition } from '../types/configurator.types';
 import {
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
+    ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
     GetDataQueryPayload,
     GetDataQueryResponsePayload,
@@ -109,6 +112,15 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
+
+    /**
+     * Stores the callbacks of context menu custom action based on custom action id
+     *
+     * @param chartModel
+     * @returns {@link ContextMenuActionHandler}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    contextMenuActionHandler?: ContextMenuActionHandler;
 };
 
 /**
@@ -118,6 +130,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
+    contextMenuActionHandler: {},
 };
 
 export class CustomChartContext {
@@ -284,6 +297,43 @@ export class CustomChartContext {
      */
     public getChartModel = (): ChartModel => this.chartModel;
 
+
+    /**
+     * Function to store custom action callback with action id
+     * 
+     * @param  {ChartToTSEventsPayloadMap[T]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    private contextMenuActionPreProcessor<
+        T extends keyof ChartToTSEventsPayloadMap,
+    >(eventPayload: ChartToTSEventsPayloadMap[T]): any {
+        let contextMenuActionHandler: ContextMenuActionHandler = {};
+        (eventPayload?.[0] as any)?.customActions.forEach(
+            (action: CustomAction) => {
+                contextMenuActionHandler[action.id] = action.onClick;
+            },
+        );
+        const processedCustomActions: CustomAction[] = (
+            eventPayload?.[0] as any
+        )?.customActions.map((action: CustomAction) => {
+            return {
+                id: action.id,
+                label: action.label,
+                icon: action.icon,
+            };
+        });
+        const processedPayload = {
+            ...eventPayload?.[0],
+            customActions: processedCustomActions,
+        };
+        this.chartContextProps = {
+            ...this.chartContextProps,
+            contextMenuActionHandler,
+        };
+        return processedPayload;
+    }
+
     /**
      * Function to emit Chart to TS Events to the TS application.
 
@@ -302,10 +352,14 @@ export class CustomChartContext {
             );
             return Promise.reject(new Error('Context not initialized'));
         }
+        let processedPayload = eventPayload;
+        if (eventType === ChartToTSEvent.OpenContextMenu) {
+            processedPayload = this.contextMenuActionPreProcessor(eventPayload);
+        }
         return PostMessageEventBridge.postMessageToHostApp(
             this.componentId,
             this.hostUrl,
-            eventPayload?.[0] ?? null,
+            processedPayload,
             eventType,
         );
     }
@@ -464,6 +518,29 @@ export class CustomChartContext {
                 return {
                     triggerRenderChart: true,
                 };
+            },
+        );
+
+        this.on(
+            TSToChartEvent.ContextMenuActionClick,
+            (
+                payload: ContextMenuCustomActionPayload,
+            ): {
+                validCustomAction: boolean;
+            } => {
+                try {
+                    const customActionCallback = payload.customAction.id;
+                    this.chartContextProps.contextMenuActionHandler?.[
+                        customActionCallback
+                    ]();
+                    return {
+                        validCustomAction: true,
+                    };
+                } catch (error) {
+                    return {
+                        validCustomAction: false,
+                    };
+                }
             },
         );
 

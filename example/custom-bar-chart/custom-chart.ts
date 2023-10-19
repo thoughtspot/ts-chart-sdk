@@ -189,6 +189,24 @@ function render(ctx: CustomChartContext) {
                         clickedPoint: {
                             tuple: dataModel.getPointDetails(dataX, dataY),
                         },
+                        customActions: [
+                            {
+                                id: 'custom-action-1',
+                                label: 'Custom user action 1',
+                                icon: '',
+                                onClick: (evt: any) => {
+                                    console.log('custom action 1 triggered');
+                                },
+                            },
+                            {
+                                id: 'custom-action-2',
+                                label: 'Custom user action 2',
+                                icon: '',
+                                onClick: (evt: any) => {
+                                    console.log('custom action 2 triggered');
+                                },
+                            },
+                        ],
                     });
                 },
             },
