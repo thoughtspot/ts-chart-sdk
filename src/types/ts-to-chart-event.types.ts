@@ -3,6 +3,7 @@ import {
     AppConfig,
     ChartConfig,
     ChartModel,
+    ContextMenuCustomAction,
     QueryData,
     ValidationResponse,
     VisualProps,
@@ -57,6 +58,10 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     VisualPropsUpdate = 'VisualPropsUpdate',
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    ContextMenuActionClick = 'ContextMenuActionClick',
 }
 
 /**
@@ -72,6 +77,9 @@ export interface TSToChartEventsPayloadMap {
     [TSToChartEvent.DataUpdate]: (payload: DataUpdateEventPayload) => void;
     [TSToChartEvent.VisualPropsUpdate]: (
         payload: VisualPropsUpdateEventPayload,
+    ) => void;
+    [TSToChartEvent.ContextMenuActionClick]: (
+        payload: ContextMenuCustomActionPayload,
     ) => void;
 }
 
@@ -260,4 +268,17 @@ export interface ChartConfigValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfig: ChartConfig[];
+}
+
+/**
+ *
+ * @group ThoughtSpot to Chart Events
+ */
+export interface ContextMenuCustomActionPayload {
+    /**
+     * Dispatched custom action from context menu
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    customAction: ContextMenuCustomAction;
 }
