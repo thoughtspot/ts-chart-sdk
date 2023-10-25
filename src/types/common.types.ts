@@ -182,3 +182,18 @@ export interface AppConfig {
     // need to be explored
     customCalendarConfig?: any; // this is to initialize custom calendar service
 }
+
+/**
+ * Custom action dispatched by context menu of the chart
+ *
+ * @group ThoughtSpot to Chart Events
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export interface ContextMenuCustomAction {
+    /**
+     * Id of custom action dispatched by context menu of the chart
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    id: string;
+}
