@@ -319,6 +319,9 @@ export class CustomChartContext {
     ): OpenContextMenuEventPayload {
         // clear out the stored custom events callback for context menu
         this.contextMenuActionHandler = {};
+        if (_.isEmpty(eventPayload?.[0]?.customActions)) {
+            return eventPayload?.[0];
+        }
         eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
             this.contextMenuActionHandler[action.id] = action.onClick;
         });
@@ -349,6 +352,9 @@ export class CustomChartContext {
     ): OpenAxisMenuEventPayload {
         // clear out the stored custom events callback for axis menu
         this.axisMenuActionHandler = {};
+        if (_.isEmpty(eventPayload?.[0]?.customActions)) {
+            return eventPayload?.[0];
+        }
         eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
             this.axisMenuActionHandler[action.id] = action.onClick;
         });
