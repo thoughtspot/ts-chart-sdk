@@ -788,5 +788,87 @@ describe('CustomChartContext', () => {
                 TEST_EVENT_TYPE,
             );
         });
+
+        test('should process the event payload for axis menu when custom actions are not defined', async () => {
+            const mockPostMessage = jest.fn();
+            let resolve: any;
+            eventProcessor({
+                data: {
+                    payload: mockInitializeContextPayload,
+                    eventType: TSToChartEvent.Initialize,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            eventProcessor({
+                data: {
+                    payload: {},
+                    eventType: TSToChartEvent.InitializeComplete,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            customChartContext.initialize();
+            mockPostMessageToHost.mockImplementation(
+                () =>
+                    new global.Promise<any>((res) => {
+                        resolve = res;
+                    }),
+            );
+
+            // Define a test event type and payload
+            const TEST_EVENT_TYPE = ChartToTSEvent.OpenAxisMenu as any;
+            const testPayload = {};
+            // Call the emitEvent function and wait for it to resolve
+            customChartContext.emitEvent(TEST_EVENT_TYPE, testPayload);
+            // Check that the result is defined
+            expect(mockPostMessageToHost).toHaveBeenCalledWith(
+                mockInitializeContextPayload.componentId,
+                mockInitializeContextPayload.hostUrl,
+                {},
+                TEST_EVENT_TYPE,
+            );
+        });
+
+        test('should process the event payload for context menu when custom actions are not defined', async () => {
+            const mockPostMessage = jest.fn();
+            let resolve: any;
+            eventProcessor({
+                data: {
+                    payload: mockInitializeContextPayload,
+                    eventType: TSToChartEvent.Initialize,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            eventProcessor({
+                data: {
+                    payload: {},
+                    eventType: TSToChartEvent.InitializeComplete,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            customChartContext.initialize();
+            mockPostMessageToHost.mockImplementation(
+                () =>
+                    new global.Promise<any>((res) => {
+                        resolve = res;
+                    }),
+            );
+
+            // Define a test event type and payload
+            const TEST_EVENT_TYPE = ChartToTSEvent.OpenContextMenu as any;
+            const testPayload = {};
+            // Call the emitEvent function and wait for it to resolve
+            customChartContext.emitEvent(TEST_EVENT_TYPE, testPayload);
+            // Check that the result is defined
+            expect(mockPostMessageToHost).toHaveBeenCalledWith(
+                mockInitializeContextPayload.componentId,
+                mockInitializeContextPayload.hostUrl,
+                {},
+                TEST_EVENT_TYPE,
+            );
+        });
     });
 });
