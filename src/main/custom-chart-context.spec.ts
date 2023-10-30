@@ -359,7 +359,8 @@ describe('CustomChartContext', () => {
                 },
                 ports: [{ postMessage: mockPostMessage }],
             });
-            // Check that the response was valid which means action gets executed successfully
+            // Check that the response was valid which means action gets
+            // executed successfully
             expect(mockPostMessage).toHaveBeenCalledWith({
                 isValid: true,
             });
@@ -390,7 +391,8 @@ describe('CustomChartContext', () => {
                 },
                 ports: [{ postMessage: mockPostMessage }],
             });
-            // Check that the response was valid which means action gets executed successfully
+            // Check that the response was valid which means action gets
+            // executed successfully
             expect(mockPostMessage).toHaveBeenCalledWith({
                 isValid: true,
             });

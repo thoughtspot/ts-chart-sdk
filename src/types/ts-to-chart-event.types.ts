@@ -281,7 +281,6 @@ export interface ChartConfigValidateEventPayload {
     chartConfig: ChartConfig[];
 }
 
-
 /**
  * Custom action dispatched by context menu of the chart
  *
@@ -306,7 +305,6 @@ export interface ContextMenuCustomActionPayload {
      */
     customAction: CustomContextMenuAction;
 }
-
 
 /**
  * Custom action dispatched by axis menu of the chart

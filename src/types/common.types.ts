@@ -182,4 +182,3 @@ export interface AppConfig {
     // need to be explored
     customCalendarConfig?: any; // this is to initialize custom calendar service
 }
-

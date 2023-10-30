@@ -318,11 +318,9 @@ export class CustomChartContext {
     ): OpenContextMenuEventPayload {
         // clear out the stored custom events callback for context menu
         this.contextMenuActionHandler = {};
-        eventPayload?.[0]?.customActions?.forEach(
-            (action: CustomAction) => {
-                this.contextMenuActionHandler[action.id] = action.onClick;
-            },
-        );
+        eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
+            this.contextMenuActionHandler[action.id] = action.onClick;
+        });
         const processedCustomActions: CustomAction[] = (
             eventPayload?.[0] as any
         )?.customActions.map((action: CustomAction) => {
@@ -350,11 +348,9 @@ export class CustomChartContext {
     ): OpenAxisMenuEventPayload {
         // clear out the stored custom events callback for axis menu
         this.axisMenuActionHandler = {};
-        eventPayload?.[0]?.customActions?.forEach(
-            (action: CustomAction) => {
-                this.axisMenuActionHandler[action.id] = action.onClick;
-            },
-        );
+        eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
+            this.axisMenuActionHandler[action.id] = action.onClick;
+        });
         const processedCustomActions: CustomAction[] = (
             eventPayload?.[0] as any
         )?.customActions.map((action: CustomAction) => {
