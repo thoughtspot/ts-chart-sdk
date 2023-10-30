@@ -5,13 +5,14 @@
  *
  * Copyright: ThoughtSpot Inc. 2023
  */
-import { CustomAction } from '@thoughtspot/ts-chart-sdk';
+
 import _ from 'lodash';
 import {
     AxisMenuActionHandler,
     ChartToTSEvent,
     ChartToTSEventsPayloadMap,
     ContextMenuActionHandler,
+    CustomAction,
     ErrorType,
     OpenAxisMenuEventPayload,
     OpenContextMenuEventPayload,
