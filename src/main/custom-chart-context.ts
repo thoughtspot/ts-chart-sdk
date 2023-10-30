@@ -8,10 +8,13 @@
 import { CustomAction } from '@thoughtspot/ts-chart-sdk';
 import _ from 'lodash';
 import {
+    AxisMenuActionHandler,
     ChartToTSEvent,
     ChartToTSEventsPayloadMap,
     ContextMenuActionHandler,
     ErrorType,
+    OpenAxisMenuEventPayload,
+    OpenContextMenuEventPayload,
 } from '../types/chart-to-ts-event.types';
 import {
     ChartConfig,
@@ -21,6 +24,7 @@ import {
 } from '../types/common.types';
 import { ChartConfigEditorDefinition } from '../types/configurator.types';
 import {
+    AxisMenuCustomActionPayload,
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
@@ -112,15 +116,6 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
-
-    /**
-     * Stores the callbacks of context menu custom action based on custom action id
-     *
-     * @param chartModel
-     * @returns {@link ContextMenuActionHandler}
-     * @version SDK: 0.1 | ThoughtSpot:
-     */
-    contextMenuActionHandler?: ContextMenuActionHandler;
 };
 
 /**
@@ -130,7 +125,6 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
-    contextMenuActionHandler: {},
 };
 
 export class CustomChartContext {
@@ -197,6 +191,22 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     private triggerInitResolve: () => void = _.noop;
+
+    /**
+     * Stores the callbacks of context menu custom action based on custom action id
+     *
+     * @returns {@link ContextMenuActionHandler}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    private contextMenuActionHandler: ContextMenuActionHandler = {};
+
+    /**
+     * Stores the callbacks of axis menu custom action based on custom action id
+     *
+     * @returns {@link AxisMenuActionHandler}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    private axisMenuActionHandler: AxisMenuActionHandler = {};
 
     /**
      * Constructor to only accept context props as payload
@@ -298,18 +308,19 @@ export class CustomChartContext {
     public getChartModel = (): ChartModel => this.chartModel;
 
     /**
-     * Function to store custom action callback with action id
-     * @param  {ChartToTSEventsPayloadMap[T]} eventPayload Event payload bound
+     * Function to store the context menu custom action callback mapped with action id
+     * @param  {[OpenContextMenuEventPayload]} eventPayload Event payload bound
      *          to the type of the event
      * @returns payload
      */
-    private contextMenuActionPreProcessor<
-        T extends keyof ChartToTSEventsPayloadMap,
-    >(eventPayload: ChartToTSEventsPayloadMap[T]): any {
-        const contextMenuActionHandler: ContextMenuActionHandler = {};
-        (eventPayload?.[0] as any)?.customActions.forEach(
+    public contextMenuCustomActionPreProcessor(
+        eventPayload: [OpenContextMenuEventPayload],
+    ): OpenContextMenuEventPayload {
+        // clear out the stored custom events callback for context menu
+        this.contextMenuActionHandler = {};
+        eventPayload?.[0]?.customActions?.forEach(
             (action: CustomAction) => {
-                contextMenuActionHandler[action.id] = action.onClick;
+                this.contextMenuActionHandler[action.id] = action.onClick;
             },
         );
         const processedCustomActions: CustomAction[] = (
@@ -325,11 +336,63 @@ export class CustomChartContext {
             ...eventPayload?.[0],
             customActions: processedCustomActions,
         };
-        this.chartContextProps = {
-            ...this.chartContextProps,
-            contextMenuActionHandler,
+        return processedPayload;
+    }
+
+    /**
+     * Function to store the axis menu custom action callback mapped with action id
+     * @param  {[OpenAxisMenuEventPayload]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    public axisMenuCustomActionPreProcessor(
+        eventPayload: [OpenAxisMenuEventPayload],
+    ): OpenAxisMenuEventPayload {
+        // clear out the stored custom events callback for axis menu
+        this.axisMenuActionHandler = {};
+        eventPayload?.[0]?.customActions?.forEach(
+            (action: CustomAction) => {
+                this.axisMenuActionHandler[action.id] = action.onClick;
+            },
+        );
+        const processedCustomActions: CustomAction[] = (
+            eventPayload?.[0] as any
+        )?.customActions.map((action: CustomAction) => {
+            return {
+                id: action.id,
+                label: action.label,
+                icon: action.icon,
+            };
+        });
+        const processedPayload = {
+            ...eventPayload?.[0],
+            customActions: processedCustomActions,
         };
         return processedPayload;
+    }
+
+    /**
+     * Function to process the event payload based on event type
+     * @param  {ChartToTSEventsPayloadMap[T]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    private eventPayloadPreProcessor<T extends keyof ChartToTSEventsPayloadMap>(
+        eventType: T,
+        eventPayload: ChartToTSEventsPayloadMap[T],
+    ) {
+        switch (eventType) {
+            case ChartToTSEvent.OpenContextMenu:
+                return this.contextMenuCustomActionPreProcessor(
+                    eventPayload as [OpenContextMenuEventPayload],
+                );
+            case ChartToTSEvent.OpenAxisMenu:
+                return this.axisMenuCustomActionPreProcessor(
+                    eventPayload as [OpenAxisMenuEventPayload],
+                );
+            default:
+                return eventPayload?.[0];
+        }
     }
 
     /**
@@ -350,10 +413,10 @@ export class CustomChartContext {
             );
             return Promise.reject(new Error('Context not initialized'));
         }
-        let processedPayload = eventPayload;
-        if (eventType === ChartToTSEvent.OpenContextMenu) {
-            processedPayload = this.contextMenuActionPreProcessor(eventPayload);
-        }
+        const processedPayload = this.eventPayloadPreProcessor(
+            eventType,
+            eventPayload,
+        );
         return PostMessageEventBridge.postMessageToHostApp(
             this.componentId,
             this.hostUrl,
@@ -499,6 +562,58 @@ export class CustomChartContext {
             this.chartContextProps.renderChart(this);
         });
 
+        /**
+         * This event is triggered when the custom context action is triggered from TS app
+         */
+        this.onInternal(
+            TSToChartEvent.ContextMenuActionClick,
+            (
+                payload: ContextMenuCustomActionPayload,
+            ): {
+                isValid: boolean;
+                error?: unknown;
+            } => {
+                try {
+                    const customActionCallback = payload.customAction.id;
+                    this.contextMenuActionHandler?.[customActionCallback]();
+                    return {
+                        isValid: true,
+                    };
+                } catch (error: unknown) {
+                    return {
+                        isValid: false,
+                        error,
+                    };
+                }
+            },
+        );
+
+        /**
+         * This event is triggered when the custom axis action is triggered from TS app
+         */
+        this.onInternal(
+            TSToChartEvent.AxisMenuActionClick,
+            (
+                payload: AxisMenuCustomActionPayload,
+            ): {
+                isValid: boolean;
+                error?: unknown;
+            } => {
+                try {
+                    const customActionCallback = payload.customAction.id;
+                    this.axisMenuActionHandler?.[customActionCallback]();
+                    return {
+                        isValid: true,
+                    };
+                } catch (error: unknown) {
+                    return {
+                        isValid: false,
+                        error,
+                    };
+                }
+            },
+        );
+
         // Register External Events
         // These events are readable by the developer
 
@@ -516,31 +631,6 @@ export class CustomChartContext {
                 return {
                     triggerRenderChart: true,
                 };
-            },
-        );
-
-        this.on(
-            TSToChartEvent.ContextMenuActionClick,
-            (
-                payload: ContextMenuCustomActionPayload,
-            ): {
-                isValid: boolean;
-                error?: any;
-            } => {
-                try {
-                    const customActionCallback = payload.customAction.id;
-                    this.chartContextProps.contextMenuActionHandler?.[
-                        customActionCallback
-                    ]();
-                    return {
-                        isValid: true,
-                    };
-                } catch (error) {
-                    return {
-                        isValid: false,
-                        error,
-                    };
-                }
             },
         );
 

@@ -1,9 +1,9 @@
 import { ChartColumn } from './answer-column.types';
+import { Point } from './chart-to-ts-event.types';
 import {
     AppConfig,
     ChartConfig,
     ChartModel,
-    ContextMenuCustomAction,
     QueryData,
     ValidationResponse,
     VisualProps,
@@ -61,7 +61,13 @@ export enum TSToChartEvent {
     /**
      * @version SDK: 0.1 | ThoughtSpot:
      */
+
     ContextMenuActionClick = 'ContextMenuActionClick',
+
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    AxisMenuActionClick = 'AxisMenuActionClick',
 }
 
 /**
@@ -77,9 +83,6 @@ export interface TSToChartEventsPayloadMap {
     [TSToChartEvent.DataUpdate]: (payload: DataUpdateEventPayload) => void;
     [TSToChartEvent.VisualPropsUpdate]: (
         payload: VisualPropsUpdateEventPayload,
-    ) => void;
-    [TSToChartEvent.ContextMenuActionClick]: (
-        payload: ContextMenuCustomActionPayload,
     ) => void;
 }
 
@@ -112,6 +115,14 @@ export interface TSToChartInternalEventsPayloadMap {
     ) => ValidationResponse;
 
     [TSToChartEvent.TriggerRenderChart]: () => void;
+
+    [TSToChartEvent.ContextMenuActionClick]: (
+        payload: ContextMenuCustomActionPayload,
+    ) => void;
+
+    [TSToChartEvent.AxisMenuActionClick]: (
+        payload: AxisMenuCustomActionPayload,
+    ) => void;
 }
 
 /**
@@ -270,6 +281,19 @@ export interface ChartConfigValidateEventPayload {
     chartConfig: ChartConfig[];
 }
 
+
+/**
+ * Custom action dispatched by context menu of the chart
+ *
+ * @group ThoughtSpot to Chart Events
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export interface CustomContextMenuAction {
+    id: string;
+    clickedPoint: Point;
+    selectedPoints?: Point[];
+}
+
 /**
  *
  * @group ThoughtSpot to Chart Events
@@ -280,5 +304,30 @@ export interface ContextMenuCustomActionPayload {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    customAction: ContextMenuCustomAction;
+    customAction: CustomContextMenuAction;
+}
+
+
+/**
+ * Custom action dispatched by axis menu of the chart
+ *
+ * @group ThoughtSpot to Chart Events
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export interface CustomAxisMenuAction {
+    id: string;
+    columnIds: string[];
+}
+
+/**
+ *
+ * @group ThoughtSpot to Chart Events
+ */
+export interface AxisMenuCustomActionPayload {
+    /**
+     * Dispatched custom action from context menu
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    customAction: CustomAxisMenuAction;
 }

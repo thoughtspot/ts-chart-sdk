@@ -86,7 +86,7 @@ function getColumnDataModel(
                         position: idx === 0 ? 'left' : 'right',
                         title: {
                             display: true,
-                            text: `${_val.name}`,
+                            text: _val.name,
                         },
                     };
                     return obj;
@@ -120,6 +120,14 @@ function getDataModel(chartModel: ChartModel) {
 
 function getParsedEvent(evt: any) {
     return _.pick(evt.native, ['clientX', 'clientY']);
+}
+
+function downloadChartAsPNG() {
+    const imageLink = document.createElement('a');
+    const canvas = document.getElementById('chart') as any;
+    imageLink.download = 'bar-chart.png';
+    imageLink.href = canvas.toDataURL('image/png', 1);
+    imageLink.click();
 }
 
 function render(ctx: CustomChartContext) {
@@ -194,16 +202,16 @@ function render(ctx: CustomChartContext) {
                                 id: 'custom-action-1',
                                 label: 'Custom user action 1',
                                 icon: '',
-                                onClick: (evt: any) => {
+                                onClick: () => {
                                     console.log('custom action 1 triggered');
                                 },
                             },
                             {
-                                id: 'custom-action-2',
-                                label: 'Custom user action 2',
+                                id: 'download-chart',
+                                label: 'Download chart',
                                 icon: '',
-                                onClick: (evt: any) => {
-                                    console.log('custom action 2 triggered');
+                                onClick: () => {
+                                    downloadChartAsPNG();
                                 },
                             },
                         ],
