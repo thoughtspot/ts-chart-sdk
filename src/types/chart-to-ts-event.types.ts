@@ -345,7 +345,7 @@ export interface OpenAxisMenuEventPayload {
  * @group Custom action callback mapping with action id/ Context Menu
  */
 export interface ContextMenuActionHandler {
-    [key: string]: () => void;
+    [key: string]: (...args: any[]) => void;
 }
 
 /**
@@ -353,5 +353,5 @@ export interface ContextMenuActionHandler {
  * @group Custom action callback mapping with action id/ Axis Menu
  */
 export interface AxisMenuActionHandler {
-    [key: string]: () => void;
+    [key: string]: (...args: any[]) => void;
 }

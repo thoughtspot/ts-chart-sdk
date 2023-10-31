@@ -202,8 +202,8 @@ function render(ctx: CustomChartContext) {
                                 id: 'custom-action-1',
                                 label: 'Custom user action 1',
                                 icon: '',
-                                onClick: () => {
-                                    console.log('custom action 1 triggered');
+                                onClick: (...arg) => {
+                                    console.log('custom action 1 triggered', arg);
                                 },
                             },
                             {

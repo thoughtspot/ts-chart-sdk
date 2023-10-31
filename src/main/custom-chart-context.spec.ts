@@ -673,6 +673,7 @@ describe('CustomChartContext', () => {
         });
         test('should process the event payload for context menu custom actions', async () => {
             const mockPostMessage = jest.fn();
+            const mockCustomAction = jest.fn();
             let resolve: any;
             eventProcessor({
                 data: {
@@ -706,7 +707,7 @@ describe('CustomChartContext', () => {
                         id: 'custom-action-1',
                         label: 'Custom user action 1',
                         icon: '',
-                        onClick: () => _.noop(),
+                        onClick: mockCustomAction,
                     },
                 ],
             };
@@ -729,9 +730,31 @@ describe('CustomChartContext', () => {
                 },
                 TEST_EVENT_TYPE,
             );
+            eventProcessor({
+                data: {
+                    payload: {
+                        customAction: {
+                            id: 'custom-action-1',
+                            clickedPoint: {},
+                            event: {},
+                            selectedPoints: [{}],
+                        },
+                    },
+                    eventType: TSToChartEvent.ContextMenuActionClick,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            expect(mockCustomAction).toHaveBeenCalled();
+            expect(mockCustomAction).toHaveBeenCalledWith({
+                clickedPoint: {},
+                event: {},
+                selectedPoints: [{}],
+            });
         });
         test('should process the event payload for axis menu custom actions', async () => {
             const mockPostMessage = jest.fn();
+            const mockCustomAction = jest.fn();
             let resolve: any;
             eventProcessor({
                 data: {
@@ -765,7 +788,7 @@ describe('CustomChartContext', () => {
                         id: 'custom-action-1',
                         label: 'Custom user action 1',
                         icon: '',
-                        onClick: () => _.noop(),
+                        onClick: mockCustomAction,
                     },
                 ],
             };
@@ -787,6 +810,26 @@ describe('CustomChartContext', () => {
                 },
                 TEST_EVENT_TYPE,
             );
+
+            eventProcessor({
+                data: {
+                    payload: {
+                        customAction: {
+                            id: 'custom-action-1',
+                            columnIds: ['123'],
+                            event: {},
+                        },
+                    },
+                    eventType: TSToChartEvent.AxisMenuActionClick,
+                    source: 'ts-host-app',
+                },
+                ports: [{ postMessage: mockPostMessage }],
+            });
+            expect(mockCustomAction).toHaveBeenCalled();
+            expect(mockCustomAction).toHaveBeenCalledWith({
+                columnIds: ['123'],
+                event: {},
+            });
         });
 
         test('should process the event payload for axis menu when custom actions are not defined', async () => {

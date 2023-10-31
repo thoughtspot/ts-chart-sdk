@@ -316,28 +316,30 @@ export class CustomChartContext {
      */
     public contextMenuCustomActionPreProcessor(
         eventPayload: [OpenContextMenuEventPayload],
-    ): OpenContextMenuEventPayload {
+    ): [OpenContextMenuEventPayload] {
         // clear out the stored custom events callback for context menu
         this.contextMenuActionHandler = {};
         if (_.isEmpty(eventPayload?.[0]?.customActions)) {
-            return eventPayload?.[0];
+            return eventPayload;
         }
         eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
             this.contextMenuActionHandler[action.id] = action.onClick;
         });
-        const processedCustomActions: CustomAction[] = (
-            eventPayload?.[0] as any
-        )?.customActions.map((action: CustomAction) => {
-            return {
-                id: action.id,
-                label: action.label,
-                icon: action.icon,
-            };
-        });
-        const processedPayload = {
-            ...eventPayload?.[0],
-            customActions: processedCustomActions,
-        };
+        const processedCustomActions = eventPayload[0]?.customActions?.map(
+            (action: CustomAction) => {
+                return {
+                    id: action.id,
+                    label: action.label,
+                    icon: action.icon,
+                };
+            },
+        );
+        const processedPayload: [OpenContextMenuEventPayload] = [
+            {
+                ...eventPayload[0],
+                customActions: processedCustomActions as CustomAction[],
+            },
+        ];
         return processedPayload;
     }
 
@@ -349,28 +351,30 @@ export class CustomChartContext {
      */
     public axisMenuCustomActionPreProcessor(
         eventPayload: [OpenAxisMenuEventPayload],
-    ): OpenAxisMenuEventPayload {
+    ): [OpenAxisMenuEventPayload] {
         // clear out the stored custom events callback for axis menu
         this.axisMenuActionHandler = {};
         if (_.isEmpty(eventPayload?.[0]?.customActions)) {
-            return eventPayload?.[0];
+            return eventPayload;
         }
-        eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
+        eventPayload[0].customActions?.forEach((action: CustomAction) => {
             this.axisMenuActionHandler[action.id] = action.onClick;
         });
-        const processedCustomActions: CustomAction[] = (
-            eventPayload?.[0] as any
-        )?.customActions.map((action: CustomAction) => {
-            return {
-                id: action.id,
-                label: action.label,
-                icon: action.icon,
-            };
-        });
-        const processedPayload = {
-            ...eventPayload?.[0],
-            customActions: processedCustomActions,
-        };
+        const processedCustomActions = eventPayload?.[0].customActions?.map(
+            (action: CustomAction) => {
+                return {
+                    id: action.id,
+                    label: action.label,
+                    icon: action.icon,
+                };
+            },
+        );
+        const processedPayload: [OpenAxisMenuEventPayload] = [
+            {
+                ...eventPayload[0],
+                customActions: processedCustomActions as CustomAction[],
+            },
+        ];
         return processedPayload;
     }
 
@@ -383,18 +387,18 @@ export class CustomChartContext {
     private eventPayloadPreProcessor<T extends keyof ChartToTSEventsPayloadMap>(
         eventType: T,
         eventPayload: ChartToTSEventsPayloadMap[T],
-    ) {
+    ): ChartToTSEventsPayloadMap[T] {
         switch (eventType) {
             case ChartToTSEvent.OpenContextMenu:
                 return this.contextMenuCustomActionPreProcessor(
                     eventPayload as [OpenContextMenuEventPayload],
-                );
+                ) as ChartToTSEventsPayloadMap[T];
             case ChartToTSEvent.OpenAxisMenu:
                 return this.axisMenuCustomActionPreProcessor(
                     eventPayload as [OpenAxisMenuEventPayload],
-                );
+                ) as ChartToTSEventsPayloadMap[T];
             default:
-                return eventPayload?.[0];
+                return eventPayload;
         }
     }
 
@@ -423,7 +427,7 @@ export class CustomChartContext {
         return PostMessageEventBridge.postMessageToHostApp(
             this.componentId,
             this.hostUrl,
-            processedPayload ?? null,
+            processedPayload?.[0] ?? null,
             eventType,
         );
     }
@@ -577,8 +581,20 @@ export class CustomChartContext {
                 error?: unknown;
             } => {
                 try {
-                    const customActionCallback = payload.customAction.id;
-                    this.contextMenuActionHandler?.[customActionCallback]();
+                    const {
+                        id: customActionCallback,
+                        clickedPoint,
+                        selectedPoints,
+                        event,
+                    } = payload.customAction;
+                    const customActionCallbackArgs = {
+                        clickedPoint,
+                        selectedPoints,
+                        event,
+                    };
+                    this.contextMenuActionHandler[customActionCallback](
+                        customActionCallbackArgs,
+                    );
                     return {
                         isValid: true,
                     };
@@ -603,8 +619,18 @@ export class CustomChartContext {
                 error?: unknown;
             } => {
                 try {
-                    const customActionCallback = payload.customAction.id;
-                    this.axisMenuActionHandler?.[customActionCallback]();
+                    const {
+                        id: customActionCallback,
+                        columnIds,
+                        event,
+                    } = payload.customAction;
+                    const customActionCallbackArgs = {
+                        columnIds,
+                        event,
+                    };
+                    this.axisMenuActionHandler[customActionCallback](
+                        customActionCallbackArgs,
+                    );
                     return {
                         isValid: true,
                     };

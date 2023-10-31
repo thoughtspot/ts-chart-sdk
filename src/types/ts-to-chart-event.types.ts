@@ -291,6 +291,7 @@ export interface CustomContextMenuAction {
     id: string;
     clickedPoint: Point;
     selectedPoints?: Point[];
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
 }
 
 /**
@@ -315,6 +316,7 @@ export interface ContextMenuCustomActionPayload {
 export interface CustomAxisMenuAction {
     id: string;
     columnIds: string[];
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
 }
 
 /**
