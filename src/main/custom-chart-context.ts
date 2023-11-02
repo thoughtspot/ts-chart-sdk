@@ -588,6 +588,7 @@ export class CustomChartContext {
                         event,
                     } = payload.customAction;
                     const customActionCallbackArgs = {
+                        id: customActionCallback,
                         clickedPoint,
                         selectedPoints,
                         event,
@@ -599,6 +600,12 @@ export class CustomChartContext {
                         isValid: true,
                     };
                 } catch (error: unknown) {
+                    console.log(
+                        'ContextMenuCustomAction: payload recieved:',
+                        payload,
+                        'CustomActionCallbackStore:',
+                        this.axisMenuActionHandler
+                    );
                     return {
                         isValid: false,
                         error,
@@ -625,6 +632,7 @@ export class CustomChartContext {
                         event,
                     } = payload.customAction;
                     const customActionCallbackArgs = {
+                        id: customActionCallback,
                         columnIds,
                         event,
                     };
@@ -635,6 +643,12 @@ export class CustomChartContext {
                         isValid: true,
                     };
                 } catch (error: unknown) {
+                    console.log(
+                        'AxisMenuCustomAction: payload recieved:',
+                        payload,
+                        'CustomActionCallbackStore:',
+                        this.axisMenuActionHandler
+                    );
                     return {
                         isValid: false,
                         error,

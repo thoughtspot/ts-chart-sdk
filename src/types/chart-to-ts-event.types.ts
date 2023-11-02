@@ -1,5 +1,5 @@
 import { VisualProps } from './common.types';
-import { Query } from './ts-to-chart-event.types';
+import { CustomAxisMenuAction, CustomContextMenuAction, Query } from './ts-to-chart-event.types';
 
 /**
  *
@@ -345,7 +345,7 @@ export interface OpenAxisMenuEventPayload {
  * @group Custom action callback mapping with action id/ Context Menu
  */
 export interface ContextMenuActionHandler {
-    [key: string]: (...args: any[]) => void;
+    [key: string]: (args: CustomContextMenuAction) => void;
 }
 
 /**
@@ -353,5 +353,5 @@ export interface ContextMenuActionHandler {
  * @group Custom action callback mapping with action id/ Axis Menu
  */
 export interface AxisMenuActionHandler {
-    [key: string]: (...args: any[]) => void;
+    [key: string]: (args: CustomAxisMenuAction) => void;
 }
