@@ -749,7 +749,7 @@ describe('CustomChartContext', () => {
             expect(mockCustomAction).toHaveBeenCalledWith({
                 clickedPoint: {},
                 event: {},
-                id: "custom-action-1",
+                id: 'custom-action-1',
                 selectedPoints: [{}],
             });
         });
@@ -828,7 +828,7 @@ describe('CustomChartContext', () => {
             });
             expect(mockCustomAction).toHaveBeenCalled();
             expect(mockCustomAction).toHaveBeenCalledWith({
-                id: "custom-action-1",
+                id: 'custom-action-1',
                 columnIds: ['123'],
                 event: {},
             });
