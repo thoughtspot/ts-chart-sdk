@@ -1,5 +1,9 @@
 import { VisualProps } from './common.types';
-import { CustomAxisMenuAction, CustomContextMenuAction, Query } from './ts-to-chart-event.types';
+import {
+    CustomAxisMenuAction,
+    CustomContextMenuAction,
+    Query,
+} from './ts-to-chart-event.types';
 
 /**
  *

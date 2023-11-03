@@ -604,7 +604,7 @@ export class CustomChartContext {
                         'ContextMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
-                        this.axisMenuActionHandler
+                        this.axisMenuActionHandler,
                     );
                     return {
                         isValid: false,
@@ -647,7 +647,7 @@ export class CustomChartContext {
                         'AxisMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
-                        this.axisMenuActionHandler
+                        this.axisMenuActionHandler,
                     );
                     return {
                         isValid: false,
