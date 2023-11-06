@@ -160,6 +160,9 @@ export type VisualProps = JSON;
 type CustomStylingConfig = any;
 
 export interface AppConfig {
+    /**
+     * @hidden
+     */
     styleConfig?: CustomStylingConfig;
 
     appOptions?: {
@@ -177,8 +180,19 @@ export interface AppConfig {
         sessionTimezone: string;
     };
 
+    /**
+     * App url for the custom chart application where the chart app is hosted.
+     * This helps the chart developer to access app artifacts relative to this url.
+     * There can be different build systems that developers may have used and different ways
+     * to host the same. This helps in resolving the same.
+     */
+    appUrl?: string;
+
     // Idea: we might be able to map this to data and ask user to read data in a
     // certain way the transformations for point during context menu operations
     // need to be explored
+    /**
+     * @hidden
+     */
     customCalendarConfig?: any; // this is to initialize custom calendar service
 }

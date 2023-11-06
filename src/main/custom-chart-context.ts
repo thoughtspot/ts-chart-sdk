@@ -18,6 +18,7 @@ import {
     OpenContextMenuEventPayload,
 } from '../types/chart-to-ts-event.types';
 import {
+    AppConfig,
     ChartConfig,
     ChartModel,
     ValidationResponse,
@@ -156,6 +157,13 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     private chartModel: ChartModel = {} as any;
+
+    /**
+     * App Config object. This contains the app state like locale and timezones.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    private appConfig: AppConfig = {};
 
     /**
      * Chart Props Object to define the workflow of the application
@@ -307,6 +315,13 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     public getChartModel = (): ChartModel => this.chartModel;
+
+    /**
+     * Getter for the chart model object
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    public getAppConfig = (): AppConfig => this.appConfig;
 
     /**
      * Function to store the context menu custom action callback mapped with action id
@@ -727,6 +742,7 @@ export class CustomChartContext {
         this.componentId = payload.componentId;
         this.hostUrl = payload.hostUrl;
         this.chartModel = payload.chartModel;
+        this.appConfig = payload.appConfig ?? {};
 
         return this.publishChartContextPropsToHost();
     };
