@@ -1,4 +1,5 @@
 import { ChartColumn } from './answer-column.types';
+import { Point } from './chart-to-ts-event.types';
 import {
     AppConfig,
     ChartConfig,
@@ -57,6 +58,16 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     VisualPropsUpdate = 'VisualPropsUpdate',
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+
+    ContextMenuActionClick = 'ContextMenuActionClick',
+
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    AxisMenuActionClick = 'AxisMenuActionClick',
 }
 
 /**
@@ -104,6 +115,14 @@ export interface TSToChartInternalEventsPayloadMap {
     ) => ValidationResponse;
 
     [TSToChartEvent.TriggerRenderChart]: () => void;
+
+    [TSToChartEvent.ContextMenuActionClick]: (
+        payload: ContextMenuCustomActionPayload,
+    ) => void;
+
+    [TSToChartEvent.AxisMenuActionClick]: (
+        payload: AxisMenuCustomActionPayload,
+    ) => void;
 }
 
 /**
@@ -260,4 +279,55 @@ export interface ChartConfigValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfig: ChartConfig[];
+}
+
+/**
+ * Custom action dispatched by context menu of the chart
+ *
+ * @group ThoughtSpot to Chart Events
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export interface CustomContextMenuAction {
+    id: string;
+    clickedPoint: Point;
+    selectedPoints?: Point[];
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+}
+
+/**
+ *
+ * @group ThoughtSpot to Chart Events
+ */
+export interface ContextMenuCustomActionPayload {
+    /**
+     * Dispatched custom action from context menu
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    customAction: CustomContextMenuAction;
+}
+
+/**
+ * Custom action dispatched by axis menu of the chart
+ *
+ * @group ThoughtSpot to Chart Events
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export interface CustomAxisMenuAction {
+    id: string;
+    columnIds: string[];
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+}
+
+/**
+ *
+ * @group ThoughtSpot to Chart Events
+ */
+export interface AxisMenuCustomActionPayload {
+    /**
+     * Dispatched custom action from context menu
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    customAction: CustomAxisMenuAction;
 }
