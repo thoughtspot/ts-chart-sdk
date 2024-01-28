@@ -20,10 +20,12 @@ import {
     PointVal,
     Query,
     VisualProps,
+    DataType,
 } from '@thoughtspot/ts-chart-sdk';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
+import moment from 'moment';
 
 Chart.register(ChartDataLabels);
 
@@ -37,9 +39,20 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
+export const isDateColumn = (col) =>
+    DataType[col.dataType] === 'DATE' || DataType[col.dataType] === 'DATE_TIME';
+
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => row[idx]);
+    return _.map(dataArr.dataValue, (row) => {
+        const colValue = row[idx];
+        if(isDateColumn(column)) {
+            return moment(colValue).format(column.format?.pattern);
+        }
+        else {
+            return colValue;
+        }
+    });
 }
 
 function getColumnDataModel(
@@ -203,7 +216,10 @@ function render(ctx: CustomChartContext) {
                                 label: 'Custom user action 1',
                                 icon: '',
                                 onClick: (...arg) => {
-                                    console.log('custom action 1 triggered', arg);
+                                    console.log(
+                                        'custom action 1 triggered',
+                                        arg,
+                                    );
                                 },
                             },
                             {
