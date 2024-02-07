@@ -37,9 +37,22 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
+const numberFormatter = value => {
+    if (value > 1000000000) {
+        return (value / 1000000000).toFixed(2) + 'B';
+    }
+    if (value > 1000000) {
+        return (value / 1000000).toFixed(2) + 'M';
+    }
+    if (value > 1000) {
+        return (value / 1000).toFixed(2) + 'K';
+    }
+    return value;
+};
+
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
-    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => row[idx]);
+    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
+    return _.map(dataArr.dataValue, row => row[idx]);
 }
 
 function getColumnDataModel(
@@ -161,8 +174,11 @@ function render(ctx: CustomChartContext) {
                 plugins: {
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
-                        display: allowLabels,
+                        display: allowLabels ? 'auto' : false,
+                        formatter: value => numberFormatter(value),
                         color: 'blue',
+                        textStrokeColor: 'white',
+                        textStrokeWidth: 5,
                         labels: {
                             title: {
                                 font: {
@@ -170,7 +186,7 @@ function render(ctx: CustomChartContext) {
                                 },
                             },
                             value: {
-                                color: 'green',
+                                color: 'black',
                             },
                         },
                     },
@@ -203,7 +219,10 @@ function render(ctx: CustomChartContext) {
                                 label: 'Custom user action 1',
                                 icon: '',
                                 onClick: (...arg) => {
-                                    console.log('custom action 1 triggered', arg);
+                                    console.log(
+                                        'custom action 1 triggered',
+                                        arg,
+                                    );
                                 },
                             },
                             {
@@ -249,12 +268,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                (col) => col.type === ColumnType.MEASURE,
+                col => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                (col) => col.type === ColumnType.ATTRIBUTE,
+                col => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -292,7 +311,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: (ctx) => renderChart(ctx),
+        renderChart: ctx => renderChart(ctx),
         chartConfigEditorDefinition: [
             {
                 key: 'column',
