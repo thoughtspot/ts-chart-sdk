@@ -36,6 +36,19 @@ ChartJS.register(
     Legend,
 );
 
+const numberFormatter = value => {
+    if (value > 1000000000) {
+        return (value / 1000000000).toFixed(2) + 'B';
+    }
+    if (value > 1000000) {
+        return (value / 1000000).toFixed(2) + 'M';
+    }
+    if (value > 1000) {
+        return (value / 1000).toFixed(2) + 'K';
+    }
+    return value;
+};
+
 interface LineChartProps {
     chartModel: ChartModel;
     emitShowToolTip: (args_0: ShowToolTipEventPayload) => Promise<void>;
@@ -71,8 +84,8 @@ interface RenderChartProps {
  * @returns {any[]} An array containing the data for the specified column.
  */
 const getDataForColumn = (column: ChartColumn, dataArr: DataPointsArray) => {
-    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => row[idx]);
+    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
+    return _.map(dataArr.dataValue, row => row[idx]);
 };
 
 /**
@@ -267,8 +280,11 @@ export const LineChart = ({
                     },
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
-                        display: dataModel.getAllowLabels(),
+                        display: dataModel.getAllowLabels() ? 'auto' : false,
+                        formatter: value => numberFormatter(value),
                         color: 'blue',
+                        textStrokeColor: 'white',
+                        textStrokeWidth: 5,
                         labels: {
                             title: {
                                 font: {
@@ -276,7 +292,7 @@ export const LineChart = ({
                                 },
                             },
                             value: {
-                                color: 'green',
+                                color: 'black',
                             },
                         },
                     },
@@ -305,7 +321,7 @@ export const LineChart = ({
                         },
                     });
                 },
-                onHover: (event) => {
+                onHover: event => {
                     if (event.type === 'mousemove') {
                         handleMouseOver(event);
                     }
