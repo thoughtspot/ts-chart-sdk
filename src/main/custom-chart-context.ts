@@ -106,7 +106,11 @@ export type CustomChartContextProps = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    chartConfigEditorDefinition?: ChartConfigEditorDefinition[];
+    chartConfigEditorDefinition?: (
+        chartModel: ChartModel,
+        updatedChartConfig: ChartConfig[],
+        visualPropEditorDefinition: VisualPropEditorDefinition | undefined,
+    ) => ChartConfigEditorDefinition[];
 
     /**
      * Definition to help edit/customize the visual properties from chart settings editor
@@ -117,7 +121,11 @@ export type CustomChartContextProps = {
      * @returns {@link VisualPropEditorDefinition}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    visualPropEditorDefinition?: VisualPropEditorDefinition;
+    visualPropEditorDefinition?: (
+        chartModel: ChartModel,
+        updatedVisualProps: VisualProps,
+        chartConfigEditorDefinition: ChartConfigEditorDefinition[] | undefined,
+    ) => VisualPropEditorDefinition;
 };
 
 /**
@@ -126,7 +134,7 @@ export type CustomChartContextProps = {
 const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
-    chartConfigEditorDefinition: undefined,
+    chartConfigEditorDefinition: () => undefined,
 };
 
 export class CustomChartContext {
@@ -532,6 +540,18 @@ export class CustomChartContext {
                             payload.visualProps,
                             this.chartModel,
                         );
+                        if (validationResponse.isValid) {
+                            const visualPropEditorDefinition =
+                                this.chartContextProps.visualPropEditorDefinition(
+                                    this.chartModel,
+                                    payload.visualProps,
+                                    payload.chartConfigEditorDefinition,
+                                );
+                            return {
+                                ...validationResponse,
+                                visualPropEditorDefinition,
+                            };
+                        }
                     return validationResponse;
                 }
                 // this will never be true
@@ -553,6 +573,25 @@ export class CustomChartContext {
                             payload.chartConfig,
                             this.chartModel,
                         );
+                    if (validationResponse.isValid) {
+                        const chartConfigEditorDefinition =
+                            this.chartContextProps.chartConfigEditorDefinition(
+                                this.chartModel,
+                                payload.chartConfig,
+                                payload.visualPropEditorDefinition,
+                            );
+                        const visualPropEditorDefinition =
+                            this.chartContextProps.visualPropEditorDefinition(
+                                this.chartModel,
+                                payload.visualPropEditorDefinition,
+                                payload.chartConfig,
+                            );
+                        return {
+                            ...validationResponse,
+                            chartConfigEditorDefinition,
+                            visualPropEditorDefinition,
+                        };
+                    }
                     return validationResponse;
                 }
                 // this will never be true
@@ -780,9 +819,9 @@ export class CustomChartContext {
                 isConfigValid: isValid,
                 defaultChartConfig,
                 chartConfigEditorDefinition:
-                    this.chartContextProps.chartConfigEditorDefinition,
+                    this.chartContextProps.chartConfigEditorDefinition(this.chartModel, defaultChartConfig),
                 visualPropEditorDefinition:
-                    this.chartContextProps.visualPropEditorDefinition,
+                    this.chartContextProps.visualPropEditorDefinition(this.chartModel, defaultChartConfig),
             };
         };
 

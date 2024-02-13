@@ -7,6 +7,8 @@
  */
 
 import { ChartColumn } from './answer-column.types';
+import { ChartConfigEditorDefinition } from './configurator.types';
+import { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
  * List of Columns for a dimension in the Custom Chart Config.
@@ -144,6 +146,8 @@ export interface ChartModel {
 export type ValidationResponse = {
     isValid: boolean;
     validationErrorMessage?: string[];
+    chartConfigEditorDefinition?: ChartConfigEditorDefinition[],
+    visualPropEditorDefinition?: VisualPropEditorDefinition,
 };
 
 /**

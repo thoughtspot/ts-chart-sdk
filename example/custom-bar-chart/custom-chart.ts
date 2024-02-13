@@ -8,6 +8,7 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+import { VisualPropEditorDefinition } from '@thoughtspot/ts-chart-sdk';
 import {
     ChartColumn,
     ChartConfig,
@@ -21,7 +22,9 @@ import {
     Query,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
+import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
+import { toDimension } from 'chart.js/dist/helpers/helpers.core';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 
@@ -151,6 +154,11 @@ function render(ctx: CustomChartContext) {
         visualPropKeyMap[2],
         false,
     );
+    const labelColor = _.get(
+        chartModel.visualProps,
+        visualPropKeyMap[1],
+        'blue',
+    );
     if (!dataModel) {
         return;
     }
@@ -174,11 +182,8 @@ function render(ctx: CustomChartContext) {
                 plugins: {
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
-                        display: allowLabels ? 'auto' : false,
-                        formatter: value => numberFormatter(value),
-                        color: 'blue',
-                        textStrokeColor: 'white',
-                        textStrokeWidth: 5,
+                        display: allowLabels,
+                        color: labelColor,
                         labels: {
                             title: {
                                 font: {
@@ -312,34 +317,70 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             return queries;
         },
         renderChart: ctx => renderChart(ctx),
-        chartConfigEditorDefinition: [
-            {
-                key: 'column',
-                label: 'Custom Column',
-                descriptionText:
-                    'X Axis can only have attributes, Y Axis can only have measures, Color can only have attributes. ' +
-                    'Should have just 1 column in Y axis with colors columns.',
-                columnSections: [
-                    {
-                        key: 'x',
-                        label: 'Custom X Axis',
-                        allowAttributeColumns: true,
-                        allowMeasureColumns: false,
-                        allowTimeSeriesColumns: true,
-                        maxColumnCount: 1,
-                    },
-                    {
-                        key: 'y',
-                        label: 'Custom Y Axis',
+        chartConfigEditorDefinition: (
+            chartModel: ChartModel,
+            updatedChartConfig: ChartConfig[],
+            updatedVisualPropEditorDefinition:
+                | VisualPropEditorDefinition
+                | undefined,
+        ): ChartConfigEditorDefinition[] => {
+            let yColumns;
+            if(updatedChartConfig.length === 0) {
+                yColumns = chartModel?.config?.chartConfig?.[0]?.dimensions.find(
+                    dimension => dimension.key === 'y' && dimension.columns,
+                );
+            }
+            else {
+                yColumns = updatedChartConfig?.[0]?.dimensions.find(
+                    dimension => dimension.key === 'y' && dimension.columns,
+                );
+            }
+
+            const config = [
+                {
+                    key: 'column',
+                    label: 'Custom Column',
+                    descriptionText:
+                        'X Axis can only have attributes, Y Axis can only have measures, Color can only have attributes. ' +
+                        'Should have just 1 column in Y axis with colors columns.',
+                    columnSections: [
+                        {
+                            key: 'x',
+                            label: 'Custom X Axis',
+                            allowAttributeColumns: true,
+                            allowMeasureColumns: false,
+                            allowTimeSeriesColumns: true,
+                            maxColumnCount: 1,
+                        },
+                        {
+                            key: 'y',
+                            label: 'Custom Y Axis',
+                            allowAttributeColumns: false,
+                            allowMeasureColumns: true,
+                            allowTimeSeriesColumns: false,
+                        },
+                    ],
+                },
+            ];
+            if (yColumns?.columns.length) {
+                for (let i = 0; i < yColumns.columns.length; i++) {
+                    config[0].columnSections.push({
+                        key: 'layers',
+                        label: 'Measures layer',
                         allowAttributeColumns: false,
                         allowMeasureColumns: true,
                         allowTimeSeriesColumns: false,
-                    },
-                ],
-            },
-        ],
-        visualPropEditorDefinition: {
-            elements: [
+                    });
+                }
+            }
+            return config;
+        },
+        visualPropEditorDefinition: (
+            chartModel: ChartModel,
+            visualProps: VisualProps,
+            chartConfig: ChartConfigEditorDefinition[] | undefined,
+        ): VisualPropEditorDefinition => {
+            const elements = [
                 {
                     key: 'color',
                     type: 'radio',
@@ -353,13 +394,6 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     label: 'Accordion',
                     children: [
                         {
-                            key: 'Color2',
-                            type: 'radio',
-                            defaultValue: 'blue',
-                            values: ['blue', 'white', 'red'],
-                            label: 'Color2',
-                        },
-                        {
                             key: 'datalabels',
                             type: 'toggle',
                             defaultValue: false,
@@ -367,7 +401,31 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                         },
                     ],
                 },
-            ],
+            ];
+            if(visualProps.length !== 0) {
+                if (visualProps?.accordion?.datalabels) {
+                    elements[1].children?.push({
+                        key: 'Color2',
+                        type: 'radio',
+                        defaultValue: 'blue',
+                        values: ['blue', 'white', 'red'],
+                        label: 'Color2',
+                    });
+                }
+            }
+            else {
+                if (chartModel.visualProps?.accordion?.datalabels) {
+                    elements[1].children?.push({
+                        key: 'Color2',
+                        type: 'radio',
+                        defaultValue: 'blue',
+                        values: ['blue', 'white', 'red'],
+                        label: 'Color2',
+                    });
+                }
+            }
+
+            return { elements };
         },
     });
 
