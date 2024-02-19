@@ -266,7 +266,6 @@ export interface VisualPropsValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualProps: VisualProps;
-    chartConfigEditorDefinition: ChartConfigEditorDefinition[] | undefined;
 }
 
 /**
@@ -280,7 +279,6 @@ export interface ChartConfigValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfig: ChartConfig[];
-    visualPropEditorDefinition: VisualPropEditorDefinition | undefined;
 }
 
 /**
