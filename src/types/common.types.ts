@@ -146,8 +146,8 @@ export interface ChartModel {
 export type ValidationResponse = {
     isValid: boolean;
     validationErrorMessage?: string[];
-    chartConfigEditorDefinition?: ChartConfigEditorDefinition[],
-    visualPropEditorDefinition?: VisualPropEditorDefinition,
+    chartConfigEditorDefinition?: ChartConfigEditorDefinition[];
+    visualPropEditorDefinition?: VisualPropEditorDefinition;
 };
 
 /**
