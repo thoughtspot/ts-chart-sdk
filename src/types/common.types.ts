@@ -200,3 +200,8 @@ export interface AppConfig {
      */
     customCalendarConfig?: any; // this is to initialize custom calendar service
 }
+
+export type CustomChartUpdatedState = {
+    updatedChartConfig?: ChartConfig[];
+    updatedVisualProps?: VisualProps;
+};
