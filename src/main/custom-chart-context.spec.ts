@@ -185,6 +185,7 @@ describe('CustomChartContext', () => {
         });
 
         test('TSToChartEvent.ChartConfigValidate validation response testing', () => {
+            // Define initial context with object definitions
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
@@ -194,6 +195,7 @@ describe('CustomChartContext', () => {
             });
 
             const mockPostMessage = jest.fn();
+            // Trigger event processor with initial context
             eventProcessor({
                 data: {
                     payload: mockInitializeContextPayload,
@@ -202,7 +204,7 @@ describe('CustomChartContext', () => {
                 },
                 ports: [{ postMessage: mockPostMessage }],
             });
-            // Check that the response was received
+            // Verify response with object definitions
             expect(mockPostMessage).toHaveBeenCalledWith({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
@@ -210,7 +212,7 @@ describe('CustomChartContext', () => {
             });
             mockPostMessage.mockReset();
 
-            // User should be able to define visualPropEditorDefinition and chartConfigEditorDefinition as functions
+            // Redefine context with function-returned definitions
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
@@ -227,6 +229,7 @@ describe('CustomChartContext', () => {
                     ];
                 },
             });
+            // Trigger event processor with updated context
             eventProcessor({
                 data: {
                     payload: mockInitializeContextPayload,
@@ -235,6 +238,7 @@ describe('CustomChartContext', () => {
                 },
                 ports: [{ postMessage: mockPostMessage }],
             });
+            // Verify response with function-returned definitions
             expect(mockPostMessage).toHaveBeenCalledWith({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
@@ -248,6 +252,7 @@ describe('CustomChartContext', () => {
         });
 
         test('TSToChartEvent.validateVisualProps validation response testing', () => {
+            // Define initial context with object definitions
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
@@ -257,6 +262,7 @@ describe('CustomChartContext', () => {
             });
 
             const mockPostMessage = jest.fn();
+            // Trigger event processor with initial context
             eventProcessor({
                 data: {
                     payload: mockInitializeContextPayload,
@@ -265,14 +271,14 @@ describe('CustomChartContext', () => {
                 },
                 ports: [{ postMessage: mockPostMessage }],
             });
-            // Check that the response was received
+            // Verify response with object definitions
             expect(mockPostMessage).toHaveBeenCalledWith({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [],
             });
             mockPostMessage.mockReset();
-            // User should be able to define visualPropEditorDefinition and chartConfigEditorDefinition as functions
+            // Redefine context with function-returned definitions
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
@@ -289,6 +295,7 @@ describe('CustomChartContext', () => {
                     ];
                 },
             });
+            // Trigger event processor with updated context
             eventProcessor({
                 data: {
                     payload: mockInitializeContextPayload,
@@ -297,6 +304,7 @@ describe('CustomChartContext', () => {
                 },
                 ports: [{ postMessage: mockPostMessage }],
             });
+            // Verify response with function-returned definitions
             expect(mockPostMessage).toHaveBeenCalledWith({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
