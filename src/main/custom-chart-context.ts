@@ -113,7 +113,7 @@ export type CustomChartContextProps = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    chartConfigEditorDefinition:
+    chartConfigEditorDefinition?:
         | ConfigEditorDefinitionSetter
         | ChartConfigEditorDefinition[];
 
@@ -126,7 +126,7 @@ export type CustomChartContextProps = {
      * @returns {@link VisualPropEditorDefinition}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    visualPropEditorDefinition:
+    visualPropEditorDefinition?:
         | VisualEditorDefinitionSetter
         | VisualPropEditorDefinition;
 };
@@ -378,7 +378,7 @@ export class CustomChartContext {
     public getChartConfigEditorDefinition = ({
         updatedChartConfig,
         updatedVisualProps,
-    }: CustomChartUpdatedState): ChartConfigEditorDefinition[] => {
+    }: CustomChartUpdatedState) => {
         if (_.isFunction(this.chartContextProps.chartConfigEditorDefinition)) {
             return this.chartContextProps.chartConfigEditorDefinition(
                 {
@@ -400,7 +400,7 @@ export class CustomChartContext {
     public getVisualPropEditorDefinition = ({
         updatedChartConfig,
         updatedVisualProps,
-    }: CustomChartUpdatedState): VisualPropEditorDefinition => {
+    }: CustomChartUpdatedState) => {
         if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
             return this.chartContextProps.visualPropEditorDefinition(
                 {
