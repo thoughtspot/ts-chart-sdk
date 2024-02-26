@@ -387,10 +387,10 @@ export class CustomChartContext {
                 },
                 this,
             );
-        } else {
-            return this.chartContextProps.chartConfigEditorDefinition;
         }
+        return this.chartContextProps.chartConfigEditorDefinition;
     };
+
     /**
      * Funtions returns the visual prop editor definition
      * @param {ChartConfig[]} updatedChartConfig
@@ -409,9 +409,8 @@ export class CustomChartContext {
                 },
                 this,
             );
-        } else {
-            return this.chartContextProps.visualPropEditorDefinition;
         }
+        return this.chartContextProps.visualPropEditorDefinition;
     };
 
     /**
