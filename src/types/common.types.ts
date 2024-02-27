@@ -146,7 +146,7 @@ export interface ChartModel {
 export type SuccessValidationResponse = {
     chartConfigEditorDefinition: ChartConfigEditorDefinition[];
     visualPropEditorDefinition: VisualPropEditorDefinition;
-}
+};
 
 // Generic Validation Response
 export type ValidationResponse = {

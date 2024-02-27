@@ -583,7 +583,9 @@ export class CustomChartContext {
             TSToChartEvent.VisualPropsValidate,
             (
                 payload: VisualPropsValidateEventPayload,
-            ): (ValidationResponse & SuccessValidationResponse) | ValidationResponse => {
+            ):
+                | (ValidationResponse & SuccessValidationResponse)
+                | ValidationResponse => {
                 if (this.chartContextProps.validateVisualProps) {
                     const validationResponse =
                         this.chartContextProps.validateVisualProps(
@@ -622,7 +624,9 @@ export class CustomChartContext {
             TSToChartEvent.ChartConfigValidate,
             (
                 payload: ChartConfigValidateEventPayload,
-            ): (ValidationResponse & SuccessValidationResponse) | ValidationResponse => {
+            ):
+                | (ValidationResponse & SuccessValidationResponse)
+                | ValidationResponse => {
                 if (this.chartContextProps.validateConfig) {
                     const validationResponse =
                         this.chartContextProps.validateConfig(
