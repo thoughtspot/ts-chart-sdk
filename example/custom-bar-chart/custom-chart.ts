@@ -24,7 +24,7 @@ import {
 } from '@thoughtspot/ts-chart-sdk';
 import {
     ChartConfigEditorDefinition,
-    CustomChartEditorDefinitionProps,
+    CustomChartCurrentState,
 } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
 import { toDimension } from 'chart.js/dist/helpers/helpers.core';
@@ -321,15 +321,15 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
         },
         renderChart: ctx => renderChart(ctx),
         chartConfigEditorDefinition: (
-            configInfo: CustomChartEditorDefinitionProps,
+            currentChartConfig: CustomChartCurrentState,
+            ctx: CustomChartContext,
         ): ChartConfigEditorDefinition[] => {
             const {
-                chartModel,
-                updatedChartConfig,
-                updatedVisualProps,
-            } = configInfo;
+                chartConfig,
+                visualProps,
+            } = currentChartConfig;
 
-            const yColumns = updatedChartConfig?.[0]?.dimensions.find(
+            const yColumns = chartConfig?.[0]?.dimensions.find(
                 dimension => dimension.key === 'y' && dimension.columns,
             );
 
@@ -373,13 +373,13 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             return config;
         },
         visualPropEditorDefinition: (
-            visualInfo: CustomChartEditorDefinitionProps,
+            currentVisualProps: CustomChartCurrentState,
+            ctx: CustomChartContext
         ): VisualPropEditorDefinition => {
             const {
-                chartModel,
-                updatedVisualProps,
-                updatedChartConfig,
-            } = visualInfo;
+                chartConfig,
+                visualProps,
+            } = currentVisualProps;
             const elements = [
                 {
                     key: 'color',
@@ -402,8 +402,8 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     ],
                 },
             ];
-            if (updatedVisualProps?.length !== 0) {
-                if (updatedVisualProps?.accordion?.datalabels) {
+            if (visualProps?.length !== 0) {
+                if (visualProps?.accordion?.datalabels) {
                     elements[1].children?.push({
                         key: 'Color2',
                         type: 'radio',
@@ -413,7 +413,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     });
                 }
             } else {
-                if (chartModel?.visualProps?.accordion?.datalabels) {
+                if (ctx?.chartModel?.visualProps?.accordion?.datalabels) {
                     elements[1].children?.push({
                         key: 'Color2',
                         type: 'radio',

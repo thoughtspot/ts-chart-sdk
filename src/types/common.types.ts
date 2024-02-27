@@ -142,12 +142,16 @@ export interface ChartModel {
     };
 }
 
+// Validation Response for valid config or visual props
+export type SuccessValidationResponse = {
+    chartConfigEditorDefinition: ChartConfigEditorDefinition[];
+    visualPropEditorDefinition: VisualPropEditorDefinition;
+}
+
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
     validationErrorMessage?: string[];
-    chartConfigEditorDefinition?: ChartConfigEditorDefinition[];
-    visualPropEditorDefinition?: VisualPropEditorDefinition;
 };
 
 /**
@@ -201,7 +205,7 @@ export interface AppConfig {
     customCalendarConfig?: any; // this is to initialize custom calendar service
 }
 
-export type CustomChartUpdatedState = {
-    updatedChartConfig?: ChartConfig[];
-    updatedVisualProps?: VisualProps;
+export type CustomChartCurrentState = {
+    chartConfig?: ChartConfig[];
+    visualProps?: VisualProps;
 };

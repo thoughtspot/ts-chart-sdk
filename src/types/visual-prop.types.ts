@@ -9,7 +9,7 @@
  */
 
 import { CustomChartContext } from '../main/custom-chart-context';
-import { CustomChartUpdatedState } from './common.types';
+import { CustomChartCurrentState } from './common.types';
 /**
  * Configuration for input validation rules
  */
@@ -376,7 +376,7 @@ export interface VisualPropEditorDefinition {
 }
 
 export type VisualEditorDefinitionSetter = (
-    updatedState: CustomChartUpdatedState,
+    currentState: CustomChartCurrentState,
     ctx: CustomChartContext,
 ) => VisualPropEditorDefinition;
 

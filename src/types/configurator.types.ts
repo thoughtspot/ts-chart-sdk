@@ -15,7 +15,7 @@
  */
 
 import { CustomChartContext } from '../main/custom-chart-context';
-import { CustomChartUpdatedState } from './common.types';
+import { CustomChartCurrentState } from './common.types';
 /**
  *
  * @group Chart Configuration Editor
@@ -104,6 +104,6 @@ export interface ChartConfigEditorDefinition {
 }
 
 export type ConfigEditorDefinitionSetter = (
-    updatedState: CustomChartUpdatedState,
+    currentState: CustomChartCurrentState,
     ctx: CustomChartContext,
 ) => ChartConfigEditorDefinition[];
