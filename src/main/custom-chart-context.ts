@@ -375,7 +375,7 @@ export class CustomChartContext {
      * @param {VisualProps}
      * @returns {ChartConfigEditorDefinition[]}
      */
-    public getChartConfigEditorDefinition = (
+    private getChartConfigEditorDefinition = (
         currentState: Partial<ChartModel> = {},
     ) => {
         if (_.isFunction(this.chartContextProps.chartConfigEditorDefinition)) {
@@ -396,7 +396,7 @@ export class CustomChartContext {
      * @param {VisualProps}
      * @returns {VisualPropEditorDefinition}
      */
-    public getVisualPropEditorDefinition = (
+    private getVisualPropEditorDefinition = (
         currentState: Partial<ChartModel> = {},
     ) => {
         if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
