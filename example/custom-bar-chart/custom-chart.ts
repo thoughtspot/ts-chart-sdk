@@ -22,10 +22,7 @@ import {
     Query,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
-import {
-    ChartConfigEditorDefinition,
-    CustomChartCurrentState,
-} from '@thoughtspot/ts-chart-sdk/src';
+import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
 import { toDimension } from 'chart.js/dist/helpers/helpers.core';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -43,7 +40,7 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
-const numberFormatter = value => {
+const numberFormatter = (value) => {
     if (value > 1000000000) {
         return (value / 1000000000).toFixed(2) + 'B';
     }
@@ -57,8 +54,8 @@ const numberFormatter = value => {
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
-    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
-    return _.map(dataArr.dataValue, row => row[idx]);
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 
 function getColumnDataModel(
@@ -276,12 +273,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.MEASURE,
+                (col) => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.ATTRIBUTE,
+                (col) => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -319,21 +316,18 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: ctx => renderChart(ctx),
+        renderChart: (ctx) => renderChart(ctx),
         chartConfigEditorDefinition: (
-            currentChartConfig: CustomChartCurrentState,
+            currentChartConfig: ChartModel,
             ctx: CustomChartContext,
         ): ChartConfigEditorDefinition[] => {
-            const {
-                chartConfig,
-                visualProps,
-            } = currentChartConfig;
+            const { config, visualProps } = currentChartConfig;
 
-            const yColumns = chartConfig?.[0]?.dimensions.find(
-                dimension => dimension.key === 'y' && dimension.columns,
+            const yColumns = config?.chartConfig?.[0]?.dimensions.find(
+                (dimension) => dimension.key === 'y' && dimension.columns,
             );
 
-            const config = [
+            const configDefinition = [
                 {
                     key: 'column',
                     label: 'Custom Column',
@@ -361,7 +355,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             ];
             if (yColumns?.columns.length) {
                 for (let i = 0; i < yColumns.columns.length; i++) {
-                    config[0].columnSections.push({
+                    configDefinition[0].columnSections.push({
                         key: `layers${i}`,
                         label: `Measures layer${i}`,
                         allowAttributeColumns: false,
@@ -370,16 +364,13 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     });
                 }
             }
-            return config;
+            return configDefinition;
         },
         visualPropEditorDefinition: (
-            currentVisualProps: CustomChartCurrentState,
-            ctx: CustomChartContext
+            currentVisualProps: ChartModel,
+            ctx: CustomChartContext,
         ): VisualPropEditorDefinition => {
-            const {
-                chartConfig,
-                visualProps,
-            } = currentVisualProps;
+            const { config, visualProps } = currentVisualProps;
             const elements = [
                 {
                     key: 'color',
@@ -413,7 +404,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     });
                 }
             } else {
-                if (ctx?.chartModel?.visualProps?.accordion?.datalabels) {
+                if (visualProps?.accordion?.datalabels) {
                     elements[1].children?.push({
                         key: 'Color2',
                         type: 'radio',
