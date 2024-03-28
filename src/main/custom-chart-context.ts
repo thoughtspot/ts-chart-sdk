@@ -21,10 +21,14 @@ import {
     AppConfig,
     ChartConfig,
     ChartModel,
+    SuccessValidationResponse,
     ValidationResponse,
     VisualProps,
 } from '../types/common.types';
-import { ChartConfigEditorDefinition } from '../types/configurator.types';
+import {
+    ChartConfigEditorDefinition,
+    ConfigEditorDefinitionSetter,
+} from '../types/configurator.types';
 import {
     AxisMenuCustomActionPayload,
     ChartConfigValidateEventPayload,
@@ -42,7 +46,10 @@ import {
     VisualPropsUpdateEventPayload,
     VisualPropsValidateEventPayload,
 } from '../types/ts-to-chart-event.types';
-import { VisualPropEditorDefinition } from '../types/visual-prop.types';
+import {
+    VisualEditorDefinitionSetter,
+    VisualPropEditorDefinition,
+} from '../types/visual-prop.types';
 import * as PostMessageEventBridge from './post-message-event-bridge';
 
 let isInitialized = false;
@@ -106,7 +113,9 @@ export type CustomChartContextProps = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    chartConfigEditorDefinition?: ChartConfigEditorDefinition[];
+    chartConfigEditorDefinition?:
+        | ConfigEditorDefinitionSetter
+        | ChartConfigEditorDefinition[];
 
     /**
      * Definition to help edit/customize the visual properties from chart settings editor
@@ -117,7 +126,9 @@ export type CustomChartContextProps = {
      * @returns {@link VisualPropEditorDefinition}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    visualPropEditorDefinition?: VisualPropEditorDefinition;
+    visualPropEditorDefinition?:
+        | VisualEditorDefinitionSetter
+        | VisualPropEditorDefinition;
 };
 
 /**
@@ -359,6 +370,48 @@ export class CustomChartContext {
     }
 
     /**
+     * Funtions return the chart config editor definition
+     * @param {ChartConfig[]} currentChartConfig
+     * @param {VisualProps}
+     * @returns {ChartConfigEditorDefinition[]}
+     */
+    private getChartConfigEditorDefinition = (
+        currentState: Partial<ChartModel> = {},
+    ) => {
+        if (_.isFunction(this.chartContextProps.chartConfigEditorDefinition)) {
+            return this.chartContextProps.chartConfigEditorDefinition(
+                {
+                    ...this.chartModel,
+                    ...currentState,
+                },
+                this,
+            );
+        }
+        return this.chartContextProps.chartConfigEditorDefinition;
+    };
+
+    /**
+     * Funtions returns the visual prop editor definition
+     * @param {ChartConfig[]} currentChartConfig
+     * @param {VisualProps}
+     * @returns {VisualPropEditorDefinition}
+     */
+    private getVisualPropEditorDefinition = (
+        currentState: Partial<ChartModel> = {},
+    ) => {
+        if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
+            return this.chartContextProps.visualPropEditorDefinition(
+                {
+                    ...this.chartModel,
+                    ...currentState,
+                },
+                this,
+            );
+        }
+        return this.chartContextProps.visualPropEditorDefinition;
+    };
+
+    /**
      * Function to store the axis menu custom action callback mapped with action id
      * @param  {[OpenAxisMenuEventPayload]} eventPayload Event payload bound
      *          to the type of the event
@@ -525,13 +578,36 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.VisualPropsValidate,
-            (payload: VisualPropsValidateEventPayload): ValidationResponse => {
+            (
+                payload: VisualPropsValidateEventPayload,
+            ):
+                | (ValidationResponse & SuccessValidationResponse)
+                | ValidationResponse => {
                 if (this.chartContextProps.validateVisualProps) {
                     const validationResponse =
                         this.chartContextProps.validateVisualProps(
                             payload.visualProps,
                             this.chartModel,
                         );
+                    if (validationResponse.isValid) {
+                        const currentVisualState = {
+                            visualProps: payload.visualProps,
+                        };
+                        const visualPropEditorDefinition =
+                            this.getVisualPropEditorDefinition(
+                                currentVisualState,
+                            );
+                        const chartConfigEditorDefinition =
+                            this.getChartConfigEditorDefinition(
+                                currentVisualState,
+                            );
+
+                        return {
+                            ...validationResponse,
+                            visualPropEditorDefinition,
+                            chartConfigEditorDefinition,
+                        };
+                    }
                     return validationResponse;
                 }
                 // this will never be true
@@ -546,13 +622,39 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.ChartConfigValidate,
-            (payload: ChartConfigValidateEventPayload): ValidationResponse => {
+            (
+                payload: ChartConfigValidateEventPayload,
+            ):
+                | (ValidationResponse & SuccessValidationResponse)
+                | ValidationResponse => {
                 if (this.chartContextProps.validateConfig) {
                     const validationResponse =
                         this.chartContextProps.validateConfig(
                             payload.chartConfig,
                             this.chartModel,
                         );
+                    if (validationResponse.isValid) {
+                        const currentConfigState = {
+                            config: {
+                                ...this.chartModel.config,
+                                chartConfig: payload.chartConfig,
+                            },
+                        };
+                        const chartConfigEditorDefinition =
+                            this.getChartConfigEditorDefinition(
+                                currentConfigState,
+                            );
+
+                        const visualPropEditorDefinition =
+                            this.getVisualPropEditorDefinition(
+                                currentConfigState,
+                            );
+                        return {
+                            ...validationResponse,
+                            visualPropEditorDefinition,
+                            chartConfigEditorDefinition,
+                        };
+                    }
                     return validationResponse;
                 }
                 // this will never be true
@@ -780,9 +882,9 @@ export class CustomChartContext {
                 isConfigValid: isValid,
                 defaultChartConfig,
                 chartConfigEditorDefinition:
-                    this.chartContextProps.chartConfigEditorDefinition,
+                    this.getChartConfigEditorDefinition(),
                 visualPropEditorDefinition:
-                    this.chartContextProps.visualPropEditorDefinition,
+                    this.getVisualPropEditorDefinition(),
             };
         };
 
