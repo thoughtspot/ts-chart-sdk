@@ -1,3 +1,4 @@
+import { AllowedConfigurations } from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
 import { Point } from './chart-to-ts-event.types';
 import {
@@ -191,6 +192,8 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
+    // Whether user wants thoughtspot default number and conditional formatting
+    allowedConfigurations?: AllowedConfigurations,
 }
 
 /**
