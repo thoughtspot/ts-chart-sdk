@@ -370,7 +370,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             currentVisualProps: ChartModel,
             ctx: CustomChartContext,
         ): VisualPropEditorDefinition => {
-            const { config, visualProps } = currentVisualProps;
+            const { visualProps } = currentVisualProps;
             const elements = [
                 {
                     key: 'color',
@@ -403,18 +403,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                         label: 'Color2',
                     });
                 }
-            } else {
-                if (visualProps?.accordion?.datalabels) {
-                    elements[1].children?.push({
-                        key: 'Color2',
-                        type: 'radio',
-                        defaultValue: 'blue',
-                        values: ['blue', 'white', 'red'],
-                        label: 'Color2',
-                    });
-                }
             }
-
             return { elements };
         },
     });
