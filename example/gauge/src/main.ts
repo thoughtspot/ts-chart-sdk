@@ -159,7 +159,7 @@ const render = (ctx: CustomChartContext) => {
     }
 
     const gaugeColor =
-        ((vizProps as any)['guage-color'] as string) ?? DEFAULT_COLOR;
+        ((vizProps as any)['gauge-color'] as string) ?? DEFAULT_COLOR;
 
     const plotBands = _.map(vizProps?.bands ?? [], (band) => ({
         from: band.start,
@@ -361,7 +361,7 @@ const init = async () => {
         chartConfigEditorDefinition: [
             {
                 key: 'gauge',
-                label: 'Guage',
+                label: 'Gauge',
                 columnSections: [
                     {
                         key: 'value',
@@ -492,8 +492,8 @@ const init = async () => {
                     label: 'Target value',
                 },
                 {
-                    key: 'guage-color',
-                    label: 'Guage color',
+                    key: 'gauge-color',
+                    label: 'Gauge color',
                     type: 'colorpicker',
                     defaultValue: DEFAULT_COLOR,
                 },
