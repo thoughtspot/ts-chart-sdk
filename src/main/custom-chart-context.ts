@@ -63,7 +63,10 @@ export type CustomChartContextProps = {
      * @returns {@link Array<Query>}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    getQueriesFromChartConfig: (chartConfig: ChartConfig[]) => Query[];
+    getQueriesFromChartConfig: (
+        chartConfig: ChartConfig[],
+        chartModel: ChartModel,
+    ) => Query[];
     /**
      * Main Render function that will render the chart based on the chart context provided
      *
@@ -570,6 +573,7 @@ export class CustomChartContext {
                 const queries =
                     this.chartContextProps.getQueriesFromChartConfig(
                         payload.config,
+                        this.chartModel,
                     );
                 return {
                     queries,
