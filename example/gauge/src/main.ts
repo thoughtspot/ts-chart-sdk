@@ -196,7 +196,7 @@ const render = (ctx: CustomChartContext) => {
             tickWidth: 0,
             minorTickInterval: null,
             labels: {
-                distance: 20,
+                distance: 30,
                 style: {
                     fontSize: '14px',
                 },
