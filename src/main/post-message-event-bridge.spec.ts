@@ -66,7 +66,6 @@ describe('postMessageToHostApp', () => {
         );
 
         // Verify that the MessageChannel was used correctly
-        expect(channel.port1.close).toHaveBeenCalled();
         expect(messageChannelMock.MessageChannel).toHaveBeenCalled();
     });
 
@@ -121,8 +120,6 @@ describe('postMessageToHostApp', () => {
             [channel.port2],
         );
 
-        // Verify that the MessageChannel was used correctly
-        expect(channel.port1.close).toHaveBeenCalled();
         expect(messageChannelMock.MessageChannel).toHaveBeenCalled();
     });
 

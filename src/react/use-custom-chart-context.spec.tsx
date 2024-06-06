@@ -8,8 +8,6 @@ import { TSToChartEvent } from '../types/ts-to-chart-event.types';
 import { contextChartProps } from './mocks/custom-chart-context-mock';
 import { useChartContext } from './use-custom-chart-context';
 
-jest.mock('../main/post-message-event-bridge');
-
 describe('useChartContext initialization', () => {
     let eventProcessor: any;
     let mockInitMessage;
@@ -26,6 +24,7 @@ describe('useChartContext initialization', () => {
         );
         mockInitMessage.mockImplementation((fn: any) => {
             eventProcessor = fn;
+            return () => null;
         });
 
         mockPostMessageToHost.mockImplementation(() => {
@@ -35,6 +34,7 @@ describe('useChartContext initialization', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        PostMessageEventBridge.globalThis.isInitialized = false;
     });
 
     test('should initialize the context only after intialize completes', async () => {
@@ -47,32 +47,24 @@ describe('useChartContext initialization', () => {
         expect(result.current.hasInitialized).toBe(false);
         expect(result.current.chartModel).toBeUndefined();
         const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: {
-                    componentId: 'COMPONENT_ID',
-                    hostUrl: 'https://some.chart.app',
-                    chartModel: mockedChartModel,
-                },
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
             },
-            ports: [{ postMessage: mockPostMessage }],
+            eventType: TSToChartEvent.Initialize,
+        });
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.InitializeComplete,
+            source: 'ts-host-app',
         });
 
-        eventProcessor({
-            data: {
-                payload: {},
-                eventType: TSToChartEvent.InitializeComplete,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
-        });
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(true);
             expect(result.current.chartModel).toEqual(mockedChartModel);
         });
-        result.current?.destroy();
     });
 
     test('should make sure hasInitialized to remain false when context initialization failed', async () => {
@@ -117,6 +109,7 @@ describe('useChartContext emit', () => {
         );
         mockInitMessage.mockImplementation((fn: any) => {
             eventProcessor = fn;
+            return () => null;
         });
 
         mockPostMessageToHost.mockImplementation(() => {
@@ -126,6 +119,7 @@ describe('useChartContext emit', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        PostMessageEventBridge.globalThis.isInitialized = false;
     });
 
     test('should trigger the emitter correctly when context is initialized', async () => {
@@ -134,23 +128,17 @@ describe('useChartContext emit', () => {
             useChartContext(contextChartProps),
         );
         const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: mockInitializeContextPayload,
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        await eventProcessor({
+            payload: mockInitializeContextPayload,
+            eventType: TSToChartEvent.Initialize,
         });
 
-        eventProcessor({
-            data: {
-                payload: {},
-                eventType: TSToChartEvent.InitializeComplete,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.InitializeComplete,
+            source: 'ts-host-app',
         });
+
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(true);
         });
@@ -174,14 +162,12 @@ describe('useChartContext emit', () => {
             useChartContext(contextChartProps),
         );
         const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: mockInitializeContextPayload,
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        await eventProcessor({
+            payload: mockInitializeContextPayload,
+            eventType: TSToChartEvent.Initialize,
+            source: 'ts-host-app',
         });
+
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(false);
         });
@@ -207,6 +193,7 @@ describe('useChartContext setOn listeners', () => {
         );
         mockInitMessage.mockImplementation((fn: any) => {
             eventProcessor = fn;
+            return () => null;
         });
 
         mockPostMessageToHost.mockImplementation(() => {
@@ -216,6 +203,7 @@ describe('useChartContext setOn listeners', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        PostMessageEventBridge.globalThis.isInitialized = false;
     });
 
     test('should trigger the setOnEvent correctly when context is initialized', async () => {
@@ -227,63 +215,49 @@ describe('useChartContext setOn listeners', () => {
         // Assert that the context is not initialized initially
         expect(result.current.hasInitialized).toBe(false);
         expect(result.current.chartModel).toBeUndefined();
-        const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: {
-                    componentId: 'COMPONENT_ID',
-                    hostUrl: 'https://some.chart.app',
-                    chartModel: mockedChartModel,
-                },
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
             },
-            ports: [{ postMessage: mockPostMessage }],
+            eventType: TSToChartEvent.Initialize,
         });
 
-        eventProcessor({
-            data: {
-                payload: {},
-                eventType: TSToChartEvent.InitializeComplete,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.InitializeComplete,
+            source: 'ts-host-app',
         });
+
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(true);
             expect(result.current.chartModel).toEqual(mockedChartModel);
         });
 
-        eventProcessor({
-            data: {
-                payload: { chartModel: {} },
-                eventType: TSToChartEvent.ChartModelUpdate,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        const resp = await eventProcessor({
+            payload: { chartModel: {} },
+            eventType: TSToChartEvent.ChartModelUpdate,
+            source: 'ts-host-app',
         });
+
         await waitFor(() => {
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(resp).toEqual({
                 triggerRenderChart: true,
             });
             expect(result.current.chartModel).toEqual({});
         });
 
-        eventProcessor({
-            data: {
-                payload: { visualProps: { color: 'red' } },
-                eventType: TSToChartEvent.VisualPropsUpdate,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        const propsUpdateResp = await eventProcessor({
+            payload: { visualProps: { color: 'red' } },
+            eventType: TSToChartEvent.VisualPropsUpdate,
+            source: 'ts-host-app',
         });
-        expect(mockPostMessage).toHaveBeenCalledWith({
+
+        expect(propsUpdateResp).toEqual({
             triggerRenderChart: true,
         });
         await waitFor(() => {
-            expect(mockPostMessage).toHaveBeenCalledWith({
-                triggerRenderChart: true,
-            });
             expect(result.current.chartModel?.visualProps).toEqual({
                 color: 'red',
             });
@@ -297,14 +271,12 @@ describe('useChartContext setOn listeners', () => {
             useChartContext(contextChartProps),
         );
         const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: mockInitializeContextPayload,
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        await eventProcessor({
+            payload: mockInitializeContextPayload,
+            eventType: TSToChartEvent.Initialize,
+            source: 'ts-host-app',
         });
+
         await waitFor(() => {
             expect(result.current.hasInitialized).toBe(false);
         });
@@ -333,6 +305,7 @@ describe('useChartContext on React Wrapper component', () => {
         );
         mockInitMessage.mockImplementation((fn: any) => {
             eventProcessor = fn;
+            return () => null;
         });
 
         mockPostMessageToHost.mockImplementation(() => {
@@ -342,6 +315,7 @@ describe('useChartContext on React Wrapper component', () => {
     afterEach(() => {
         // Clear mock implementations after each test
         jest.clearAllMocks();
+        PostMessageEventBridge.globalThis.isInitialized = false;
     });
     test('TSChartContext renders children and should not increase counter for useEffect on chartModel if visualProps is updated', async () => {
         const CustomChartComponent = () => {
@@ -364,18 +338,15 @@ describe('useChartContext on React Wrapper component', () => {
         const { getByTestId, rerender } = render(<CustomChartComponent />);
 
         const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: {
-                    componentId: 'COMPONENT_ID',
-                    hostUrl: 'https://some.chart.app',
-                    chartModel: mockedChartModel,
-                },
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
             },
-            ports: [{ postMessage: mockPostMessage }],
+            eventType: TSToChartEvent.Initialize,
         });
+
         rerender(<CustomChartComponent />);
 
         // Check if the child element is rendered
@@ -385,13 +356,10 @@ describe('useChartContext on React Wrapper component', () => {
             );
         });
 
-        eventProcessor({
-            data: {
-                payload: { visualProps: { color: 'red' } },
-                eventType: TSToChartEvent.VisualPropsUpdate,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+        await eventProcessor({
+            payload: { visualProps: { color: 'red' } },
+            eventType: TSToChartEvent.VisualPropsUpdate,
+            source: 'ts-host-app',
         });
 
         // Re-render the component with a new key
@@ -432,26 +400,22 @@ describe('useChartContext on React Wrapper component', () => {
 
         // Re-render the component with a new key
         const mockPostMessage = jest.fn();
-        eventProcessor({
-            data: {
-                payload: {
-                    componentId: 'COMPONENT_ID',
-                    hostUrl: 'https://some.chart.app',
-                    chartModel: mockedChartModel,
-                },
-                eventType: TSToChartEvent.Initialize,
-                source: 'ts-host-app',
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
             },
-            ports: [{ postMessage: mockPostMessage }],
+            eventType: TSToChartEvent.Initialize,
+            source: 'ts-host-app',
         });
-        eventProcessor({
-            data: {
-                payload: { visualProps: { color: 'red' } },
-                eventType: TSToChartEvent.VisualPropsUpdate,
-                source: 'ts-host-app',
-            },
-            ports: [{ postMessage: mockPostMessage }],
+
+        await eventProcessor({
+            payload: { visualProps: { color: 'red' } },
+            eventType: TSToChartEvent.VisualPropsUpdate,
+            source: 'ts-host-app',
         });
+
         rerender(<CustomChartComponent />);
         // Check if the child element is still in the document after re-render
         const updatedChildElement = getByTestId('child-element');
