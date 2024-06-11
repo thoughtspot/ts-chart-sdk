@@ -48,8 +48,8 @@ import * as PostMessageEventBridge from './post-message-event-bridge';
 let isInitialized = false;
 
 export type AllowedConfigurations = {
-    allowNumberFormatting: Boolean;
-    conditionalFormatting: Boolean;
+    allowColumnNumberFormatting: boolean;
+    allowColumnConditionalFormatting: boolean;
 };
 
 export type CustomChartContextProps = {
@@ -139,8 +139,8 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
     allowedConfigurations: {
-        allowNumberFormatting: false,
-        conditionalFormatting: false,
+        allowColumnNumberFormatting: false,
+        allowColumnConditionalFormatting: false,
     },
 };
 

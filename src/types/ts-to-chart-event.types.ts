@@ -192,8 +192,12 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
-    // Whether user wants thoughtspot default number and conditional formatting
-    allowedConfigurations?: AllowedConfigurations,
+    /**
+     * Toggle native configurations supported by TS UI. Ex: column level number and conditional formatting.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowedConfigurations?: AllowedConfigurations;
 }
 
 /**
