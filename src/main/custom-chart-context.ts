@@ -47,6 +47,11 @@ import * as PostMessageEventBridge from './post-message-event-bridge';
 
 let isInitialized = false;
 
+export type AllowedConfigurations = {
+    allowColumnNumberFormatting: boolean;
+    allowColumnConditionalFormatting: boolean;
+};
+
 export type CustomChartContextProps = {
     /**
      * Generate the default axis configuration for rendering the chart on first load.
@@ -121,6 +126,9 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
+
+    // Whether user wants thoughtspot default number and conditional formatting
+    allowedConfigurations?: AllowedConfigurations;
 };
 
 /**
@@ -130,6 +138,10 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
+    allowedConfigurations: {
+        allowColumnNumberFormatting: false,
+        allowColumnConditionalFormatting: false,
+    },
 };
 
 export class CustomChartContext {
@@ -787,6 +799,8 @@ export class CustomChartContext {
                     this.chartContextProps.chartConfigEditorDefinition,
                 visualPropEditorDefinition:
                     this.chartContextProps.visualPropEditorDefinition,
+                allowedConfigurations:
+                    this.chartContextProps.allowedConfigurations,
             };
         };
 

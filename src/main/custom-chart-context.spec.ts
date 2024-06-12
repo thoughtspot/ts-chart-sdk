@@ -112,6 +112,10 @@ describe('CustomChartContext', () => {
                 defaultChartConfig: undefined,
                 chartConfigEditorDefinition: undefined,
                 visualPropEditorDefinition: undefined,
+                allowedConfigurations: {
+                    allowColumnNumberFormatting: false,
+                    allowColumnConditionalFormatting: false,
+                },
             });
             expect(mockPostMessage).toHaveBeenCalled();
             expect(mockPostMessageToHost).not.toHaveBeenCalled();

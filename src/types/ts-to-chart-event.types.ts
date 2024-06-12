@@ -1,3 +1,4 @@
+import { AllowedConfigurations } from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
 import { Point } from './chart-to-ts-event.types';
 import {
@@ -191,6 +192,12 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
+    /**
+     * Toggle native configurations supported by TS UI. Ex: column level number and conditional formatting.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowedConfigurations?: AllowedConfigurations;
 }
 
 /**
