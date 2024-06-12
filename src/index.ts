@@ -6,3 +6,5 @@ export * from './types/chart-to-ts-event.types';
 export * from './types/ts-to-chart-event.types';
 export * from './main/custom-chart-context';
 export * from './react/use-custom-chart-context';
+export * from './types/conditional-formatting.types';
+export * from './formatting/conditional-formatting';
