@@ -32,23 +32,25 @@ const doValueBasedComparison = (
     lhsValue?: string | number | null,
     rhsValue?: string | number | null,
 ): boolean => {
-    if (
-        lhsValue == null ||
-        rhsValue == null ||
-        lhsValue === undefined ||
-        rhsValue === undefined
-    ) {
-        return false;
-    }
     switch (metric.operator) {
         case Operators.Is:
         case Operators.EqualTo:
-            return _.isEqual(_.toString(lhsValue), _.toString(rhsValue));
+            return (
+                !_.isNil(lhsValue) &&
+                !_.isNil(rhsValue) &&
+                (_.isEqual(lhsValue, rhsValue) ||
+                    _.isEqual(_.toString(lhsValue), _.toString(rhsValue)))
+            );
         case Operators.IsNot:
-        case Operators.NotEqualTo:
+        case Operators.NotEqualTo: {
+            if (_.isNil(lhsValue) || _.isNil(rhsValue))
+                return lhsValue !== rhsValue;
             return !_.isEqual(_.toString(lhsValue), _.toString(rhsValue));
+        }
+        case Operators.IsNull:
         case Operators.IsEmpty:
             return _.isNil(lhsValue);
+        case Operators.IsNotNull:
         case Operators.IsNotEmpty:
             return !_.isNil(lhsValue);
         case Operators.LessThan:
@@ -61,6 +63,7 @@ const doValueBasedComparison = (
             return _.toNumber(lhsValue) >= _.toNumber(rhsValue);
         case Operators.IsBetween:
             return (
+                lhsValue != null &&
                 +lhsValue >= (getMinRangeValue(metric) ?? -Infinity) &&
                 +lhsValue <= (getMaxRangeValues(metric) ?? Infinity)
             );
@@ -68,13 +71,13 @@ const doValueBasedComparison = (
             return (
                 lhsValue != null &&
                 rhsValue != null &&
-                _.includes(lhsValue as string, rhsValue.toString())
+                _.includes(_.toString(lhsValue) as string, rhsValue.toString())
             );
         case Operators.DoesNotContain:
             return (
                 lhsValue != null &&
                 rhsValue != null &&
-                !_.includes(lhsValue as string, rhsValue.toString())
+                !_.includes(_.toString(lhsValue) as string, rhsValue.toString())
             );
         case Operators.StartsWith:
             return (
@@ -105,17 +108,17 @@ const doValueBasedComparison = (
  * @param rhsColValue - The value of the right-hand side column, used in ColumnBased comparisons.
  * @returns Boolean indicating whether the condition is satisfied.
  */
+
 export const isConditionSatisfied = (
     metric: ConditionalMetric,
     parameters?: Parameter[],
-    lhsColValue?: string | number,
-    rhsColValue?: string | number,
+    lhsColValue?: string | number | null,
+    rhsColValue?: string | number | null,
 ): boolean => {
     let parameter = null;
     let parameterValue = null;
     switch (metric.comparisonType) {
         case ConditionalFormattingComparisonTypes.ValueBased:
-            // todo: lhsColValue is undefined?
             return doValueBasedComparison(metric, lhsColValue, metric.value);
 
         case ConditionalFormattingComparisonTypes.ParameterBased:
@@ -141,33 +144,42 @@ export const isConditionSatisfied = (
 };
 
 /**
+ * Validates if the conditional rule is applicable or not.
  *
- * @param conditionalMetric - conditional rule to be validated
- * @param allSeries - list of series in the chart
- * @param serieIndex - row number of cell
- * @param axis - comparison is done for x or y axis
- * @param dataRow - data point in series
- * @param inScopeParameters - list of parameters available for chart
- * @returns if the conditional rule is applicable or not
+ * @param conditionalMetric - The conditional rule to be validated.
+ * @param index - The index of the data point to evaluate.
+ * @param columnId - The ID of the column for which to validate the rule.
+ * @param dataAttr - The data points array containing the data for the chart.
+ * @param inScopeParameters - The list of parameters available for the chart.
+ * @returns Boolean indicating if the conditional rule is applicable or not.
  */
+
 export function validateCfCondition(
     conditionalMetric: ConditionalMetric,
     index: number,
+    columnId: string,
     dataAttr?: DataPointsArray,
     inScopeParameters?: Parameter[],
 ) {
     let lhsColumnValue;
     let rhsColumnValue;
+    if (dataAttr?.columns) {
+        const columnIdx = _.findIndex(
+            dataAttr.columns,
+            (colId) => colId === columnId,
+        );
+        lhsColumnValue = dataAttr?.dataValue[index][columnIdx];
+    }
     const lhsId = conditionalMetric.lhsColumnId;
     const rhsId = conditionalMetric.rhsColumnId;
-    if (lhsId !== null && dataAttr?.columns) {
+    if (lhsId && dataAttr?.columns) {
         const lhsIdx = _.findIndex(
             dataAttr.columns,
             (colId) => colId === lhsId,
         );
         lhsColumnValue = dataAttr?.dataValue[index][lhsIdx];
     }
-    if (rhsId !== null && dataAttr?.columns) {
+    if (rhsId && dataAttr?.columns) {
         const rhsIdx = _.findIndex(
             dataAttr.columns,
             (colId) => colId === rhsId,
@@ -187,44 +199,39 @@ export function validateCfCondition(
  * applicable rule.
  *
  * @param idx The index of the data point to evaluate.
+ * @param columnId - The ID of the column for which to validate the rule.
  * @param The array of data points against which the conditional formatting rules will be evaluated.
  * @param The conditional formattings applied on a column.
  * @returns The first ConditionalMetric that is applicable to the specified data point, or undefined if no rules are applicable.
  */
+
 export const applicableConditionalFormatting = (
     idx: number,
+    columnId: string,
     dataArr: DataPointsArray,
-    conditionalFormatting: ConditionalFormatting,
+    conditionalFormatting?: ConditionalFormatting,
 ): ConditionalMetric | null => {
     return (
         _.find(conditionalFormatting?.rows, (ConditionalMetric) => {
             return validateCfCondition(
                 ConditionalMetric as ConditionalMetric,
                 idx,
+                columnId,
                 dataArr,
             );
         }) || null
     );
 };
+
 /**
  * Retrieves all conditional formatting rules applied to a specified column.
  *
  * @param column The column for which to retrieve conditional formatting rules.
- * @param dataArr The array of data points, used to determine the relevant column index.
- * @param conditionalFormatting An array of conditional formatting configurations, each potentially applicable to the column.
  * @returns An array of ConditionalFormatting configurations applied to the specified column, or null if no configurations are applicable.
  */
+
 export function getCfForColumn(
     column: ChartColumn,
-    dataArr: DataPointsArray,
-    conditionalFormatting: ConditionalFormatting[],
-) {
-    if (conditionalFormatting === undefined) {
-        return null;
-    }
-    const idx = _.findIndex(
-        dataArr.columns,
-        (colId: any) => column.id === colId,
-    );
-    return conditionalFormatting[idx] || null;
+): ConditionalFormatting | undefined {
+    return column?.columnProperties?.conditionalFormatting || undefined;
 }
