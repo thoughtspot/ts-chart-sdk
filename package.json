@@ -6,14 +6,13 @@
     "main": "lib/index",
     "types": "lib/index",
     "files": [
-        "cjs/**",
         "dist/**",
         "lib/**",
         "src/**"
     ],
     "scripts": {
-        "build": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
-        "tsc": "tsc -p .; tsc -p . --module commonjs --outDir cjs",
+        "build": "tsc -p .",
+        "tsc": "tsc -p .",
         "test-sdk": "npx jest -c jest.config.sdk.js --runInBand",
         "test": "npm run test-sdk",
         "lint": "eslint 'src/**'",
