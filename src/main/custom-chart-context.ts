@@ -43,9 +43,11 @@ import {
     VisualPropsValidateEventPayload,
 } from '../types/ts-to-chart-event.types';
 import { VisualPropEditorDefinition } from '../types/visual-prop.types';
-import * as PostMessageEventBridge from './post-message-event-bridge';
-
-let isInitialized = false;
+import {
+    globalThis,
+    initMessageListener,
+    postMessageToHostApp,
+} from './post-message-event-bridge';
 
 export type AllowedConfigurations = {
     allowColumnNumberFormatting: boolean;
@@ -156,6 +158,8 @@ export class CustomChartContext {
      */
     private componentId = '';
 
+    private removeListener: () => void = _.noop;
+
     /**
      * host app url
      *
@@ -231,6 +235,8 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     private axisMenuActionHandler: AxisMenuActionHandler = {};
+
+    public containerEl: HTMLElement | null = null;
 
     /**
      * Constructor to only accept context props as payload
@@ -320,8 +326,8 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     public destroy() {
-        PostMessageEventBridge.destroyMessageListener(this.eventProcessor);
-        isInitialized = false;
+        this.removeListener();
+        globalThis.isInitialized = false;
     }
 
     /**
@@ -444,7 +450,7 @@ export class CustomChartContext {
         eventType: T,
         ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
-        if (!isInitialized) {
+        if (!globalThis.isInitialized) {
             console.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
@@ -454,7 +460,7 @@ export class CustomChartContext {
             eventType,
             eventPayload,
         );
-        return PostMessageEventBridge.postMessageToHostApp(
+        return postMessageToHostApp(
             this.componentId,
             this.hostUrl,
             processedPayload?.[0] ?? null,
@@ -467,13 +473,13 @@ export class CustomChartContext {
      * Process all the functions via the eventProcess callback
      */
     private registerEventProcessor = () => {
-        if (isInitialized) {
+        if (globalThis.isInitialized) {
             console.error(
                 'The context is already initialized. you cannot have multiple contexts',
             );
             throw new Error(ErrorType.MultipleContextsNotSupported);
         }
-        PostMessageEventBridge.initMessageListener(this.eventProcessor);
+        this.removeListener = initMessageListener(this.eventProcessor);
 
         this.registerEvents();
     };
@@ -483,29 +489,13 @@ export class CustomChartContext {
      *
      * @param event : Message Event Object
      */
-    private eventProcessor = (event: MessageEvent) => {
-        if (event.data.source !== 'ts-host-app') {
-            return;
-        }
+    private eventProcessor = (data: any) => {
+        console.log('Chart Context: message received:', data.eventType, data);
 
-        console.log(
-            'Chart Context: message received:',
-            event.data.eventType,
-            event.data,
-        );
-
-        const messageResponse = this.executeEventListenerCBs(event);
+        const messageResponse = this.executeEventListenerCBs(data);
 
         // respond back to parent to confirm/ack the receipt
-        if (!_.isNil(event.ports[0])) {
-            if (!_.isNil(messageResponse)) {
-                event.ports[0].postMessage({
-                    ...(messageResponse as any),
-                });
-            } else {
-                event.ports[0].postMessage({});
-            }
-        }
+        return messageResponse;
     };
 
     /**
@@ -759,13 +749,16 @@ export class CustomChartContext {
         this.hostUrl = payload.hostUrl;
         this.chartModel = payload.chartModel;
         this.appConfig = payload.appConfig ?? {};
+        this.containerEl = payload.containerElSelector
+            ? document.querySelector(payload.containerElSelector)
+            : null;
 
         return this.publishChartContextPropsToHost();
     };
 
     private initializationComplete = (): void => {
         // context is now initialized
-        isInitialized = true;
+        globalThis.isInitialized = true;
 
         // TODO: following can be done behind a promise
         this.triggerInitResolve();
@@ -810,12 +803,12 @@ export class CustomChartContext {
      * @param event : Message Event Object
      * @returns response to be sent back to the message sender (host)
      */
-    private executeEventListenerCBs = (event: MessageEvent): any => {
+    private executeEventListenerCBs = (data: any): any => {
         // do basic sanity
-        const payload = event.data.payload;
+        const payload = data.payload;
         let response;
-        if (_.isArray(this.eventListeners[event.data.eventType])) {
-            this.eventListeners[event.data.eventType].forEach((callback) => {
+        if (_.isArray(this.eventListeners[data.eventType])) {
+            this.eventListeners[data.eventType].forEach((callback) => {
                 // this is a problem today if we have multiple callbacks
                 // registered. only the last response will be sent back to the
                 // server
@@ -824,15 +817,15 @@ export class CustomChartContext {
         } else {
             response = {
                 hasError: true,
-                error: `Event type not recognised or processed: ${event.data.eventType}`,
+                error: `Event type not recognised or processed: ${data.eventType}`,
             };
         }
 
         console.log(
             'ChartContext: Response:',
-            event.data.eventType,
+            data.eventType,
             response,
-            this.eventListeners[event.data.eventType]?.length,
+            this.eventListeners[data.eventType]?.length,
         );
         return response;
     };

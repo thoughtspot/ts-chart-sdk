@@ -160,6 +160,13 @@ export interface InitializeEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     hostUrl: string;
+    /**
+     * The selector of the container element where the chart will be rendered. Used for internal
+     * charts, external custom charts mostly have their own DOM.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    containerElSelector: string;
 }
 
 /**

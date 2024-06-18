@@ -3,21 +3,18 @@ import type { UserConfig } from 'vite';
 const config: UserConfig = {
   plugins: [],
   optimizeDeps: {
-    exclude: [
-      'chart.js',
-    ],
+    exclude: ['chart.js'],
     esbuildOptions: {
       treeShaking: true,
     },
   },
   define: {
     __IS_MICROFRONTEND__: false,
-    "process.env": {},
-
+    'process.env': {},
   },
   resolve: {
     alias: {
-        '~@thoughtspot': '@thoughtspot',
+      '~@thoughtspot': '@thoughtspot',
     },
   },
 };
