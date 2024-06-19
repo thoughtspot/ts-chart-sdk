@@ -3,19 +3,19 @@ import {
     createAttributeOperator,
     createBetweenMetricOperator,
     createMetricOperator,
-} from '../test/test-utils';
+} from '../../test/test-conditional-formatting-utils';
 import {
     ChartColumn,
     ColumnTimeBucket,
     ColumnType,
     DataType,
-} from '../types/answer-column.types';
-import { DataPointsArray } from '../types/common.types';
+} from '../../types/answer-column.types';
+import { DataPointsArray } from '../../types/common.types';
 import {
     ConditionalFormatting,
     ConditionalFormattingComparisonTypes,
     Operators,
-} from '../types/conditional-formatting.types';
+} from '../../types/conditional-formatting.types';
 import {
     applicableConditionalFormatting,
     getCfForColumn,
@@ -56,6 +56,7 @@ const doesNotContainOperator = createAttributeOperator(
 );
 const startsWithOperator = createAttributeOperator(Operators.StartsWith);
 const endsWithOperator = createAttributeOperator(Operators.EndsWith);
+
 const parameter = undefined;
 
 const mockConditionalFormatting: ConditionalFormatting = {
@@ -206,7 +207,6 @@ describe('isConditionSatisfied', () => {
         expect(isConditionSatisfied(equalToOperator, parameter, 100)).toBe(
             false,
         );
-        // expect(
         expect(isConditionSatisfied(notEqualToOperator, parameter, 300)).toBe(
             true,
         );
