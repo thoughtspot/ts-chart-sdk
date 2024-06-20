@@ -1,3 +1,10 @@
+/**
+ * @file: Test Conditional Formatting Utils
+ *
+ * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
+ *
+ * Copyright: ThoughtSpot Inc. 2023
+ */
 import {
     BackgroundFormatTypes,
     ConditionalFormattingComparisonTypes,

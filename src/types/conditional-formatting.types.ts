@@ -1,3 +1,11 @@
+/**
+ * @file: Conditional Formatting Types
+ * @fileoverview All CF types for the Custom Chart implementations
+ * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
+ *
+ * Copyright: ThoughtSpot Inc. 2023
+ */
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 

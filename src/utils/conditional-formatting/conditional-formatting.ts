@@ -1,3 +1,11 @@
+/**
+ * @file: Conditional Formatting Utils
+ * @fileoverview All CF utils for the Custom Chart implementations
+ * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
+ *
+ * Copyright: ThoughtSpot Inc. 2023
+ */
+
 import _ from 'lodash';
 import { ChartColumn } from '../../types/answer-column.types';
 import { DataPointsArray } from '../../types/common.types';

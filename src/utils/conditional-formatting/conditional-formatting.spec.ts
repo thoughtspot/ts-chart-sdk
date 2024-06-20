@@ -1,3 +1,10 @@
+/**
+ * @file: Conditional Formatting Spec
+ *
+ * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
+ *
+ * Copyright: ThoughtSpot Inc. 2023
+ */
 import _ from 'lodash';
 import {
     createAttributeOperator,

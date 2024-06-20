@@ -7,4 +7,4 @@ export * from './types/ts-to-chart-event.types';
 export * from './main/custom-chart-context';
 export * from './react/use-custom-chart-context';
 export * from './types/conditional-formatting.types';
-export * from './utils/conditional-formatting-utils/conditional-formatting';
+export * from './utils/conditional-formatting/conditional-formatting';
