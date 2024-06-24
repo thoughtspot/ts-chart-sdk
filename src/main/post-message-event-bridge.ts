@@ -9,7 +9,7 @@ const target =
     (elSelector && (document.querySelector(elSelector) as HTMLElement)) ||
     window.parent;
 
-const globalThis = (target instanceof Window ? window : target) as any;
+const globalThis = (target === window.parent ? window : target) as any;
 
 /**
  * method to listen to messages using postMessage from the parent.
