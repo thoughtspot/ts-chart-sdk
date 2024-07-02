@@ -50,7 +50,7 @@ jobs:
                   if [ "$BRANCH_NAME" = "release" ]; then
                     echo "publish release"
                     npm run publish-prod
-                  elif [ "$BRANCH_NAME" = "main" ]; then
+                  elif [ "$BRANCH_NAME" = "sample-pr-to-be-deleted" ]; then
                     echo "publish dev"
                     npm run publish-dev
                   else
