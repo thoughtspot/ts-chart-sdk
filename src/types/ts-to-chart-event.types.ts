@@ -1,3 +1,4 @@
+import { AllowedConfigurations } from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
 import { Point } from './chart-to-ts-event.types';
 import {
@@ -159,6 +160,13 @@ export interface InitializeEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     hostUrl: string;
+    /**
+     * The selector of the container element where the chart will be rendered. Used for internal
+     * charts, external custom charts mostly have their own DOM.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    containerElSelector: string;
 }
 
 /**
@@ -191,6 +199,12 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
+    /**
+     * Toggle native configurations supported by TS UI. Ex: column level number and conditional formatting.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowedConfigurations?: AllowedConfigurations;
 }
 
 /**

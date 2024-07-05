@@ -1,3 +1,5 @@
+import { ConditionalFormatting, Maybe } from './conditional-formatting.types';
+
 export enum ColumnType {
     UNKNOWN,
     MEASURE,
@@ -171,4 +173,13 @@ export interface ChartColumn {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     format?: ColumnFormat;
+
+    /**
+     * Column Properties of the columns
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    columnProperties?: {
+        conditionalFormatting?: Maybe<ConditionalFormatting>;
+    };
 }

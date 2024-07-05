@@ -1,23 +1,23 @@
+import { onMessage, sendMessage } from 'promise-postmessage';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
+import { timeout } from './util';
 
 const TIMEOUT_THRESHOLD = 30000; // 30sec
+
+const elSelector = new URL(import.meta.url).searchParams.get('elSelector');
+const target =
+    (elSelector && (document.querySelector(elSelector) as HTMLElement)) ||
+    window.parent;
+
+const globalThis = (target === window.parent ? window : target) as any;
 
 /**
  * method to listen to messages using postMessage from the parent.
  *
  * @param  {any} handleMessageEvent
  */
-const init = (handleMessageEvent: any) => {
-    window.addEventListener('message', handleMessageEvent);
-};
-
-/**
- * stop listening to the messages
- *
- * @param  {any} handleMessageEvent
- */
-const destroy = (handleMessageEvent: any) => {
-    window.removeEventListener('message', handleMessageEvent);
+const init = (handleMessageEvent: (data: any) => Promise<any> | any) => {
+    return onMessage(handleMessageEvent, target, 'child');
 };
 
 /**
@@ -28,61 +28,35 @@ const destroy = (handleMessageEvent: any) => {
  * @param  {ChartToTSEvent} eventType type of the event
  * @returns Promise
  */
-const postMessageToHostApp = (
+const postMessageToHostApp = async (
     componentId: string,
     hostUrl: string,
     eventPayload: any,
     eventType: ChartToTSEvent,
-): Promise<any> =>
-    new Promise((resolve, reject) => {
-        const channel = new MessageChannel();
-        channel.port1.onmessage = (res: any) => {
-            channel.port1.close();
-            const { hasError, error } = res.data;
-            if (hasError) {
-                console.log('ChartContext: message failure:', res.data);
-                reject(error);
-            } else {
-                console.log('ChartContext: message success:', res.data);
-                resolve(res.data);
-            }
-        };
-
-        setTimeout(() => {
-            reject(
-                new Error(
-                    `ChartContext: postMessage operation timed out. ${eventType}`,
-                    eventPayload,
-                ),
-            );
-        }, TIMEOUT_THRESHOLD);
-
-        try {
-            window.parent.window.postMessage(
-                {
-                    componentId,
-                    payload: {
-                        ...eventPayload,
-                    },
-                    eventType,
-                    source: 'ts-chart-sdk',
+): Promise<any> => {
+    const resp = await timeout(
+        sendMessage(
+            target,
+            {
+                componentId,
+                payload: {
+                    ...eventPayload,
                 },
-                hostUrl,
-                [channel.port2],
-            );
-        } catch (err) {
-            console.error(
-                'ChartContext: error in emitting event:',
-                err,
                 eventType,
-                eventPayload,
-            );
-            reject(err);
-        }
-    });
-
-export {
-    init as initMessageListener,
-    destroy as destroyMessageListener,
-    postMessageToHostApp,
+                source: 'ts-chart-sdk',
+            },
+            {
+                origin: hostUrl,
+                endpoint: 'child',
+            },
+        ),
+        TIMEOUT_THRESHOLD,
+        'ChartContext: postMessage operation timed out.',
+    );
+    if (resp.hasError) {
+        throw new Error(resp.error);
+    }
+    return resp;
 };
+
+export { init as initMessageListener, postMessageToHostApp, globalThis };

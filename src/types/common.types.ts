@@ -176,7 +176,7 @@ export interface AppConfig {
     appOptions?: {
         isMobile?: boolean;
         isPrintMode?: boolean; // export mode on/off
-
+        isLiveboardContext?: boolean; // if chart renders in liveboard context
         // runtime configurations
         isDebugMode?: boolean; // enables debug mode for logging
     };

@@ -11,7 +11,7 @@ import { TSToChartEvent } from '../types/ts-to-chart-event.types';
 import { CustomChartContext, getChartContext } from './custom-chart-context';
 import * as PostMessageEventBridge from './post-message-event-bridge';
 
-jest.mock('./post-message-event-bridge');
+// jest.mock('./post-message-event-bridge');
 
 jest.spyOn(console, 'log').mockImplementation(() => {
     // do nothing.
@@ -39,6 +39,7 @@ describe('CustomChartContext', () => {
 
         mockInitMessage.mockImplementation((fn: any) => {
             eventProcessor = fn;
+            return () => null;
         });
 
         mockPostMessageToHost.mockImplementation(() => {
@@ -85,35 +86,29 @@ describe('CustomChartContext', () => {
             const promise = customChartContext.initialize();
 
             // Check that the hasInitializedPromise has resolved
-            const mockPostMessage = jest.fn();
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+
+            const initResp = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
 
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
 
             await expect(promise).resolves.toBeUndefined();
-            expect(mockPostMessage).toHaveBeenCalledTimes(2);
 
-            expect(mockPostMessage.mock.calls[0][0]).toEqual({
+            expect(initResp).toEqual({
                 isConfigValid: false,
                 defaultChartConfig: undefined,
                 chartConfigEditorDefinition: undefined,
                 visualPropEditorDefinition: undefined,
+                allowedConfigurations: {
+                    allowColumnNumberFormatting: false,
+                    allowColumnConditionalFormatting: false,
+                },
             });
-            expect(mockPostMessage).toHaveBeenCalled();
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
@@ -122,23 +117,14 @@ describe('CustomChartContext', () => {
             const promise = customChartContext.initialize();
 
             // Check that the hasInitializedPromise has resolved
-            const mockPostMessage = jest.fn();
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
 
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
 
             await expect(promise).resolves.toBeUndefined();
@@ -321,122 +307,71 @@ describe('CustomChartContext', () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for ChartConfigValidate
-            const mockPostMessage = jest.fn();
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.ChartConfigValidate,
-                    source: 'incorrect-source',
-                },
-                ports: [{ postMessage: mockPostMessage }],
-            });
-            // Check that the event listener was added to the eventListeners
-            // object
-            expect(mockPostMessage).not.toHaveBeenCalled();
-        });
-
-        test('default internal function testing', () => {
-            expect(mockInitMessage).toHaveBeenCalled();
-
-            // mock the event trigger for ChartConfigValidate
-            const mockPostMessage = jest.fn();
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.ChartConfigValidate,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const validateChartConfigResp = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
             });
             // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(validateChartConfigResp).toEqual({
                 isValid: true,
             });
-            mockPostMessage.mockReset();
 
             // mock the event trigger for VisualPropsValidate
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.VisualPropsValidate,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const validateVisualPropsResp = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.VisualPropsValidate,
             });
             // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(validateVisualPropsResp).toEqual({
                 isValid: true,
             });
 
-            mockPostMessage.mockReset();
-
             // mock the event trigger for TriggerRenderChart
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.TriggerRenderChart,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const renderResp = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.TriggerRenderChart,
             });
             // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({});
             expect(renderChart).toHaveBeenCalled();
-
-            mockPostMessage.mockReset();
 
             // mock the event trigger for getQueriesFromChartConfig
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.GetDataQuery,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.GetDataQuery,
             });
-            // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({});
+
             expect(getQueriesFromChartConfig).toHaveBeenCalled();
         });
 
-        test('default external function testing', () => {
+        test('default external function testing', async () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for DataUpdate
-            const mockPostMessage = jest.fn();
-            eventProcessor({
-                data: {
-                    payload: {
-                        data: 'random data',
-                    },
-                    eventType: TSToChartEvent.DataUpdate,
-                    source: 'ts-host-app',
+
+            const dataUpdateResp = await eventProcessor({
+                payload: {
+                    data: 'random data',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.DataUpdate,
             });
             // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(dataUpdateResp).toEqual({
                 triggerRenderChart: true,
             });
             expect(customChartContext.getChartModel().data).toBe('random data');
-            mockPostMessage.mockReset();
 
             // mock the event trigger for VisualPropsValidate
-            eventProcessor({
-                data: {
-                    payload: {
-                        chartModel: {
-                            data: 'random data2',
-                            visualProps: null,
-                        },
+            const modelUpdateResp = await eventProcessor({
+                payload: {
+                    chartModel: {
+                        data: 'random data2',
+                        visualProps: null,
                     },
-                    eventType: TSToChartEvent.ChartModelUpdate,
-                    source: 'ts-host-app',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.ChartModelUpdate,
             });
             // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(modelUpdateResp).toEqual({
                 triggerRenderChart: true,
             });
             expect(customChartContext.getChartModel().data).toBe(
@@ -444,27 +379,20 @@ describe('CustomChartContext', () => {
             );
             expect(customChartContext.getChartModel().visualProps).toBe(null);
 
-            mockPostMessage.mockReset();
-
             // mock the event trigger for VisualPropsUpdate
-            eventProcessor({
-                data: {
-                    payload: {
-                        visualProps: 'random data',
-                    },
-                    eventType: TSToChartEvent.VisualPropsUpdate,
-                    source: 'ts-host-app',
+            const visualPropsUpdateResp = await eventProcessor({
+                payload: {
+                    visualProps: 'random data',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.VisualPropsUpdate,
             });
             // Check that the response was received
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(visualPropsUpdateResp).toEqual({
                 triggerRenderChart: true,
             });
             expect(customChartContext.getChartModel().visualProps).toBe(
                 'random data',
             );
-            mockPostMessage.mockReset();
 
             // mock the event trigger for AxisMenuActionClick
             customChartContext.axisMenuCustomActionPreProcessor([
@@ -479,22 +407,18 @@ describe('CustomChartContext', () => {
                     ],
                 },
             ] as any);
-            eventProcessor({
-                data: {
-                    payload: {
-                        customAction: {
-                            id: 'custom-action-1',
-                            columnIds: ['9f96b5b0-f7e4-4a5e-aa11-4c77fdf42125'],
-                        },
+            const axisMenuClickResp = await eventProcessor({
+                payload: {
+                    customAction: {
+                        id: 'custom-action-1',
+                        columnIds: ['9f96b5b0-f7e4-4a5e-aa11-4c77fdf42125'],
                     },
-                    eventType: TSToChartEvent.AxisMenuActionClick,
-                    source: 'ts-host-app',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.AxisMenuActionClick,
             });
             // Check that the response was valid which means action gets
             // executed successfully
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(axisMenuClickResp).toEqual({
                 isValid: true,
             });
 
@@ -511,22 +435,18 @@ describe('CustomChartContext', () => {
                     ],
                 },
             ] as any);
-            eventProcessor({
-                data: {
-                    payload: {
-                        customAction: {
-                            id: 'custom-action-1',
-                            columnIds: ['9f96b5b0-f7e4-4a5e-aa11-4c77fdf42125'],
-                        },
+            const ctxMenuResp = await eventProcessor({
+                payload: {
+                    customAction: {
+                        id: 'custom-action-1',
+                        columnIds: ['9f96b5b0-f7e4-4a5e-aa11-4c77fdf42125'],
                     },
-                    eventType: TSToChartEvent.ContextMenuActionClick,
-                    source: 'ts-host-app',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.ContextMenuActionClick,
             });
             // Check that the response was valid which means action gets
             // executed successfully
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(ctxMenuResp).toEqual({
                 isValid: true,
             });
         });
@@ -541,38 +461,30 @@ describe('CustomChartContext', () => {
             customChartContext.on(TEST_EVENT_TYPE, testCallbackFn);
 
             // mock the event trigger
-            const mockPostMessage = jest.fn();
+
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TEST_EVENT_TYPE,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TEST_EVENT_TYPE,
             });
             // Check that the event listener was added to the eventListeners
             // object
             expect(testCallbackFn).toHaveBeenCalled();
         });
 
-        test('should respond with an error to an unspecified event type', () => {
+        test('should respond with an error to an unspecified event type', async () => {
             expect(mockInitMessage).toHaveBeenCalled();
             // Define a test event type and callback function
             const TEST_EVENT_TYPE = 'testEventType' as any;
 
             // mock the event trigger
-            const mockPostMessage = jest.fn();
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TEST_EVENT_TYPE,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+
+            const resp = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TEST_EVENT_TYPE,
             });
             // Check that the event listener was added to the eventListeners
             // object
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(resp).toEqual({
                 hasError: true,
                 error: `Event type not recognised or processed: ${TEST_EVENT_TYPE}`,
             });
@@ -606,14 +518,10 @@ describe('CustomChartContext', () => {
             customChartContext.on(TEST_EVENT_TYPE, testCallbackFn);
 
             // mock the event trigger for the test event type
-            const mockPostMessage = jest.fn();
+
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TEST_EVENT_TYPE,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TEST_EVENT_TYPE,
             });
 
             // Call the off function to remove the event listener
@@ -647,22 +555,14 @@ describe('CustomChartContext', () => {
             ).toHaveLength(1);
 
             // Emit events for both event types
-            const mockPostMessage = jest.fn();
+
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TEST_EVENT_TYPE_1,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TEST_EVENT_TYPE_1,
             });
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TEST_EVENT_TYPE_2,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TEST_EVENT_TYPE_2,
             });
 
             // Check that both callback functions were called
@@ -729,28 +629,19 @@ describe('CustomChartContext', () => {
 
         test('should resolve the promise if the chart context is initialized', async () => {
             // Check that the hasInitializedPromise has resolved
-            const mockPostMessage = jest.fn();
+
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
 
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
 
             const promise = customChartContext.initialize();
             await expect(promise).resolves.toBeUndefined();
-            expect(mockPostMessage).toHaveBeenCalledTimes(2);
 
             // define mock response for the postMessage response promise
             let resolve: any;
@@ -805,24 +696,15 @@ describe('CustomChartContext', () => {
             );
         });
         test('should process the event payload for context menu custom actions', async () => {
-            const mockPostMessage = jest.fn();
             const mockCustomAction = jest.fn();
             let resolve: any;
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
             customChartContext.initialize();
             mockPostMessageToHost.mockImplementation(
@@ -864,19 +746,15 @@ describe('CustomChartContext', () => {
                 TEST_EVENT_TYPE,
             );
             eventProcessor({
-                data: {
-                    payload: {
-                        customAction: {
-                            id: 'custom-action-1',
-                            clickedPoint: {},
-                            event: {},
-                            selectedPoints: [{}],
-                        },
+                payload: {
+                    customAction: {
+                        id: 'custom-action-1',
+                        clickedPoint: {},
+                        event: {},
+                        selectedPoints: [{}],
                     },
-                    eventType: TSToChartEvent.ContextMenuActionClick,
-                    source: 'ts-host-app',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.ContextMenuActionClick,
             });
             expect(mockCustomAction).toHaveBeenCalled();
             expect(mockCustomAction).toHaveBeenCalledWith({
@@ -887,24 +765,15 @@ describe('CustomChartContext', () => {
             });
         });
         test('should process the event payload for axis menu custom actions', async () => {
-            const mockPostMessage = jest.fn();
             const mockCustomAction = jest.fn();
             let resolve: any;
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
             customChartContext.initialize();
             mockPostMessageToHost.mockImplementation(
@@ -946,18 +815,14 @@ describe('CustomChartContext', () => {
             );
 
             eventProcessor({
-                data: {
-                    payload: {
-                        customAction: {
-                            id: 'custom-action-1',
-                            columnIds: ['123'],
-                            event: {},
-                        },
+                payload: {
+                    customAction: {
+                        id: 'custom-action-1',
+                        columnIds: ['123'],
+                        event: {},
                     },
-                    eventType: TSToChartEvent.AxisMenuActionClick,
-                    source: 'ts-host-app',
                 },
-                ports: [{ postMessage: mockPostMessage }],
+                eventType: TSToChartEvent.AxisMenuActionClick,
             });
             expect(mockCustomAction).toHaveBeenCalled();
             expect(mockCustomAction).toHaveBeenCalledWith({
@@ -968,23 +833,14 @@ describe('CustomChartContext', () => {
         });
 
         test('should process the event payload for axis menu when custom actions are not defined', async () => {
-            const mockPostMessage = jest.fn();
             let resolve: any;
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
             customChartContext.initialize();
             mockPostMessageToHost.mockImplementation(
@@ -1009,23 +865,14 @@ describe('CustomChartContext', () => {
         });
 
         test('should process the event payload for context menu when custom actions are not defined', async () => {
-            const mockPostMessage = jest.fn();
             let resolve: any;
             eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.Initialize,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
             });
             eventProcessor({
-                data: {
-                    payload: {},
-                    eventType: TSToChartEvent.InitializeComplete,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
             });
             customChartContext.initialize();
             mockPostMessageToHost.mockImplementation(
