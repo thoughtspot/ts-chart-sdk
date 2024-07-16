@@ -8,7 +8,10 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-import { VisualPropEditorDefinition } from '@thoughtspot/ts-chart-sdk';
+import {
+    ValidationResponse,
+    VisualPropEditorDefinition,
+} from '@thoughtspot/ts-chart-sdk';
 import {
     ChartColumn,
     ChartConfig,
@@ -317,6 +320,21 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             return queries;
         },
         renderChart: (ctx) => renderChart(ctx),
+        validateConfig: (
+            updatedConfig: any[],
+            chartModel: any,
+        ): ValidationResponse => {
+            if (updatedConfig.length <= 0) {
+                return {
+                    isValid: false,
+                    validationErrorMessage: ['Invalid config. no config found'],
+                };
+            } else {
+                return {
+                    isValid: true,
+                };
+            }
+        },
         chartConfigEditorDefinition: (
             currentChartConfig: ChartModel,
             ctx: CustomChartContext,
