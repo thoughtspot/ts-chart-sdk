@@ -43,19 +43,6 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
-const numberFormatter = (value) => {
-    if (value > 1000000000) {
-        return (value / 1000000000).toFixed(2) + 'B';
-    }
-    if (value > 1000000) {
-        return (value / 1000000).toFixed(2) + 'M';
-    }
-    if (value > 1000) {
-        return (value / 1000).toFixed(2) + 'K';
-    }
-    return value;
-};
-
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
     return _.map(dataArr.dataValue, (row) => row[idx]);
@@ -160,7 +147,7 @@ function render(ctx: CustomChartContext) {
     const labelColor = _.get(
         chartModel.visualProps,
         visualPropKeyMap[1],
-        'blue',
+        availableColor[0],
     );
     if (!dataModel) {
         return;
