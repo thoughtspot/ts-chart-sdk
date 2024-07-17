@@ -170,7 +170,7 @@ describe('CustomChartContext', () => {
             eventProcessor = null;
         });
 
-        test('TSToChartEvent.ChartConfigValidate validation response testing', () => {
+        test('TSToChartEvent.ChartConfigValidate validation response testing', async () => {
             // Define initial context with object definitions
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
@@ -180,23 +180,18 @@ describe('CustomChartContext', () => {
                 chartConfigEditorDefinition: [],
             });
 
-            const mockPostMessage = jest.fn();
             // Trigger event processor with initial context
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.ChartConfigValidate,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const responseWithInitialContext = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
+                source: 'ts-host-app',
             });
             // Verify response with object definitions
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(responseWithInitialContext).toStrictEqual({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [],
             });
-            mockPostMessage.mockReset();
 
             // Redefine context with function-returned definitions
             customChartContext = new CustomChartContext({
@@ -216,16 +211,13 @@ describe('CustomChartContext', () => {
                 },
             });
             // Trigger event processor with updated context
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.ChartConfigValidate,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const responseWithUpdatedContext = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
+                source: 'ts-host-app',
             });
             // Verify response with function-returned definitions
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(responseWithUpdatedContext).toStrictEqual({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [
@@ -247,23 +239,18 @@ describe('CustomChartContext', () => {
                 chartConfigEditorDefinition: [],
             });
 
-            const mockPostMessage = jest.fn();
             // Trigger event processor with initial context
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.VisualPropsValidate,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const responseWithInitialContext = eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
             });
             // Verify response with object definitions
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(responseWithInitialContext).toStrictEqual({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [],
             });
-            mockPostMessage.mockReset();
             // Redefine context with function-returned definitions
             customChartContext = new CustomChartContext({
                 getDefaultChartConfig,
@@ -282,16 +269,13 @@ describe('CustomChartContext', () => {
                 },
             });
             // Trigger event processor with updated context
-            eventProcessor({
-                data: {
-                    payload: mockInitializeContextPayload,
-                    eventType: TSToChartEvent.VisualPropsValidate,
-                    source: 'ts-host-app',
-                },
-                ports: [{ postMessage: mockPostMessage }],
+            const responseWithFunctionReturnedValues = eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
             });
             // Verify response with function-returned definitions
-            expect(mockPostMessage).toHaveBeenCalledWith({
+            expect(responseWithFunctionReturnedValues).toStrictEqual({
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [
@@ -303,7 +287,7 @@ describe('CustomChartContext', () => {
             });
         });
 
-        test('should not trigger post message if host is not accurate', () => {
+        test('should not trigger post message if host is not accurate', async () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for ChartConfigValidate
