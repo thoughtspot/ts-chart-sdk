@@ -74,6 +74,51 @@ export enum CurrencyFormatType {
 }
 
 /**
+ * Type of aggregations applied on the column data
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export enum ColumnAggregationType {
+    AGGREGATE,
+    AGGREGATE_DISTINCT,
+    APPROX_AGGR_DISTINCT,
+    APPROX_AGGR_DISTINCT_MERGE,
+    APPROX_COUNT_DISTINCT,
+    AVERAGE,
+    COUNT,
+    COUNT_DISTINCT,
+    CUMULATIVE_AVERAGE,
+    CUMULATIVE_COUNT,
+    CUMULATIVE_MAX,
+    CUMULATIVE_MIN,
+    CUMULATIVE_SUM,
+    GROWTH,
+    MAX,
+    MEDIAN,
+    MIN,
+    MOVING_AVERAGE,
+    MOVING_COUNT,
+    MOVING_MAX,
+    MOVING_MIN,
+    MOVING_SUM,
+    NONE,
+    PERCENTILE,
+    RANK,
+    RANK_PERCENTILE,
+    SQL_BOOL_AGGREGATE_OP,
+    SQL_DATE_AGGREGATE_OP,
+    SQL_DATE_TIME_AGGREGATE_OP,
+    SQL_DOUBLE_AGGREGATE_OP,
+    SQL_INT_AGGREGATE_OP,
+    SQL_STRING_AGGREGATE_OP,
+    SQL_TIME_AGGREGATE_OP,
+    STD_DEVIATION,
+    SUM,
+    TABLE_AGGR,
+    VARIANCE,
+}
+
+/**
  * Currency format for the column defined in the worksheet
  *
  * @version SDK: 0.1 | ThoughtSpot:
@@ -182,4 +227,11 @@ export interface ChartColumn {
     columnProperties?: {
         conditionalFormatting?: Maybe<ConditionalFormatting>;
     };
+
+    /**
+     * Aggregation applied on the column data
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    columnAggregationType?: ColumnAggregationType;
 }
