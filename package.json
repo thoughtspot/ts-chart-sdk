@@ -1,7 +1,7 @@
 {
     "name": "@thoughtspot/ts-chart-sdk",
     "private": false,
-    "version": "0.0.2-alpha.4",
+    "version": "0.0.2-alpha.5",
     "module": "lib/index",
     "main": "lib/index",
     "types": "lib/index",
@@ -23,7 +23,7 @@
         "dev:bar": "vite serve example/custom-bar-chart --port 3000",
         "about:bundle-dts": "echo '===== add ts types bundle in dist ====='",
         "bundle-dts": "npx dts-bundle --name ../dist/ts-chart-sdk --main lib/index.d.ts --outputAsModuleFolder=true",
-        "prePublish": "npm run ci; npm run build; npm run bundle-dts;",
+        "prepublishOnly": "npm run ci; npm run build; npm run bundle-dts;",
         "about:publish-dev": "echo '===== patch dev workflow ====='",
         "patch-dev": "npm version prerelease --no-git-tag-version",
         "publish-dev": "npm publish --tag dev --access public",
