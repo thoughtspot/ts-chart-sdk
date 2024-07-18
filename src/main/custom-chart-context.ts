@@ -144,6 +144,10 @@ export type CustomChartContextProps = {
     allowedConfigurations?: AllowedConfigurations;
 };
 
+export type ValidationFunctions =
+    | CustomChartContextProps['validateVisualProps']
+    | CustomChartContextProps['validateConfig'];
+
 /**
  * Default configuration options for all the chart context properties
  */
@@ -491,6 +495,24 @@ export class CustomChartContext {
         }
     }
 
+    private validationsResponseProcessor(
+        currentValidationState: Partial<ChartModel>,
+        validationResponse: ValidationResponse,
+    ) {
+        const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
+            currentValidationState,
+        );
+        const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
+            currentValidationState,
+        );
+
+        return {
+            ...validationResponse,
+            visualPropEditorDefinition,
+            chartConfigEditorDefinition,
+        };
+    }
+
     /**
      * Function to emit Chart to TS Events to the TS application.
 
@@ -598,20 +620,11 @@ export class CustomChartContext {
                         const currentVisualState = {
                             visualProps: payload.visualProps,
                         };
-                        const visualPropEditorDefinition =
-                            this.getVisualPropEditorDefinition(
-                                currentVisualState,
-                            );
-                        const chartConfigEditorDefinition =
-                            this.getChartConfigEditorDefinition(
-                                currentVisualState,
-                            );
 
-                        return {
-                            ...validationResponse,
-                            visualPropEditorDefinition,
-                            chartConfigEditorDefinition,
-                        };
+                        return this.validationsResponseProcessor(
+                            currentVisualState,
+                            validationResponse,
+                        );
                     }
                     return validationResponse;
                 }
@@ -645,20 +658,10 @@ export class CustomChartContext {
                                 chartConfig: payload.chartConfig,
                             },
                         };
-                        const chartConfigEditorDefinition =
-                            this.getChartConfigEditorDefinition(
-                                currentConfigState,
-                            );
-
-                        const visualPropEditorDefinition =
-                            this.getVisualPropEditorDefinition(
-                                currentConfigState,
-                            );
-                        return {
-                            ...validationResponse,
-                            visualPropEditorDefinition,
-                            chartConfigEditorDefinition,
-                        };
+                        return this.validationsResponseProcessor(
+                            currentConfigState,
+                            validationResponse,
+                        );
                     }
                     return validationResponse;
                 }
