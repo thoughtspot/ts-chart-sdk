@@ -9,6 +9,10 @@
  */
 
 import {
+    ValidationResponse,
+    VisualPropEditorDefinition,
+} from '@thoughtspot/ts-chart-sdk';
+import {
     ChartColumn,
     ChartConfig,
     ChartModel,
@@ -21,7 +25,9 @@ import {
     Query,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
+import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
+import { toDimension } from 'chart.js/dist/helpers/helpers.core';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 
@@ -37,22 +43,9 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
-const numberFormatter = value => {
-    if (value > 1000000000) {
-        return (value / 1000000000).toFixed(2) + 'B';
-    }
-    if (value > 1000000) {
-        return (value / 1000000).toFixed(2) + 'M';
-    }
-    if (value > 1000) {
-        return (value / 1000).toFixed(2) + 'K';
-    }
-    return value;
-};
-
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
-    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
-    return _.map(dataArr.dataValue, row => row[idx]);
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 
 function getColumnDataModel(
@@ -151,6 +144,11 @@ function render(ctx: CustomChartContext) {
         visualPropKeyMap[2],
         false,
     );
+    const labelColor = _.get(
+        chartModel.visualProps,
+        visualPropKeyMap[1],
+        availableColor[0],
+    );
     if (!dataModel) {
         return;
     }
@@ -174,11 +172,8 @@ function render(ctx: CustomChartContext) {
                 plugins: {
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
-                        display: allowLabels ? 'auto' : false,
-                        formatter: value => numberFormatter(value),
-                        color: 'blue',
-                        textStrokeColor: 'white',
-                        textStrokeWidth: 5,
+                        display: allowLabels,
+                        color: labelColor,
                         labels: {
                             title: {
                                 font: {
@@ -268,12 +263,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.MEASURE,
+                (col) => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.ATTRIBUTE,
+                (col) => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -311,35 +306,77 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: ctx => renderChart(ctx),
-        chartConfigEditorDefinition: [
-            {
-                key: 'column',
-                label: 'Custom Column',
-                descriptionText:
-                    'X Axis can only have attributes, Y Axis can only have measures, Color can only have attributes. ' +
-                    'Should have just 1 column in Y axis with colors columns.',
-                columnSections: [
-                    {
-                        key: 'x',
-                        label: 'Custom X Axis',
-                        allowAttributeColumns: true,
-                        allowMeasureColumns: false,
-                        allowTimeSeriesColumns: true,
-                        maxColumnCount: 1,
-                    },
-                    {
-                        key: 'y',
-                        label: 'Custom Y Axis',
+        renderChart: (ctx) => renderChart(ctx),
+        validateConfig: (
+            updatedConfig: any[],
+            chartModel: any,
+        ): ValidationResponse => {
+            if (updatedConfig.length <= 0) {
+                return {
+                    isValid: false,
+                    validationErrorMessage: ['Invalid config. no config found'],
+                };
+            } else {
+                return {
+                    isValid: true,
+                };
+            }
+        },
+        chartConfigEditorDefinition: (
+            currentChartConfig: ChartModel,
+            ctx: CustomChartContext,
+        ): ChartConfigEditorDefinition[] => {
+            const { config, visualProps } = currentChartConfig;
+
+            const yColumns = config?.chartConfig?.[0]?.dimensions.find(
+                (dimension) => dimension.key === 'y' && dimension.columns,
+            );
+
+            const configDefinition = [
+                {
+                    key: 'column',
+                    label: 'Custom Column',
+                    descriptionText:
+                        'X Axis can only have attributes, Y Axis can only have measures, Color can only have attributes. ' +
+                        'Should have just 1 column in Y axis with colors columns.',
+                    columnSections: [
+                        {
+                            key: 'x',
+                            label: 'Custom X Axis',
+                            allowAttributeColumns: true,
+                            allowMeasureColumns: false,
+                            allowTimeSeriesColumns: true,
+                            maxColumnCount: 1,
+                        },
+                        {
+                            key: 'y',
+                            label: 'Custom Y Axis',
+                            allowAttributeColumns: false,
+                            allowMeasureColumns: true,
+                            allowTimeSeriesColumns: false,
+                        },
+                    ],
+                },
+            ];
+            if (yColumns?.columns.length) {
+                for (let i = 0; i < yColumns.columns.length; i++) {
+                    configDefinition[0].columnSections.push({
+                        key: `layers${i}`,
+                        label: `Measures layer${i}`,
                         allowAttributeColumns: false,
                         allowMeasureColumns: true,
                         allowTimeSeriesColumns: false,
-                    },
-                ],
-            },
-        ],
-        visualPropEditorDefinition: {
-            elements: [
+                    });
+                }
+            }
+            return configDefinition;
+        },
+        visualPropEditorDefinition: (
+            currentVisualProps: ChartModel,
+            ctx: CustomChartContext,
+        ): VisualPropEditorDefinition => {
+            const { visualProps } = currentVisualProps;
+            const elements = [
                 {
                     key: 'color',
                     type: 'radio',
@@ -353,13 +390,6 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     label: 'Accordion',
                     children: [
                         {
-                            key: 'Color2',
-                            type: 'radio',
-                            defaultValue: 'blue',
-                            values: ['blue', 'white', 'red'],
-                            label: 'Color2',
-                        },
-                        {
                             key: 'datalabels',
                             type: 'toggle',
                             defaultValue: false,
@@ -367,7 +397,19 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                         },
                     ],
                 },
-            ],
+            ];
+            if (visualProps?.length !== 0) {
+                if (visualProps?.accordion?.datalabels) {
+                    elements[1].children?.push({
+                        key: 'Color2',
+                        type: 'radio',
+                        defaultValue: 'blue',
+                        values: ['blue', 'white', 'red'],
+                        label: 'Color2',
+                    });
+                }
+            }
+            return { elements };
         },
     });
 

@@ -53,7 +53,7 @@ const postMessageToHostApp = async (
         TIMEOUT_THRESHOLD,
         'ChartContext: postMessage operation timed out.',
     );
-    if (resp.hasError) {
+    if (resp?.hasError) {
         throw new Error(resp.error);
     }
     return resp;

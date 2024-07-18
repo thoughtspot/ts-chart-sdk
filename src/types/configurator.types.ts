@@ -14,6 +14,8 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+import { CustomChartContext } from '../main/custom-chart-context';
+import { ChartModel } from './common.types';
 /**
  *
  * @group Chart Configuration Editor
@@ -100,3 +102,8 @@ export interface ChartConfigEditorDefinition {
      */
     columnSections: ChartConfigSection[];
 }
+
+export type ConfigEditorDefinitionSetter = (
+    currentState: ChartModel,
+    ctx: CustomChartContext,
+) => ChartConfigEditorDefinition[];

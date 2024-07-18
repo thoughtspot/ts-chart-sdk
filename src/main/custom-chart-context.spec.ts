@@ -170,7 +170,124 @@ describe('CustomChartContext', () => {
             eventProcessor = null;
         });
 
-        test('default internal function testing', async () => {
+        test('TSToChartEvent.ChartConfigValidate validation response testing', async () => {
+            // Define initial context with object definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [],
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with object definitions
+            expect(responseWithInitialContext).toStrictEqual({
+                isValid: true,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [],
+            });
+
+            // Redefine context with function-returned definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: () => {
+                    return { elements: [] };
+                },
+                chartConfigEditorDefinition: () => {
+                    return [
+                        {
+                            key: 'x',
+                            columnSections: [{ label: 'x-axis', key: 'x' }],
+                        },
+                    ];
+                },
+            });
+            // Trigger event processor with updated context
+            const responseWithUpdatedContext = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with function-returned definitions
+            expect(responseWithUpdatedContext).toStrictEqual({
+                isValid: true,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [
+                    {
+                        key: 'x',
+                        columnSections: [{ label: 'x-axis', key: 'x' }],
+                    },
+                ],
+            });
+        });
+
+        test('TSToChartEvent.validateVisualProps validation response testing', () => {
+            // Define initial context with object definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [],
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with object definitions
+            expect(responseWithInitialContext).toStrictEqual({
+                isValid: true,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [],
+            });
+            // Redefine context with function-returned definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: () => {
+                    return { elements: [] };
+                },
+                chartConfigEditorDefinition: () => {
+                    return [
+                        {
+                            key: 'x',
+                            columnSections: [{ label: 'x-axis', key: 'x' }],
+                        },
+                    ];
+                },
+            });
+            // Trigger event processor with updated context
+            const responseWithFunctionReturnedValues = eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with function-returned definitions
+            expect(responseWithFunctionReturnedValues).toStrictEqual({
+                isValid: true,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [
+                    {
+                        key: 'x',
+                        columnSections: [{ label: 'x-axis', key: 'x' }],
+                    },
+                ],
+            });
+        });
+
+        test('should not trigger post message if host is not accurate', async () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
             // mock the event trigger for ChartConfigValidate

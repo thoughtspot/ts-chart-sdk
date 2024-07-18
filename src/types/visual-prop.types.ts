@@ -8,6 +8,8 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+import { CustomChartContext } from '../main/custom-chart-context';
+import { ChartModel } from './common.types';
 /**
  * Configuration for input validation rules
  */
@@ -372,6 +374,11 @@ export interface VisualPropEditorDefinition {
      */
     elements: PropElement[];
 }
+
+export type VisualEditorDefinitionSetter = (
+    currentState: ChartModel,
+    ctx: CustomChartContext,
+) => VisualPropEditorDefinition;
 
 /**
  * Example config to be able to store config in the following keys

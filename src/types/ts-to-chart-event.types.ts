@@ -200,7 +200,8 @@ export interface InitializeEventResponsePayload {
      */
     visualPropEditorDefinition?: VisualPropEditorDefinition;
     /**
-     * Toggle native configurations supported by TS UI. Ex: column level number and conditional formatting.
+     * Toggle native configurations supported by TS UI. Ex: column level number and conditional
+     * formatting.
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
