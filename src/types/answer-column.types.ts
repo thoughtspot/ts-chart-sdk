@@ -233,5 +233,5 @@ export interface ChartColumn {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnAggregationType?: ColumnAggregationType;
+    aggregationType?: ColumnAggregationType;
 }
