@@ -234,4 +234,12 @@ export interface ChartColumn {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     aggregationType?: ColumnAggregationType;
+
+    /**
+     * Custom sort order defined for the column to sort charts in a specific order
+     * Defined in worksheet
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    customOrder?: Array<string>;
 }
