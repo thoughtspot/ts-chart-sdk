@@ -206,7 +206,7 @@ export type CustomFontFaces = {
 
 /**
  * Used for Custom color pallete and Custom font for charts defined in Style customisations
- * inside thoughtspot admin section
+ * inside thoughtspot admin or developer section
  *
  */
 
