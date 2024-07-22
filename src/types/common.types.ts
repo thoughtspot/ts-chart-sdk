@@ -11,6 +11,28 @@ import { ChartConfigEditorDefinition } from './configurator.types';
 import { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
+ * Defines types of features for which font can be customised with Custom style config used in TS.
+ * @remarks
+ * Use chartFeatureToFontGuid to get the guid for the feature and get the font face from guid
+ * from customFontFaces
+ */
+
+export enum CustomizableChartFeature {
+    X_AXIS_LABEL,
+    X_AXIS_TITLE,
+    Y_AXIS_LABEL,
+    Y_AXIS_TITLE,
+    TOOLTIP,
+    SCATTER_CHART,
+    PIE_CHART,
+    LINE_CHART,
+    COLUMN_CHART,
+    BAR_CHART,
+    AREA_CHART,
+    TAIL_FEATURE,
+}
+
+/**
  * List of Columns for a dimension in the Custom Chart Config.
  * Associated with the key defined in the chart config editor definition
  * Relates to ChartConfigSection
@@ -164,14 +186,45 @@ export type ValidationResponse = {
  */
 export type VisualProps = JSON;
 
-// Todo: this should be imported from the custom style config package.
-type CustomStylingConfig = any;
+/**
+ * Custom Font Faces type from TS.
+ */
+
+export type CustomFontFaces = {
+    guid: string;
+    family?: string;
+    format?: string;
+    url?: string;
+    weight?: string;
+    style?: string;
+    size?: string;
+    unicodeRange?: string;
+    variant?: string;
+    stretch?: string;
+    color?: string;
+};
+
+/**
+ * Used for Custom color pallete and Custom font for charts defined in Style customisations
+ * inside thoughtspot admin or developer section
+ *
+ */
+
+export type ChartSdkCustomStylingConfig = {
+    appBackground?: {
+        color?: string;
+    };
+    appPanelColor?: {
+        color?: string;
+    };
+    chartColorPalettes?: Array<{ colors: Array<string> }>;
+    disableColorRotation?: boolean;
+    chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
+    customFontFaces?: Array<CustomFontFaces>;
+};
 
 export interface AppConfig {
-    /**
-     * @hidden
-     */
-    styleConfig?: CustomStylingConfig;
+    styleConfig?: ChartSdkCustomStylingConfig;
 
     appOptions?: {
         isMobile?: boolean;
