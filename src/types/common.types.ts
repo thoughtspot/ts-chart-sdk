@@ -191,7 +191,7 @@ export type VisualProps = JSON;
  */
 
 export type CustomFontFaces = {
-    guid?: string;
+    guid: string;
     family?: string;
     format?: string;
     url?: string;
@@ -219,7 +219,7 @@ export type ChartSdkCustomStylingConfig = {
     };
     chartColorPalettes?: Array<{ colors: Array<string> }>;
     disableColorRotation?: boolean;
-    chartFeatureToFontGuid: Record<CustomizableChartFeature, string>;
+    chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
     customFontFaces?: Array<CustomFontFaces>;
 };
 
