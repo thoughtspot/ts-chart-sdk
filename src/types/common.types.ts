@@ -191,7 +191,7 @@ export type VisualProps = JSON;
  */
 
 export type CustomFontFaces = {
-    id?: string;
+    guid?: string;
     family?: string;
     format?: string;
     url?: string;
