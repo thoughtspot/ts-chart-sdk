@@ -4,7 +4,12 @@ module.exports = {
     collectCoverage: true,
     collectCoverageFrom: ['src/**'],
     coverageDirectory: 'coverage/sdk/',
-    coveragePathIgnorePatterns: ['/node_modules/', '/test/', '/*.types.ts'],
+    coveragePathIgnorePatterns: [
+        '/node_modules/',
+        '/test/',
+        '/*.types.ts',
+        '/src/index.ts',
+    ],
     coverageThreshold: {
         './src/main': {
             branches: 75, // make this above 80
