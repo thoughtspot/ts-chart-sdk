@@ -21,7 +21,9 @@ import { DataPointsArray } from '../../types/common.types';
 import {
     ConditionalFormatting,
     ConditionalFormattingComparisonTypes,
+    FalconDataType,
     Operators,
+    ParameterValueType,
 } from '../../types/conditional-formatting.types';
 import {
     applicableConditionalFormatting,
@@ -64,11 +66,25 @@ const doesNotContainOperator = createAttributeOperator(
 const startsWithOperator = createAttributeOperator(Operators.StartsWith);
 const endsWithOperator = createAttributeOperator(Operators.EndsWith);
 
+const invalidOperator = createMetricOperator('invalid-operator' as any);
+
 const parameter = undefined;
 
 const mockConditionalFormatting: ConditionalFormatting = {
     rows: [lessThanOperator, greaterThanOperator, isBetweenOperator],
 };
+
+const parameters = [
+    {
+        id: 'parameter1',
+        defaultValue: 'abc',
+        dataType: FalconDataType.Char,
+        description: '',
+        owner: null as any,
+        valueType: ParameterValueType.Any,
+        name: 'parameter1',
+    },
+];
 
 describe('validateCfCondition', () => {
     test('verify validateCfCondition util', () => {
@@ -114,6 +130,19 @@ describe('validateCfCondition', () => {
         ).toBe(true);
         expect(
             validateCfCondition(isBetweenOperator, 4, 'col1', mockDataAttr),
+        ).toBe(false);
+        expect(
+            validateCfCondition(invalidOperator, 4, 'col1', mockDataAttr),
+        ).toBe(false);
+
+        const operatorWithColId = createMetricOperator(
+            Operators.LessThan,
+            'col1',
+            'col2',
+        );
+
+        expect(
+            validateCfCondition(operatorWithColId, 4, '', mockDataAttr),
         ).toBe(false);
     });
 });
@@ -220,6 +249,9 @@ describe('isConditionSatisfied', () => {
         expect(isConditionSatisfied(notEqualToOperator, parameter, 200)).toBe(
             false,
         );
+        expect(isConditionSatisfied(notEqualToOperator, parameter, null)).toBe(
+            true,
+        );
         expect(isConditionSatisfied(isBetweenOperator, parameter, 200)).toBe(
             true,
         );
@@ -227,6 +259,9 @@ describe('isConditionSatisfied', () => {
             true,
         );
         expect(isConditionSatisfied(isBetweenOperator, parameter, 201)).toBe(
+            false,
+        );
+        expect(isConditionSatisfied(isBetweenOperator, parameter, 50)).toBe(
             false,
         );
         expect(isConditionSatisfied(isBetweenOperator, parameter, 50)).toBe(
@@ -411,5 +446,22 @@ describe('isConditionSatisfied', () => {
         expect(
             isConditionSatisfied(columnBasedOperator, undefined, 'abc', 'def'),
         ).toBe(false);
+
+        // Parameter Based
+        const parameterBasedOperator = createMetricOperator(
+            Operators.EqualTo,
+            'col1',
+            'col2',
+            'parameter1',
+            ConditionalFormattingComparisonTypes.ParameterBased,
+        );
+        expect(
+            isConditionSatisfied(
+                parameterBasedOperator,
+                parameters,
+                'abc',
+                'abc',
+            ),
+        ).toBe(true);
     });
 });
