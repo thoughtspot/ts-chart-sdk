@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import * as PostMessageEventBridge from '../main/post-message-event-bridge';
 import { mockInitializeContextPayload } from '../test/test-utils';
+import { ColumnType } from '../types/answer-column.types';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
 import { contextChartProps } from './mocks/custom-chart-context-mock';
@@ -12,7 +13,10 @@ describe('useChartContext initialization', () => {
     let eventProcessor: any;
     let mockInitMessage;
     let mockPostMessageToHost;
-    const mockedChartModel = { columns: [], config: {} };
+    const mockedChartModel = {
+        columns: [{ type: ColumnType.MEASURE }, { type: ColumnType.ATTRIBUTE }],
+        config: {},
+    };
     beforeEach(() => {
         mockInitMessage = jest.spyOn(
             PostMessageEventBridge,
@@ -67,6 +71,66 @@ describe('useChartContext initialization', () => {
         });
     });
 
+    test('should trigger getDataQuery and fetch correct query response', async () => {
+        // Render the hook with the custom chart context props
+        const { result, waitFor } = renderHook(() =>
+            useChartContext(contextChartProps),
+        );
+
+        // Assert that the context is not initialized initially
+        expect(result.current.hasInitialized).toBe(false);
+        expect(result.current.chartModel).toBeUndefined();
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
+            },
+            eventType: TSToChartEvent.Initialize,
+        });
+        const response = await eventProcessor({
+            payload: {
+                config: [
+                    {
+                        key: 'column',
+                        dimensions: [
+                            {
+                                key: 'x',
+                                columns: [mockedChartModel.columns[0]],
+                            },
+                            {
+                                key: 'y',
+                                columns: [mockedChartModel.columns[1]],
+                            },
+                        ],
+                    },
+                ],
+            },
+            eventType: TSToChartEvent.GetDataQuery,
+            source: 'ts-host-app',
+        });
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.TriggerRenderChart,
+            source: 'ts-host-app',
+        });
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.InitializeComplete,
+            source: 'ts-host-app',
+        });
+
+        await waitFor(() => {
+            expect(response.queries[0].queryColumns[0]).toBe(
+                mockedChartModel.columns[0],
+            );
+            expect(response.queries[0].queryColumns[1]).toBe(
+                mockedChartModel.columns[1],
+            );
+            expect(result.current.hasInitialized).toBeTruthy();
+        });
+    });
+
     test('should make sure hasInitialized to remain false when context initialization failed', async () => {
         jest.mock('../main/custom-chart-context', () => ({
             CustomChartContext: jest.fn().mockImplementation(() => ({
@@ -76,7 +140,6 @@ describe('useChartContext initialization', () => {
                 emitEvent: jest.fn(),
                 on: jest.fn(),
                 getChartModel: jest.fn(),
-                renderChart: jest.fn(),
                 destroy: jest.fn(),
             })),
         }));

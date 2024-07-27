@@ -114,21 +114,15 @@ describe('CustomChartContext', () => {
 
         test('multiple intializations should throw an error', async () => {
             // Call the initialize function and wait for it to resolve
-            const promise = customChartContext.initialize();
-
-            // Check that the hasInitializedPromise has resolved
-            eventProcessor({
-                payload: mockInitializeContextPayload,
-                eventType: TSToChartEvent.Initialize,
+            getChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
             });
-
             eventProcessor({
                 payload: {},
                 eventType: TSToChartEvent.InitializeComplete,
             });
-
-            await expect(promise).resolves.toBeUndefined();
-
             let error;
             try {
                 customChartContext = new CustomChartContext({
