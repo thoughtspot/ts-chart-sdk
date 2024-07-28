@@ -188,9 +188,7 @@ export type VisualProps = unknown;
 
 /**
  * Custom Font Faces type from TS.
- * @remarks
- * hostUrl (recieved in Initialize event payload) needs to be added as a prefix to the url property
- * to fetch the custom font file.
+ *
  */
 
 export type CustomFontFaces = {
