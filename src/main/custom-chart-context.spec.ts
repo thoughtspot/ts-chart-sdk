@@ -112,6 +112,68 @@ describe('CustomChartContext', () => {
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
+        test('type check string for visualProps on initialize payload should not throw an error.', async () => {
+            expect(mockInitMessage).toHaveBeenCalled();
+
+            // Call the initialize function and wait for it to resolve
+            const promise = customChartContext.initialize();
+
+            // Check that the hasInitializedPromise has resolved
+
+            const mockInitializeContextPayloadWithVisualProps = {
+                ...mockInitializeContextPayload,
+                chartModel: {
+                    ...mockInitializeContextPayload.chartModel,
+                    visualProps: 'visualPropStringPayload',
+                },
+            };
+
+            await eventProcessor({
+                payload: mockInitializeContextPayloadWithVisualProps,
+                eventType: TSToChartEvent.Initialize,
+            });
+            eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            await expect(promise).resolves.toBeUndefined();
+            const chartModel = customChartContext.getChartModel();
+            expect(typeof chartModel.visualProps).toEqual('string');
+            expect(mockPostMessageToHost).not.toHaveBeenCalled();
+        });
+
+        test('type check object for visualProps on initialize payload should not throw an error.', async () => {
+            expect(mockInitMessage).toHaveBeenCalled();
+
+            // Call the initialize function and wait for it to resolve
+            const promise = customChartContext.initialize();
+
+            // Check that the hasInitializedPromise has resolved
+
+            const mockInitializeContextPayloadWithVisualProps = {
+                ...mockInitializeContextPayload,
+                chartModel: {
+                    ...mockInitializeContextPayload.chartModel,
+                    visualProps: {
+                        data: 'sample data',
+                    },
+                },
+            };
+
+            await eventProcessor({
+                payload: mockInitializeContextPayloadWithVisualProps,
+                eventType: TSToChartEvent.Initialize,
+            });
+            eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            await expect(promise).resolves.toBeUndefined();
+            const chartModel = customChartContext.getChartModel();
+            expect(typeof chartModel.visualProps).toEqual('object');
+            expect(mockPostMessageToHost).not.toHaveBeenCalled();
+        });
+
         test('multiple intializations should throw an error', async () => {
             // Call the initialize function and wait for it to resolve
             getChartContext({
