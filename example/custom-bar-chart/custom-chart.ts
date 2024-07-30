@@ -173,7 +173,7 @@ function render(ctx: CustomChartContext) {
                 ...chartModel.visualProps,
                 // used to store any local state specific to chart, can only be
                 // of type string. This will be preserved when you save answer
-                clientState: JSON.stringify(exampleClientState),
+                clientState: exampleClientState,
             }),
         ),
     });
@@ -184,7 +184,7 @@ function render(ctx: CustomChartContext) {
         insertCustomFont(appConfig.styleConfig?.customFontFaces);
     }
 
-    const appColor = appConfig.styleConfig?.appPanelColor?.color || '';
+    const appColor = appConfig?.styleConfig?.appPanelColor?.color || '';
     const dataModel = getDataModel(chartModel, appConfig?.styleConfig);
     const allowLabels = _.get(
         chartModel.visualProps,
