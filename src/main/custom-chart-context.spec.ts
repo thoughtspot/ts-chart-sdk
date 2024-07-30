@@ -139,6 +139,7 @@ describe('CustomChartContext', () => {
             await expect(promise).resolves.toBeUndefined();
             const chartModel = customChartContext.getChartModel();
             expect(typeof chartModel.visualProps).toEqual('string');
+            expect(chartModel.visualProps).toEqual('visualPropStringPayload');
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
@@ -171,6 +172,9 @@ describe('CustomChartContext', () => {
             await expect(promise).resolves.toBeUndefined();
             const chartModel = customChartContext.getChartModel();
             expect(typeof chartModel.visualProps).toEqual('object');
+            expect(chartModel.visualProps).toEqual({
+                data: 'sample data',
+            });
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
