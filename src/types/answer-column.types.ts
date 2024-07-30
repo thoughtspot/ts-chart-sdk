@@ -242,4 +242,11 @@ export interface ChartColumn {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     customOrder?: Array<string>;
+
+    /**
+     * Guid of Custom calender for the column if defined in worksheet else null
+     *
+     * @version SDK: 0.1 | ThoughtSpot: sdcwdc
+     */
+    calenderGuid?: string;
 }
