@@ -17,7 +17,10 @@ import {
     ColumnType,
     CustomChartContext,
     DataPointsArray,
+    dateFormatter,
     getChartContext,
+    isDateColumn,
+    isDateNumColumn,
     PointVal,
     Query,
     ValidationResponse,
@@ -49,7 +52,13 @@ const exampleClientState = {
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => row[idx]);
+    return _.map(dataArr.dataValue, (row) => {
+        const colValue = row[idx];
+        if (isDateColumn(column) || isDateNumColumn(column)) {
+            return dateFormatter(colValue, column);
+        }
+        return colValue;
+    });
 }
 
 function getColumnDataModel(
