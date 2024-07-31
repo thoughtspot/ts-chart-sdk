@@ -9,13 +9,10 @@
  */
 
 import {
-    ValidationResponse,
-    VisualPropEditorDefinition,
-} from '@thoughtspot/ts-chart-sdk';
-import {
     ChartColumn,
     ChartConfig,
     ChartModel,
+    ChartSdkCustomStylingConfig,
     ChartToTSEvent,
     ColumnType,
     CustomChartContext,
@@ -23,11 +20,12 @@ import {
     getChartContext,
     PointVal,
     Query,
+    ValidationResponse,
+    VisualPropEditorDefinition,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
 import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
-import { toDimension } from 'chart.js/dist/helpers/helpers.core';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 
@@ -43,6 +41,12 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 
+const exampleClientState = {
+    id: 'chart-id',
+    name: 'custom-bar-chart',
+    library: 'chartJs',
+};
+
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
     return _.map(dataArr.dataValue, (row) => row[idx]);
@@ -53,6 +57,7 @@ function getColumnDataModel(
     dataArr: DataPointsArray,
     type,
     visualProps: VisualProps,
+    customStyleConfig: ChartSdkCustomStylingConfig,
 ) {
     // this should be handled in a better way
     const xAxisColumns = configDimensions?.[0].columns ?? [];
@@ -66,11 +71,15 @@ function getColumnDataModel(
                 data: getDataForColumn(col, dataArr),
                 yAxisID: `${type}-y${idx.toString()}`,
                 type: `${type}`,
-                backgroundColor: _.get(
-                    visualProps,
-                    visualPropKeyMap?.[idx],
-                    availableColor[idx],
-                ),
+                backgroundColor:
+                    customStyleConfig?.chartColorPalettes.length &&
+                    customStyleConfig?.chartColorPalettes[0].colors.length > 0
+                        ? customStyleConfig?.chartColorPalettes[0].colors
+                        : _.get(
+                              visualProps,
+                              visualPropKeyMap?.[idx],
+                              availableColor[idx],
+                          ),
                 borderColor: _.get(
                     visualProps,
                     visualPropKeyMap?.[idx],
@@ -93,6 +102,10 @@ function getColumnDataModel(
                         title: {
                             display: true,
                             text: _val.name,
+                            font: {
+                                size: 30,
+                                family: 'Custom font',
+                            },
                         },
                     };
                     return obj;
@@ -112,13 +125,17 @@ function getColumnDataModel(
     };
 }
 
-function getDataModel(chartModel: ChartModel) {
+function getDataModel(
+    chartModel: ChartModel,
+    customStyleConfig: ChartSdkCustomStylingConfig | undefined,
+) {
     // column chart model
     const columnChartModel = getColumnDataModel(
         chartModel.config?.chartConfig?.[0].dimensions ?? [],
         chartModel.data?.[0].data ?? [],
         'bar',
         chartModel.visualProps,
+        customStyleConfig,
     );
 
     return columnChartModel;
@@ -136,9 +153,39 @@ function downloadChartAsPNG() {
     imageLink.click();
 }
 
+// To apply custom font, Note: chart url will need to be whitelisted for
+// font-src for this to work and not through CORS error
+
+function insertCustomFont(customFontFaces) {
+    customFontFaces.forEach((it: any) => {
+        const font = new FontFace(it.family, `url(${it.url})`);
+        document.fonts.add(font);
+    });
+}
+
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
-    const dataModel = getDataModel(chartModel);
+    const appConfig = ctx.getAppConfig();
+
+    ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
+        visualProps: JSON.parse(
+            JSON.stringify({
+                ...chartModel.visualProps,
+                // used to store any local state specific to chart, can only be
+                // of type string. This will be preserved when you save answer
+                clientState: exampleClientState,
+            }),
+        ),
+    });
+    if (
+        appConfig?.styleConfig?.customFontFaces?.length &&
+        appConfig?.styleConfig?.customFontFaces?.length > 0
+    ) {
+        insertCustomFont(appConfig.styleConfig?.customFontFaces);
+    }
+
+    const appColor = appConfig?.styleConfig?.appPanelColor?.color || '';
+    const dataModel = getDataModel(chartModel, appConfig?.styleConfig);
     const allowLabels = _.get(
         chartModel.visualProps,
         visualPropKeyMap[2],
@@ -178,10 +225,13 @@ function render(ctx: CustomChartContext) {
                             title: {
                                 font: {
                                     weight: 'bold',
+                                    size: 12,
+                                    family: 'Custom font',
                                 },
                             },
+
                             value: {
-                                color: 'black',
+                                color: appColor,
                             },
                         },
                     },
@@ -316,11 +366,15 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     isValid: false,
                     validationErrorMessage: ['Invalid config. no config found'],
                 };
-            } else {
-                return {
-                    isValid: true,
-                };
             }
+            return {
+                isValid: true,
+            };
+        },
+        validateVisualProps: (visualProps, chartModel) => {
+            return {
+                isValid: true,
+            };
         },
         chartConfigEditorDefinition: (
             currentChartConfig: ChartModel,

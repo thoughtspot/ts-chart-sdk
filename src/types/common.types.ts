@@ -179,15 +179,21 @@ export type ValidationResponse = {
 /**
  * Custom Visual props is the stored metadata for the visual props definition
  * configured by the user in the visual prop editor
- * The JSON is defined by the visual prop types. See VisualPropEditorDefinition.
- *
+ * The object is defined by the visual prop types. See VisualPropEditorDefinition.
+ * If there is any local state specific to charts needs to be maintained on save answer, store it
+ * in VisualProps, with visualProps.clientState variable. The clientState variable should be a
+ * string, preferrably a result of JSON.stringify(<yourlocalClientState>).
+ * @remark
+ * only values stored in clientSate variable will be preserved on changing the
+ * visualPropeditorDefinition, any other variable store would not be preserved
  * @group Chart Model
  * @version SDK: 0.1 | ThoughtSpot:
  */
-export type VisualProps = JSON;
+export type VisualProps = unknown;
 
 /**
  * Custom Font Faces type from TS.
+ *
  */
 
 export type CustomFontFaces = {
