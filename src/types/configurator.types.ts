@@ -70,6 +70,20 @@ export interface ChartConfigSection {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     allowTimeSeriesColumns?: boolean;
+    /**
+     * Allow measure name Column on the Section
+     *
+     * @default true
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowMeasureNameColumn?: boolean;
+    /**
+     * Allow measure value Column on the Section
+     *
+     * @default true
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowMeasureValueColumn?: boolean;
 }
 
 /**

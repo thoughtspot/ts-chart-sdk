@@ -59,6 +59,7 @@ import {
 export type AllowedConfigurations = {
     allowColumnNumberFormatting: boolean;
     allowColumnConditionalFormatting: boolean;
+    allowMeasureNamesAndValues: boolean;
 };
 
 export type CustomChartContextProps = {
@@ -158,6 +159,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     allowedConfigurations: {
         allowColumnNumberFormatting: false,
         allowColumnConditionalFormatting: false,
+        allowMeasureNamesAndValues: false,
     },
 };
 

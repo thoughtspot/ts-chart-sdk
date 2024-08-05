@@ -13,6 +13,7 @@ import {
 } from '../../test/test-conditional-formatting-utils';
 import {
     ChartColumn,
+    ChartSpecificColumnType,
     ColumnTimeBucket,
     ColumnType,
     DataType,
@@ -190,6 +191,7 @@ describe('getCfForColumn', () => {
             id: 'col3',
             name: '',
             type: ColumnType.MEASURE,
+            chartSpecificColumnType: ChartSpecificColumnType.UNKNOWN,
             timeBucket: ColumnTimeBucket.AUTO,
             dataType: DataType.UNKNOWN,
             columnProperties: {
