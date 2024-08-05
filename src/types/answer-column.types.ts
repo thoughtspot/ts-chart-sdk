@@ -4,6 +4,18 @@ export enum ColumnType {
     UNKNOWN,
     MEASURE,
     ATTRIBUTE,
+    // Virtual columns that are measure name/value columns
+    VIRTUAL,
+}
+
+/**
+ * When the column is generated for the chart for creating views,
+ * on top of measure columns from the worksheet which are part of answer query.
+ */
+export enum ChartSpecificColumnType {
+    UNKNOWN,
+    MEASURE_NAMES,
+    MEASURE_VALUES,
 }
 
 /**
@@ -249,4 +261,12 @@ export interface ChartColumn {
      * @version SDK: 0.1 | ThoughtSpot: sdcwdc
      */
     calenderGuid?: string;
+
+    /**
+     * Type of arbitrary column, can be measure names or measure values
+     * also, unknown if regular column
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    chartSpecificColumnType: ChartSpecificColumnType;
 }

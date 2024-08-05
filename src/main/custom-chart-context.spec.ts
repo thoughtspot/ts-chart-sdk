@@ -107,6 +107,7 @@ describe('CustomChartContext', () => {
                 allowedConfigurations: {
                     allowColumnNumberFormatting: false,
                     allowColumnConditionalFormatting: false,
+                    allowMeasureNamesAndValues: false,
                 },
             });
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
