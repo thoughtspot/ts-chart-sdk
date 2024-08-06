@@ -262,4 +262,9 @@ export interface AppConfig {
      * @hidden
      */
     customCalendarConfig?: any; // this is to initialize custom calendar service
+
+    /**
+     * Unique identifier for the customer. This is used to identify the customer
+     */
+    customerId?: string;
 }
