@@ -8,15 +8,13 @@ import {
   Query,
 } from '@thoughtspot/ts-chart-sdk';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import Chart from 'chart.js/auto';
 import _ from 'lodash';
 import USjsonData from './ADMIN_DIV_2-US.json'
 import L from 'leaflet';
 
-Chart.register(ChartDataLabels);
 function getDataModel(chartModel: ChartModel) {
-  const dataModel=chartModel.data?.[0].data.dataValue;
-  const updatedCounties= dataModel?.map(([name, value]) => {
+  const chartValue=chartModel.data?.[0].data.dataValue;
+  const updatedNameCounties= chartValue?.map(([name, value]) => {
     const words = name.split(' ');
     if (words.length >= 2) {
       words.pop();
@@ -24,32 +22,30 @@ function getDataModel(chartModel: ChartModel) {
     const updatedName = words.join(' ');
     return [updatedName, value];
   });
-  console.log(updatedCounties)
-  return updatedCounties;
-}
-let globalChartReference: Chart;
-const render = (ctx: CustomChartContext) => {
-  const chartModel = ctx.getChartModel();
-  const dataModel = getDataModel(chartModel);
-  console.log(dataModel)
+  console.log(updatedNameCounties)
   const USCountyData = USjsonData;
   console.log(USCountyData)
-  const updatedCounties = dataModel?.map((county: any[]) => county[0]);
+  const updatedCounties = updatedNameCounties?.map((county: any[]) => county[0]);
   console.log(updatedCounties)
   const filteredUSCountyData = USCountyData.features.filter((feature: any) => {
     const idx=updatedCounties?.indexOf(feature.properties.NAME.toLowerCase());
     if(idx==-1) return false
-    if(idx!==undefined) feature.properties.XData= dataModel?.[idx][1]??0;
+    if(idx!==undefined) feature.properties.XData= updatedNameCounties?.[idx][1]??0;
     return true;
   });
   console.log(filteredUSCountyData)
+  return filteredUSCountyData;
+}
+const render = (ctx: CustomChartContext) => {
+  const chartModel = ctx.getChartModel();
+  const dataModel = getDataModel(chartModel);
   let config = {
     minZoom: 1,
     maxZoom: 18,
   };
   const geojsonFeature={
     "type": "FeatureCollection",
-    "features": filteredUSCountyData
+    "features": dataModel
   }
   console.log(geojsonFeature);
   // magnification with which the map will start
@@ -81,9 +77,6 @@ const render = (ctx: CustomChartContext) => {
 }
 
 const renderChart = async (ctx: CustomChartContext): Promise<void> => {
-  if (globalChartReference) {
-      globalChartReference.destroy();
-  }
   try {
       ctx.emitEvent(ChartToTSEvent.RenderStart);
       render(ctx);
