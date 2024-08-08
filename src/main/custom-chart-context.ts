@@ -5,21 +5,35 @@
  *
  * Copyright: ThoughtSpot Inc. 2023
  */
+
 import _ from 'lodash';
 import {
+    AxisMenuActionHandler,
+    ChartToTSEvent,
     ChartToTSEventsPayloadMap,
+    ContextMenuActionHandler,
+    CustomAction,
     ErrorType,
+    OpenAxisMenuEventPayload,
+    OpenContextMenuEventPayload,
 } from '../types/chart-to-ts-event.types';
 import {
+    AppConfig,
     ChartConfig,
     ChartModel,
+    SuccessValidationResponse,
     ValidationResponse,
     VisualProps,
 } from '../types/common.types';
-import { ChartConfigEditorDefinition } from '../types/configurator.types';
 import {
+    ChartConfigEditorDefinition,
+    ConfigEditorDefinitionSetter,
+} from '../types/configurator.types';
+import {
+    AxisMenuCustomActionPayload,
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
+    ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
     GetDataQueryPayload,
     GetDataQueryResponsePayload,
@@ -32,10 +46,21 @@ import {
     VisualPropsUpdateEventPayload,
     VisualPropsValidateEventPayload,
 } from '../types/ts-to-chart-event.types';
-import { VisualPropEditorDefinition } from '../types/visual-prop.types';
-import * as PostMessageEventBridge from './post-message-event-bridge';
+import {
+    VisualEditorDefinitionSetter,
+    VisualPropEditorDefinition,
+} from '../types/visual-prop.types';
+import {
+    globalThis,
+    initMessageListener,
+    postMessageToHostApp,
+} from './post-message-event-bridge';
 
-let isInitialized = false;
+export type AllowedConfigurations = {
+    allowColumnNumberFormatting: boolean;
+    allowColumnConditionalFormatting: boolean;
+    allowMeasureNamesAndValues: boolean;
+};
 
 export type CustomChartContextProps = {
     /**
@@ -53,7 +78,10 @@ export type CustomChartContextProps = {
      * @returns {@link Array<Query>}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    getQueriesFromChartConfig: (chartConfig: ChartConfig[]) => Query[];
+    getQueriesFromChartConfig: (
+        chartConfig: ChartConfig[],
+        chartModel: ChartModel,
+    ) => Query[];
     /**
      * Main Render function that will render the chart based on the chart context provided
      *
@@ -63,7 +91,7 @@ export type CustomChartContextProps = {
      */
     renderChart: (ctx: CustomChartContext) => Promise<void>;
     /**
-     * required to validate the current chart configuration
+     * Required to validate the current chart configuration
      * that chart user has updated on the chart config editor
      *
      * @version SDK: 0.1 | ThoughtSpot:
@@ -77,7 +105,7 @@ export type CustomChartContextProps = {
     ) => ValidationResponse;
 
     /**
-     * required to validate the custom visual props that
+     * Required to validate the custom visual props that
      * the chart user has updated on the chart settings editor.
      *
      * @param updatedVisualProps
@@ -96,17 +124,30 @@ export type CustomChartContextProps = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    chartConfigEditorDefinition?: ChartConfigEditorDefinition[];
+    chartConfigEditorDefinition?:
+        | ConfigEditorDefinitionSetter
+        | ChartConfigEditorDefinition[];
 
     /**
      * Definition to help edit/customize the visual properties from chart settings editor
      * on the TS app. If not provided, visual properties will not be configurable in
      * editor
      *
+     * @param chartModel
+     * @returns {@link VisualPropEditorDefinition}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    visualPropEditorDefinition?: VisualPropEditorDefinition;
+    visualPropEditorDefinition?:
+        | VisualEditorDefinitionSetter
+        | VisualPropEditorDefinition;
+
+    // Whether user wants thoughtspot default number and conditional formatting
+    allowedConfigurations?: AllowedConfigurations;
 };
+
+export type ValidationFunctions =
+    | CustomChartContextProps['validateVisualProps']
+    | CustomChartContextProps['validateConfig'];
 
 /**
  * Default configuration options for all the chart context properties
@@ -115,13 +156,17 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     validateConfig: () => ({ isValid: true }),
     validateVisualProps: () => ({ isValid: true }),
     chartConfigEditorDefinition: undefined,
-    visualPropEditorDefinition: undefined,
+    allowedConfigurations: {
+        allowColumnNumberFormatting: false,
+        allowColumnConditionalFormatting: false,
+        allowMeasureNamesAndValues: false,
+    },
 };
 
 export class CustomChartContext {
     /**
-     * Id to map to the parent chart component.
-     * This is used to differentiate between multiple chart componenets rendered on the
+     * ID to map to the parent chart component.
+     * This is used to differentiate between multiple chart components rendered on the
      * parent app Example: liveboards with multiple charts
      *
      * @hidden
@@ -129,6 +174,8 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     private componentId = '';
+
+    private removeListener: () => void = _.noop;
 
     /**
      * host app url
@@ -146,6 +193,13 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     private chartModel: ChartModel = {} as any;
+
+    /**
+     * App Config object. This contains the app state like locale and timezones.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    private appConfig: AppConfig = {};
 
     /**
      * Chart Props Object to define the workflow of the application
@@ -184,6 +238,24 @@ export class CustomChartContext {
     private triggerInitResolve: () => void = _.noop;
 
     /**
+     * Stores the callbacks of context menu custom action based on custom action id
+     *
+     * @returns {@link ContextMenuActionHandler}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    private contextMenuActionHandler: ContextMenuActionHandler = {};
+
+    /**
+     * Stores the callbacks of axis menu custom action based on custom action id
+     *
+     * @returns {@link AxisMenuActionHandler}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    private axisMenuActionHandler: AxisMenuActionHandler = {};
+
+    public containerEl: HTMLElement | null = null;
+
+    /**
      * Constructor to only accept context props as payload
      *
      * @param  {CustomChartContextProps} chartContextProps
@@ -194,7 +266,7 @@ export class CustomChartContext {
             ...chartContextProps,
         };
         this.registerEventProcessor();
-        this.hasInitializedPromise = new Promise((resolve) => {
+        this.hasInitializedPromise = new Promise((resolve, reject) => {
             this.triggerInitResolve = resolve;
         });
     }
@@ -232,6 +304,21 @@ export class CustomChartContext {
     }
 
     /**
+     * Removes specific event listeners on the chart context.
+     *
+     * @param  {T} eventType
+     * @returns void
+     */
+    public off<T extends keyof TSToChartEventsPayloadMap>(eventType: T): void {
+        if (_.isNil(this.eventListeners[eventType])) {
+            console.log('No event listener found to remove');
+            this.eventListeners[eventType] = [];
+            return;
+        }
+        this.eventListeners[eventType].splice(0, 1);
+    }
+
+    /**
      * Add internal event listeners on the chart context with the required callback.
      *
      * @param  {T} eventType
@@ -256,8 +343,8 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     public destroy() {
-        PostMessageEventBridge.destroyMessageListener(this.eventProcessor);
-        isInitialized = false;
+        this.removeListener();
+        globalThis.isInitialized = false;
     }
 
     /**
@@ -266,6 +353,167 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     public getChartModel = (): ChartModel => this.chartModel;
+
+    /**
+     * Getter for the chart model object
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    public getAppConfig = (): AppConfig => this.appConfig;
+
+    /**
+     * Function to store the context menu custom action callback mapped with action id
+     * @param  {[OpenContextMenuEventPayload]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    public contextMenuCustomActionPreProcessor(
+        eventPayload: [OpenContextMenuEventPayload],
+    ): [OpenContextMenuEventPayload] {
+        // clear out the stored custom events callback for context menu
+        this.contextMenuActionHandler = {};
+        if (_.isEmpty(eventPayload?.[0]?.customActions)) {
+            return eventPayload;
+        }
+        eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
+            this.contextMenuActionHandler[action.id] = action.onClick;
+        });
+        const processedCustomActions = eventPayload[0]?.customActions?.map(
+            (action: CustomAction) => {
+                return {
+                    id: action.id,
+                    label: action.label,
+                    icon: action.icon,
+                };
+            },
+        );
+        const processedPayload: [OpenContextMenuEventPayload] = [
+            {
+                ...eventPayload[0],
+                customActions: processedCustomActions as CustomAction[],
+            },
+        ];
+        return processedPayload;
+    }
+
+    /**
+     * Funtions return the chart config editor definition
+     * @param {ChartConfig[]} currentChartConfig
+     * @param {VisualProps}
+     * @returns {ChartConfigEditorDefinition[]}
+     */
+    private getChartConfigEditorDefinition = (
+        currentState: Partial<ChartModel> = {},
+    ) => {
+        if (_.isFunction(this.chartContextProps.chartConfigEditorDefinition)) {
+            return this.chartContextProps.chartConfigEditorDefinition(
+                {
+                    ...this.chartModel,
+                    ...currentState,
+                },
+                this,
+            );
+        }
+        return this.chartContextProps.chartConfigEditorDefinition;
+    };
+
+    /**
+     * Funtions returns the visual prop editor definition
+     * @param {ChartConfig[]} currentChartConfig
+     * @param {VisualProps}
+     * @returns {VisualPropEditorDefinition}
+     */
+    private getVisualPropEditorDefinition = (
+        currentState: Partial<ChartModel> = {},
+    ) => {
+        if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
+            return this.chartContextProps.visualPropEditorDefinition(
+                {
+                    ...this.chartModel,
+                    ...currentState,
+                },
+                this,
+            );
+        }
+        return this.chartContextProps.visualPropEditorDefinition;
+    };
+
+    /**
+     * Function to store the axis menu custom action callback mapped with action id
+     * @param  {[OpenAxisMenuEventPayload]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    public axisMenuCustomActionPreProcessor(
+        eventPayload: [OpenAxisMenuEventPayload],
+    ): [OpenAxisMenuEventPayload] {
+        // clear out the stored custom events callback for axis menu
+        this.axisMenuActionHandler = {};
+        if (_.isEmpty(eventPayload?.[0]?.customActions)) {
+            return eventPayload;
+        }
+        eventPayload[0].customActions?.forEach((action: CustomAction) => {
+            this.axisMenuActionHandler[action.id] = action.onClick;
+        });
+        const processedCustomActions = eventPayload?.[0].customActions?.map(
+            (action: CustomAction) => {
+                return {
+                    id: action.id,
+                    label: action.label,
+                    icon: action.icon,
+                };
+            },
+        );
+        const processedPayload: [OpenAxisMenuEventPayload] = [
+            {
+                ...eventPayload[0],
+                customActions: processedCustomActions as CustomAction[],
+            },
+        ];
+        return processedPayload;
+    }
+
+    /**
+     * Function to process the event payload based on event type
+     * @param  {ChartToTSEventsPayloadMap[T]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    private eventPayloadPreProcessor<T extends keyof ChartToTSEventsPayloadMap>(
+        eventType: T,
+        eventPayload: ChartToTSEventsPayloadMap[T],
+    ): ChartToTSEventsPayloadMap[T] {
+        switch (eventType) {
+            case ChartToTSEvent.OpenContextMenu:
+                return this.contextMenuCustomActionPreProcessor(
+                    eventPayload as [OpenContextMenuEventPayload],
+                ) as ChartToTSEventsPayloadMap[T];
+            case ChartToTSEvent.OpenAxisMenu:
+                return this.axisMenuCustomActionPreProcessor(
+                    eventPayload as [OpenAxisMenuEventPayload],
+                ) as ChartToTSEventsPayloadMap[T];
+            default:
+                return eventPayload;
+        }
+    }
+
+    private validationsResponseProcessor(
+        currentValidationState: Partial<ChartModel>,
+        validationResponse: ValidationResponse,
+    ) {
+        const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
+            currentValidationState,
+        );
+        const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
+            currentValidationState,
+        );
+
+        return {
+            ...validationResponse,
+            visualPropEditorDefinition,
+            chartConfigEditorDefinition,
+        };
+    }
 
     /**
      * Function to emit Chart to TS Events to the TS application.
@@ -277,18 +525,22 @@ export class CustomChartContext {
      */
     public emitEvent<T extends keyof ChartToTSEventsPayloadMap>(
         eventType: T,
-        eventPayload: ChartToTSEventsPayloadMap[T],
+        ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
-        if (!isInitialized) {
+        if (!globalThis.isInitialized) {
             console.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
-            return Promise.reject();
+            return Promise.reject(new Error('Context not initialized'));
         }
-        return PostMessageEventBridge.postMessageToHostApp(
+        const processedPayload = this.eventPayloadPreProcessor(
+            eventType,
+            eventPayload,
+        );
+        return postMessageToHostApp(
             this.componentId,
             this.hostUrl,
-            eventPayload,
+            processedPayload?.[0] ?? null,
             eventType,
         );
     }
@@ -298,13 +550,13 @@ export class CustomChartContext {
      * Process all the functions via the eventProcess callback
      */
     private registerEventProcessor = () => {
-        if (isInitialized) {
+        if (globalThis.isInitialized) {
             console.error(
                 'The context is already initialized. you cannot have multiple contexts',
             );
             throw new Error(ErrorType.MultipleContextsNotSupported);
         }
-        PostMessageEventBridge.initMessageListener(this.eventProcessor);
+        this.removeListener = initMessageListener(this.eventProcessor);
 
         this.registerEvents();
     };
@@ -314,29 +566,13 @@ export class CustomChartContext {
      *
      * @param event : Message Event Object
      */
-    private eventProcessor = (event: MessageEvent) => {
-        if (event.data.source !== 'ts-host-app') {
-            return;
-        }
+    private eventProcessor = (data: any) => {
+        console.log('Chart Context: message received:', data.eventType, data);
 
-        console.log(
-            'Chart Context: message received:',
-            event.data.eventType,
-            event.data,
-        );
-
-        const messageResponse = this.executeEventListenerCBs(event);
+        const messageResponse = this.executeEventListenerCBs(data);
 
         // respond back to parent to confirm/ack the receipt
-        if (!_.isNil(event.ports[0])) {
-            if (!_.isNil(messageResponse)) {
-                event.ports[0].postMessage({
-                    ...(messageResponse as any),
-                });
-            } else {
-                event.ports[0].postMessage({});
-            }
-        }
+        return messageResponse;
     };
 
     /**
@@ -358,19 +594,40 @@ export class CustomChartContext {
         );
 
         /**
+         * This event is triggered when the TS app initialization is complete.
+         */
+        this.onInternal(TSToChartEvent.InitializeComplete, () =>
+            this.initializationComplete(),
+        );
+
+        /**
          * This event is triggered when the TS app asks for validating the updated visual
          * props If {validateVisualProps} is not defined, default is always returned as
          * true.
          */
         this.onInternal(
             TSToChartEvent.VisualPropsValidate,
-            (payload: VisualPropsValidateEventPayload): ValidationResponse => {
+            (
+                payload: VisualPropsValidateEventPayload,
+            ):
+                | (ValidationResponse & SuccessValidationResponse)
+                | ValidationResponse => {
                 if (this.chartContextProps.validateVisualProps) {
                     const validationResponse =
                         this.chartContextProps.validateVisualProps(
                             payload.visualProps,
                             this.chartModel,
                         );
+                    if (validationResponse.isValid) {
+                        const currentVisualState = {
+                            visualProps: payload.visualProps,
+                        };
+
+                        return this.validationsResponseProcessor(
+                            currentVisualState,
+                            validationResponse,
+                        );
+                    }
                     return validationResponse;
                 }
                 // this will never be true
@@ -385,13 +642,29 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.ChartConfigValidate,
-            (payload: ChartConfigValidateEventPayload): ValidationResponse => {
+            (
+                payload: ChartConfigValidateEventPayload,
+            ):
+                | (ValidationResponse & SuccessValidationResponse)
+                | ValidationResponse => {
                 if (this.chartContextProps.validateConfig) {
                     const validationResponse =
                         this.chartContextProps.validateConfig(
                             payload.chartConfig,
                             this.chartModel,
                         );
+                    if (validationResponse.isValid) {
+                        const currentConfigState = {
+                            config: {
+                                ...this.chartModel.config,
+                                chartConfig: payload.chartConfig,
+                            },
+                        };
+                        return this.validationsResponseProcessor(
+                            currentConfigState,
+                            validationResponse,
+                        );
+                    }
                     return validationResponse;
                 }
                 // this will never be true
@@ -409,6 +682,7 @@ export class CustomChartContext {
                 const queries =
                     this.chartContextProps.getQueriesFromChartConfig(
                         payload.config,
+                        this.chartModel,
                     );
                 return {
                     queries,
@@ -419,9 +693,97 @@ export class CustomChartContext {
         /**
          * This event is triggered when the TS app re-renders the chart
          */
-        this.onInternal(TSToChartEvent.TriggerRenderChart, async () => {
-            await this.chartContextProps.renderChart(this);
+        this.onInternal(TSToChartEvent.TriggerRenderChart, () => {
+            this.chartContextProps.renderChart(this);
         });
+
+        /**
+         * This event is triggered when the custom context action is triggered from TS app
+         */
+        this.onInternal(
+            TSToChartEvent.ContextMenuActionClick,
+            (
+                payload: ContextMenuCustomActionPayload,
+            ): {
+                isValid: boolean;
+                error?: unknown;
+            } => {
+                try {
+                    const {
+                        id: customActionCallback,
+                        clickedPoint,
+                        selectedPoints,
+                        event,
+                    } = payload.customAction;
+                    const customActionCallbackArgs = {
+                        id: customActionCallback,
+                        clickedPoint,
+                        selectedPoints,
+                        event,
+                    };
+                    this.contextMenuActionHandler[customActionCallback](
+                        customActionCallbackArgs,
+                    );
+                    return {
+                        isValid: true,
+                    };
+                } catch (error: unknown) {
+                    console.log(
+                        'ContextMenuCustomAction: payload recieved:',
+                        payload,
+                        'CustomActionCallbackStore:',
+                        this.axisMenuActionHandler,
+                    );
+                    return {
+                        isValid: false,
+                        error,
+                    };
+                }
+            },
+        );
+
+        /**
+         * This event is triggered when the custom axis action is triggered from TS app
+         */
+        this.onInternal(
+            TSToChartEvent.AxisMenuActionClick,
+            (
+                payload: AxisMenuCustomActionPayload,
+            ): {
+                isValid: boolean;
+                error?: unknown;
+            } => {
+                try {
+                    const {
+                        id: customActionCallback,
+                        columnIds,
+                        event,
+                    } = payload.customAction;
+                    const customActionCallbackArgs = {
+                        id: customActionCallback,
+                        columnIds,
+                        event,
+                    };
+                    this.axisMenuActionHandler[customActionCallback](
+                        customActionCallbackArgs,
+                    );
+                    return {
+                        isValid: true,
+                    };
+                } catch (error: unknown) {
+                    console.log(
+                        'AxisMenuCustomAction: payload recieved:',
+                        payload,
+                        'CustomActionCallbackStore:',
+                        this.axisMenuActionHandler,
+                    );
+                    return {
+                        isValid: false,
+                        error,
+                    };
+                }
+            },
+        );
 
         // Register External Events
         // These events are readable by the developer
@@ -481,8 +843,8 @@ export class CustomChartContext {
     };
 
     /**
-     * private function is going to initialize the flow from TS app and send back
-     * the coinfiguration back to ts app to complete the handshake.
+     * Private function is going to initialize the flow from TS app and send back
+     * the configuration back to ts app to complete the handshake.
      *
      * @param  {InitializeEventPayload} payload
      * @returns InitializeEventResponsePayload
@@ -493,14 +855,20 @@ export class CustomChartContext {
         this.componentId = payload.componentId;
         this.hostUrl = payload.hostUrl;
         this.chartModel = payload.chartModel;
+        this.appConfig = payload.appConfig ?? {};
+        this.containerEl = payload.containerElSelector
+            ? document.querySelector(payload.containerElSelector)
+            : null;
 
+        return this.publishChartContextPropsToHost();
+    };
+
+    private initializationComplete = (): void => {
         // context is now initialized
-        isInitialized = true;
+        globalThis.isInitialized = true;
 
         // TODO: following can be done behind a promise
         this.triggerInitResolve();
-
-        return this.publishChartContextPropsToHost();
     };
 
     private publishChartContextPropsToHost =
@@ -524,14 +892,15 @@ export class CustomChartContext {
                         this.chartModel,
                     );
             }
-
             return {
                 isConfigValid: isValid,
                 defaultChartConfig,
                 chartConfigEditorDefinition:
-                    this.chartContextProps.chartConfigEditorDefinition,
+                    this.getChartConfigEditorDefinition(),
                 visualPropEditorDefinition:
-                    this.chartContextProps.visualPropEditorDefinition,
+                    this.getVisualPropEditorDefinition(),
+                allowedConfigurations:
+                    this.chartContextProps.allowedConfigurations,
             };
         };
 
@@ -541,29 +910,29 @@ export class CustomChartContext {
      * @param event : Message Event Object
      * @returns response to be sent back to the message sender (host)
      */
-    private executeEventListenerCBs = (event: MessageEvent): any => {
+    private executeEventListenerCBs = (data: any): any => {
         // do basic sanity
-        const payload = event.data.payload;
+        const payload = data.payload;
         let response;
-        if (_.isArray(this.eventListeners[event.data.eventType])) {
-            this.eventListeners[event.data.eventType].forEach((callback) => {
-                // this is a problem today if we have multipe callbacks
-                // registered. only the last responsed will be sent back to the
+        if (_.isArray(this.eventListeners[data.eventType])) {
+            this.eventListeners[data.eventType].forEach((callback) => {
+                // this is a problem today if we have multiple callbacks
+                // registered. only the last response will be sent back to the
                 // server
                 response = callback(payload);
             });
         } else {
             response = {
                 hasError: true,
-                error: `Event type not recognised or processed: ${event.data.eventType}`,
+                error: `Event type not recognised or processed: ${data.eventType}`,
             };
         }
 
         console.log(
             'ChartContext: Response:',
-            event.data.eventType,
+            data.eventType,
             response,
-            this.eventListeners[event.data.eventType]?.length,
+            this.eventListeners[data.eventType]?.length,
         );
         return response;
     };

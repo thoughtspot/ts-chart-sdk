@@ -1,0 +1,100 @@
+
+    {
+      "columns": [
+        {
+          "id": "2c2e6b70-bf81-4677-a94d-2af6ee5dfada",
+          "name": "Ship Mode",
+          "type": 2,
+          "dataType": 2,
+          "format": null
+        },
+        {
+          "id": "306c28f1-1197-4934-b858-110cda5dc190",
+          "name": "Total Discount",
+          "type": 1,
+          "dataType": 4,
+          "format": null
+        },
+        {
+          "id": "af8f3b48-b4da-46e3-8b93-74b2fb89f192",
+          "name": "Total Revenue",
+          "type": 1,
+          "dataType": 4,
+          "format": null
+        },
+        {
+          "id": "7d635776-7bf2-40ee-9c30-3f96dacb12b8",
+          "name": "Total OrderKey",
+          "type": 1,
+          "dataType": 4,
+          "format": null
+        }
+      ],
+      "data": [
+        {
+          "data": {
+            "columns": [
+              "2c2e6b70-bf81-4677-a94d-2af6ee5dfada",
+              "306c28f1-1197-4934-b858-110cda5dc190",
+              "af8f3b48-b4da-46e3-8b93-74b2fb89f192",
+              "7d635776-7bf2-40ee-9c30-3f96dacb12b8"
+            ],
+            "dataValue": [
+              [
+                "reg air",
+                3732,
+                2565221233,
+                1790147
+              ],
+              [
+                "air",
+                3512,
+                2369896786,
+                1695533
+              ],
+              [
+                true,
+                9,
+                1340812,
+                4871
+              ],
+              [
+                "rail",
+                3702,
+                2708882732,
+                1746869
+              ],
+              [
+                "mail",
+                3500,
+                2549494249,
+                1696385
+              ],
+              [
+                "fob",
+                3707,
+                2575734586,
+                1737153
+              ],
+              [
+                "truck",
+                3604,
+                2793585813,
+                4820715
+              ],
+              [
+                "ship",
+                3488,
+                2487066224,
+                1676506
+              ]
+            ]
+          },
+          "totalRowCount": null
+        }
+      ],
+      "sortInfo": [],
+      "config": {
+        "chartConfig": []
+      }
+    }

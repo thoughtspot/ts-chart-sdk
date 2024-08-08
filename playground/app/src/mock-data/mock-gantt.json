@@ -1,0 +1,137 @@
+{
+    "columns": [
+        {
+            "id": "79344559-4c71-45c6-be33-450316eab54d",
+            "name": "Project Name",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "bce26c20-1335-4357-9d3f-b15a6a27237d",
+            "name": "Task",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "cdd0329d-9ae6-41d2-b036-aa565eb18bc9",
+            "name": "Start Date",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "59a5893c-f487-46f6-ab08-8cd7672c283d",
+            "name": "End Date",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "69a5893c-f487-46f6-ab08-8cd7672c283d",
+            "name": "Completion",
+            "type": 1,
+            "timeBucket": 0,
+            "dataType": 4,
+            "format": null
+        },
+        {
+            "id": "79a5893c-f487-46f6-ab08-8cd7672c283d",
+            "name": "Dependency",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        }
+    ],
+    "data": [
+        {
+            "data": {
+                "columns": [
+                    "79344559-4c71-45c6-be33-450316eab54d",
+                    "bce26c20-1335-4357-9d3f-b15a6a27237d",
+                    "cdd0329d-9ae6-41d2-b036-aa565eb18bc9",
+                    "59a5893c-f487-46f6-ab08-8cd7672c283d",
+                    "69a5893c-f487-46f6-ab08-8cd7672c283d",
+                    "79a5893c-f487-46f6-ab08-8cd7672c283d"
+                ],
+                "dataValue": [
+                    [
+                        "Project 1",
+                        "Start prototype",
+                        1413570600000,
+                        1414175400000,
+                        0.25,
+                        null
+                    ],
+                    [
+                        "Project 1",
+                        "Test prototype",
+                        1414348200000,
+                        1414521000000,
+                        null,
+                        "Develop"
+                    ],
+                    [
+                        "Project 1",
+                        "Develop",
+                        1413743400000,
+                        1414175400000,
+                        null,
+                        "Start prototype"
+                    ],
+                    [
+                        "Project 1",
+                        "Run acceptance test",
+                        1414002600000,
+                        1414261800000,
+                        null,
+                        "Test prototype"
+                    ],
+                    [
+                        "Project 2",
+                        "Start prototype",
+                        1413570600000,
+                        1414175400000,
+                        0.4,
+                        null
+                    ],
+                    [
+                        "Project 2",
+                        "Test prototype",
+                        1414348200000,
+                        1414521000000,
+                        null,
+                        "Develop"
+                    ],
+                    [
+                        "Project 2",
+                        "Develop",
+                        1413743400000,
+                        1414175400000,
+                        null,
+                        "Start prototype"
+                    ],
+                    [
+                        "Project 2",
+                        "Run acceptance test",
+                        1414002600000,
+                        1414261800000,
+                        null,
+                        "Test prototype"
+                    ]
+                ]
+            },
+            "totalRowCount": 8
+        }
+    ],
+    "sortInfo": [],
+    "config": {
+        "chartConfig": []
+    }
+}

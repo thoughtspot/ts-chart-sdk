@@ -6,7 +6,31 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-import { ChartColumn, DataType } from './answer-column.types';
+import { ChartColumn } from './answer-column.types';
+import { ChartConfigEditorDefinition } from './configurator.types';
+import { VisualPropEditorDefinition } from './visual-prop.types';
+
+/**
+ * Defines types of features for which font can be customised with Custom style config used in TS.
+ * @remarks
+ * Use chartFeatureToFontGuid to get the guid for the feature and get the font face from guid
+ * from customFontFaces
+ */
+
+export enum CustomizableChartFeature {
+    X_AXIS_LABEL,
+    X_AXIS_TITLE,
+    Y_AXIS_LABEL,
+    Y_AXIS_TITLE,
+    TOOLTIP,
+    SCATTER_CHART,
+    PIE_CHART,
+    LINE_CHART,
+    COLUMN_CHART,
+    BAR_CHART,
+    AREA_CHART,
+    TAIL_FEATURE,
+}
 
 /**
  * List of Columns for a dimension in the Custom Chart Config.
@@ -18,13 +42,13 @@ import { ChartColumn, DataType } from './answer-column.types';
  */
 export interface ChartConfigDimension {
     /**
-     * key fo the dimension in the chart config
+     * Key for the dimension in the chart config
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     key: string;
     /**
-     * list of columns added for the dimension
+     * List of columns added for the dimension
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -40,8 +64,8 @@ export interface ChartConfigDimension {
  */
 export interface ChartConfig {
     /**
-     * key of the custom chart config defined in the chart config editor definition
-     * this is used to differentiate between different custom chart configurations
+     * Key of the custom chart config defined in the chart config editor definition
+     * This is used to differentiate between different custom chart configurations
      * within the same chart
      *
      * @version SDK: 0.1 | ThoughtSpot:
@@ -56,35 +80,32 @@ export interface ChartConfig {
 }
 
 /**
- * Data Array inteface to define each column data
+ * Data Points Array interface to define data for each row and column.
+ * Data is ordered as per the columns in the query and the rows are sorted
+ * as per the search query.
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group Chart Model
  */
-export type DataArray = {
+export type DataPointsArray = {
     /**
-     * column id associated with the data array
+     * Array of column IDs ordered as per the data query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnId: string;
+    columns: string[];
+
     /**
-     * type of data
+     * Array of rows of data ordered by the columns
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    columnDataType: DataType;
-    /**
-     * The array of data values associated with the column
-     *
-     * @version SDK: 0.1 | ThoughtSpot:
-     */
-    dataValue: any[];
+    dataValue: any[][];
 };
 
 /**
  * For each query defined by the user, a query data object is sent
- * in the following format
+ * in this format.
  *
  * @version SDK: 0.1 | ThoughtSpot:
  * @group Chart Model
@@ -95,21 +116,21 @@ export type QueryData = {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    data: DataArray[];
+    data: DataPointsArray;
 
     /**
      * @hidden
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    completionRatio: number;
+    completionRatio?: number;
     /**
      * @hidden
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    samplingRatio: number;
+    samplingRatio?: number;
 
     /**
-     * number of rows of data fetched for the query
+     * Number of rows of data fetched for the query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -130,7 +151,7 @@ export interface ChartModel {
      */
     columns: ChartColumn[];
     /**
-     * Array of Datasets for each query
+     * Array of datasets for each query
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -143,6 +164,12 @@ export interface ChartModel {
     };
 }
 
+// Validation Response for valid config or visual props
+export type SuccessValidationResponse = {
+    chartConfigEditorDefinition: ChartConfigEditorDefinition[];
+    visualPropEditorDefinition: VisualPropEditorDefinition;
+};
+
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
@@ -152,23 +179,63 @@ export type ValidationResponse = {
 /**
  * Custom Visual props is the stored metadata for the visual props definition
  * configured by the user in the visual prop editor
- * The JSON is defined by the visual prop types. See VisualPropEditorDefinition
- *
+ * The object is defined by the visual prop types. See VisualPropEditorDefinition.
+ * If there is any local state specific to charts needs to be maintained on save answer, store it
+ * in VisualProps, with visualProps.clientState variable. The clientState variable should be a
+ * string, preferrably a result of JSON.stringify(<yourlocalClientState>).
+ * @remark
+ * only values stored in clientSate variable will be preserved on changing the
+ * visualPropeditorDefinition, any other variable store would not be preserved
  * @group Chart Model
  * @version SDK: 0.1 | ThoughtSpot:
  */
-export type VisualProps = JSON;
+export type VisualProps = unknown;
 
-// Todo: this should be imported from custom style config package.
-type CustomStylingConfig = any;
+/**
+ * Custom Font Faces type from TS.
+ *
+ */
+
+export type CustomFontFaces = {
+    guid: string;
+    family?: string;
+    format?: string;
+    url?: string;
+    weight?: string;
+    style?: string;
+    size?: string;
+    unicodeRange?: string;
+    variant?: string;
+    stretch?: string;
+    color?: string;
+};
+
+/**
+ * Used for Custom color pallete and Custom font for charts defined in Style customisations
+ * inside thoughtspot admin or developer section
+ *
+ */
+
+export type ChartSdkCustomStylingConfig = {
+    appBackground?: {
+        color?: string;
+    };
+    appPanelColor?: {
+        color?: string;
+    };
+    chartColorPalettes?: Array<{ colors: Array<string> }>;
+    disableColorRotation?: boolean;
+    chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
+    customFontFaces?: Array<CustomFontFaces>;
+};
 
 export interface AppConfig {
-    styleConfig?: CustomStylingConfig;
+    styleConfig?: ChartSdkCustomStylingConfig;
 
     appOptions?: {
         isMobile?: boolean;
         isPrintMode?: boolean; // export mode on/off
-
+        isLiveboardContext?: boolean; // if chart renders in liveboard context
         // runtime configurations
         isDebugMode?: boolean; // enables debug mode for logging
     };
@@ -180,8 +247,24 @@ export interface AppConfig {
         sessionTimezone: string;
     };
 
+    /**
+     * App url for the custom chart application where the chart app is hosted.
+     * This helps the chart developer to access app artifacts relative to this url.
+     * There can be different build systems that developers may have used and different ways
+     * to host the same. This helps in resolving the same.
+     */
+    appUrl?: string;
+
     // Idea: we might be able to map this to data and ask user to read data in a
     // certain way the transformations for point during context menu operations
     // need to be explored
+    /**
+     * @hidden
+     */
     customCalendarConfig?: any; // this is to initialize custom calendar service
+
+    /**
+     * Unique identifier for the customer. This is used to identify the customer
+     */
+    customerId?: string;
 }

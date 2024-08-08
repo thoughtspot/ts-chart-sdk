@@ -8,6 +8,62 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+import { CustomChartContext } from '../main/custom-chart-context';
+import { ChartModel } from './common.types';
+/**
+ * Configuration for input validation rules
+ */
+export interface InputValidation {
+    /**
+     * Determines if the input is required.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    required?: boolean;
+    /**
+     * Error message to display when input is required but not provided.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    requiredError?: string;
+    /**
+     * Regular expression pattern to validate the input against.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    regex?: string;
+    /**
+     * Error message to display when input doesn't match the regex pattern.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    regexError?: string;
+    /**
+     * Minimum length required for the input.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    minLength?: number;
+    /**
+     * Error message to display when input length is less than the required minimum.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    minLengthError?: string;
+    /**
+     * Range of values allowed for the input.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    range?: string;
+    /**
+     * Error message to display when input value is outside the allowed range.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    rangeError?: string;
+}
+
 /**
  * Text Form Element for the visual props editor
  *
@@ -16,7 +72,7 @@
 export interface TextInputFormDetail {
     type: 'text';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -35,7 +91,7 @@ export interface TextInputFormDetail {
      */
     password?: boolean;
     /**
-     * Allow multiline text
+     * Allows multiline text
      *
      * @default false
      * @version SDK: 0.1 | ThoughtSpot:
@@ -53,6 +109,79 @@ export interface TextInputFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: string;
+    /**
+     * inputValidation config for input field
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    inputValidation?: InputValidation;
+}
+
+/**
+ * Number Form Element for the visual props editor
+ *
+ * @group Visual Properties Editor
+ */
+export interface NumberInputFormDetail {
+    type: 'number';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Default value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    defaultValue?: number;
+    /**
+     * inputValidation config for input field
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    inputValidation?: InputValidation;
+}
+
+/**
+ * Color Picker Form Element for the visual props editor
+ *
+ * @group Visual Properties Editor
+ */
+export interface ColorPickerFormDetail {
+    type: 'colorpicker';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Display selected color with font or with color only
+     *
+     * @default COLOR
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    selectorType?: 'FONT' | 'COLOR';
+    /**
+     * Default value
+     *
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    defaultValue?: string;
 }
 
 /**
@@ -63,7 +192,7 @@ export interface TextInputFormDetail {
 export interface ToggleFormDetail {
     type: 'toggle';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -90,7 +219,7 @@ export interface ToggleFormDetail {
 export interface CheckboxFormDetail {
     type: 'checkbox';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -117,7 +246,7 @@ export interface CheckboxFormDetail {
 export interface RadioButtonFormDetail {
     type: 'radio';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -135,7 +264,7 @@ export interface RadioButtonFormDetail {
      */
     defaultValue?: string;
     /**
-     * list fo values to select from
+     * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -150,7 +279,7 @@ export interface RadioButtonFormDetail {
 export interface DropDownFormDetail {
     type: 'dropdown';
     /**
-     * key to store the value
+     * Key to store the value
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -168,7 +297,7 @@ export interface DropDownFormDetail {
      */
     defaultValue?: string;
     /**
-     * list fo values to select from
+     * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -176,14 +305,14 @@ export interface DropDownFormDetail {
 }
 
 /**
- * Element to define sections of form for the visual props editor
+ * Element to define sections of the form for the visual props editor
  *
  * @group Visual Properties Editor
  */
 export interface Section {
     type: 'section';
     /**
-     * key to define & store the children's parent
+     * Key to define & store the children's parent
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -201,11 +330,19 @@ export interface Section {
      */
     children?: PropElement[];
     /**
-     * defines form alignment in the view for the section
+     * Defines form alignment in the view for the section
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     alignment?: 'row' | 'column';
+    /**
+     * Defines form layout in the view for the section.
+     * default will be 'accordion' for first section if nothing specified
+     * and will be 'none' for all nested section.
+     *
+     * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
+     */
+    layoutType?: 'accordion' | 'tab' | 'none';
 }
 
 /**
@@ -216,6 +353,8 @@ export interface Section {
 export type PropElement =
     | Section
     | TextInputFormDetail
+    | NumberInputFormDetail
+    | ColorPickerFormDetail
     | ToggleFormDetail
     | CheckboxFormDetail
     | RadioButtonFormDetail
@@ -235,6 +374,11 @@ export interface VisualPropEditorDefinition {
      */
     elements: PropElement[];
 }
+
+export type VisualEditorDefinitionSetter = (
+    currentState: ChartModel,
+    ctx: CustomChartContext,
+) => VisualPropEditorDefinition;
 
 /**
  * Example config to be able to store config in the following keys

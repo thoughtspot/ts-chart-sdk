@@ -1,0 +1,64 @@
+{
+    "columns": [
+        {
+            "id": "79344559-4c71-45c6-be33-450316eab54d",
+            "name": "State",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "bce26c20-1335-4357-9d3f-b15a6a27237d",
+            "name": "County FIPS Code",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "cdd0329d-9ae6-41d2-b036-aa565eb18bc9",
+            "name": "County",
+            "type": 2,
+            "timeBucket": 0,
+            "dataType": 2,
+            "format": null
+        },
+        {
+            "id": "49a5893c-f487-46f6-ab08-8cd7672c283d",
+            "name": "Total Poverty Estimate",
+            "type": 1,
+            "timeBucket": 0,
+            "dataType": 4,
+            "format": null
+        }
+    ],
+    "data": [
+        {
+            "data": {
+                "columns": [
+                    "79344559-4c71-45c6-be33-450316eab54d",
+                    "bce26c20-1335-4357-9d3f-b15a6a27237d",
+                    "cdd0329d-9ae6-41d2-b036-aa565eb18bc9",
+                    "49a5893c-f487-46f6-ab08-8cd7672c283d"
+                ],
+                "dataValue": [
+                    [1, "p", "A", 252],
+                    [2, "p", "B", 397],
+                    [3, "p", "A", 2500],
+                    [1, "q", "B", 6472],
+                    [2, "q", "A", 544],
+                    [3, "q", "B", 1685],
+                    [1, "r", "A", 1146],
+                    [2, "r", "B", 549],
+                    [3, "r", "A", 288]
+                ]
+            },
+            "totalRowCount": 9
+        }
+    ],
+    "sortInfo": [],
+    "config": {
+        "chartConfig": []
+    }
+}

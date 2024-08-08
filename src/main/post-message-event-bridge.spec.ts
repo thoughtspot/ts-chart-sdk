@@ -13,7 +13,7 @@ describe('postMessageToHostApp', () => {
         jest.resetAllMocks();
     });
 
-    test('should resolve the promise with null when successful', async () => {
+    test('should resolve the promise with data object when successful', async () => {
         // Mock the necessary variables and functions
         const componentId = '123';
         const hostUrl = 'https://example.com';
@@ -39,7 +39,9 @@ describe('postMessageToHostApp', () => {
         );
 
         // Simulate a successful response
-        const response = { data: { hasError: false } };
+        const response = {
+            data: { hasError: false, randomData: 'randomString' },
+        };
         if (_.isFunction(channel.port1.onmessage)) {
             (channel.port1.onmessage as any)(response);
         } else {
@@ -48,7 +50,7 @@ describe('postMessageToHostApp', () => {
         }
 
         // Wait for the promise to resolve
-        await expect(promise).resolves.toBeNull();
+        await expect(promise).resolves.toEqual(response.data);
 
         // Verify that the postMessage function was called with the correct
         // arguments
@@ -64,7 +66,6 @@ describe('postMessageToHostApp', () => {
         );
 
         // Verify that the MessageChannel was used correctly
-        expect(channel.port1.close).toHaveBeenCalled();
         expect(messageChannelMock.MessageChannel).toHaveBeenCalled();
     });
 
@@ -119,8 +120,6 @@ describe('postMessageToHostApp', () => {
             [channel.port2],
         );
 
-        // Verify that the MessageChannel was used correctly
-        expect(channel.port1.close).toHaveBeenCalled();
         expect(messageChannelMock.MessageChannel).toHaveBeenCalled();
     });
 

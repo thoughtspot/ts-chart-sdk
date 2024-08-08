@@ -1,7 +1,21 @@
+import { ConditionalFormatting, Maybe } from './conditional-formatting.types';
+
 export enum ColumnType {
     UNKNOWN,
     MEASURE,
     ATTRIBUTE,
+    // Virtual columns that are measure name/value columns
+    VIRTUAL,
+}
+
+/**
+ * When the column is generated for the chart for creating views,
+ * on top of measure columns from the worksheet which are part of answer query.
+ */
+export enum ChartSpecificColumnType {
+    UNKNOWN,
+    MEASURE_NAMES,
+    MEASURE_VALUES,
 }
 
 /**
@@ -72,14 +86,59 @@ export enum CurrencyFormatType {
 }
 
 /**
- * Currency Format for the columm defined in the worksheet
+ * Type of aggregations applied on the column data
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export enum ColumnAggregationType {
+    AGGREGATE,
+    AGGREGATE_DISTINCT,
+    APPROX_AGGR_DISTINCT,
+    APPROX_AGGR_DISTINCT_MERGE,
+    APPROX_COUNT_DISTINCT,
+    AVERAGE,
+    COUNT,
+    COUNT_DISTINCT,
+    CUMULATIVE_AVERAGE,
+    CUMULATIVE_COUNT,
+    CUMULATIVE_MAX,
+    CUMULATIVE_MIN,
+    CUMULATIVE_SUM,
+    GROWTH,
+    MAX,
+    MEDIAN,
+    MIN,
+    MOVING_AVERAGE,
+    MOVING_COUNT,
+    MOVING_MAX,
+    MOVING_MIN,
+    MOVING_SUM,
+    NONE,
+    PERCENTILE,
+    RANK,
+    RANK_PERCENTILE,
+    SQL_BOOL_AGGREGATE_OP,
+    SQL_DATE_AGGREGATE_OP,
+    SQL_DATE_TIME_AGGREGATE_OP,
+    SQL_DOUBLE_AGGREGATE_OP,
+    SQL_INT_AGGREGATE_OP,
+    SQL_STRING_AGGREGATE_OP,
+    SQL_TIME_AGGREGATE_OP,
+    STD_DEVIATION,
+    SUM,
+    TABLE_AGGR,
+    VARIANCE,
+}
+
+/**
+ * Currency format for the column defined in the worksheet
  *
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export interface CurrencyFormat {
     type: CurrencyFormatType;
     /**
-     * column id of the column in case of currency formatted by a column
+     * column ID of the column in case of currency formatted by a column
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -118,13 +177,13 @@ export interface ColumnFormat {
 
 export interface ChartColumn {
     /**
-     * Column Id
+     * Column ID
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     id: string;
     /**
-     * Column Name
+     * Column name
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -137,7 +196,7 @@ export interface ChartColumn {
     type: ColumnType;
 
     /**
-     * Type of the time based aggregation
+     * Type of the time-based aggregation
      * when the column data is of type Date, Datetime, Time
      *
      * @version SDK: 0.1 | ThoughtSpot:
@@ -171,4 +230,43 @@ export interface ChartColumn {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     format?: ColumnFormat;
+
+    /**
+     * Column Properties of the columns
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    columnProperties?: {
+        conditionalFormatting?: Maybe<ConditionalFormatting>;
+    };
+
+    /**
+     * Aggregation applied on the column data
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    aggregationType?: ColumnAggregationType;
+
+    /**
+     * Custom sort order defined for the column to sort charts in a specific order
+     * Defined in worksheet
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    customOrder?: Array<string>;
+
+    /**
+     * Guid of Custom calender for the column if defined in worksheet else null
+     *
+     * @version SDK: 0.1 | ThoughtSpot: sdcwdc
+     */
+    calenderGuid?: string;
+
+    /**
+     * Type of arbitrary column, can be measure names or measure values
+     * also, unknown if regular column
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    chartSpecificColumnType: ChartSpecificColumnType;
 }

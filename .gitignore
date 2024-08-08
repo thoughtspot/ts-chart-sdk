@@ -10,6 +10,7 @@ lerna-debug.log*
 coverage
 docs
 lib
+cjs
 node_modules
 dist
 dist-ssr
@@ -25,3 +26,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
