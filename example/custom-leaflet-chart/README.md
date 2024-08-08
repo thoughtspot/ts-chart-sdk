@@ -19,9 +19,9 @@ To integrate ThoughtSpot Chart SDK and complete these steps:
 
 ## Setup Your Environment
 
-- For this u can refer to [setup your environment](../../README.md#set-up-your-environment) above section with the following changes:
+- For this you can refer to [setup your environment](../../README.md#set-up-your-environment) above section with the following changes:
     - While creating folder name it with **map-chart**.
-    - Give project name as **custom-leaflet-charts** or u can directly us `npm create vite@latest custom-leaflet-chart -- --template vanilla-ts`
+    - Give project name as **custom-leaflet-charts** or you can directly us `npm create vite@latest custom-leaflet-chart -- --template vanilla-ts`
     - Instead of highcharts install your chart library (which by luck in this case is leaflet) using command-`npm install --save leaflet`
 
 
@@ -30,7 +30,7 @@ In this section we will be Rendering a sample leaflet chart in the application c
 
 To implement the chart code in your application, complete these steps:
 
-1. Delete the unwanted files from your project folder.These are metioned as follow-
+1. Delete the unwanted files from your project folder. These are metioned as follow-
 ```
 /public [whole folder]
 /src/counter.ts
@@ -38,7 +38,7 @@ To implement the chart code in your application, complete these steps:
 /src/style.css
 ```
 
-2. Since, leaflet uses leaflet.css file for the proper styling and functionality of the maps we need to include it in our project.For this follow the following steps:
+2. Since, leaflet uses leaflet.css file for the proper styling and functionality of the maps we need to include it in our project. For this follow the following steps:
  - Go to [leaflet download page](https://leafletjs.com/download.html) download the latest .zip file
  - Extract the folder and copy leaflet.css file to leaflet folder.
  - Your project folder structure should look like this-
@@ -49,7 +49,7 @@ To implement the chart code in your application, complete these steps:
       └── leaflet.css
  ```
 
-3. Clear `main.ts` and rename it to `geo-charts.ts`
+3. Clear `main.ts` and rename it to `geo-charts.ts`. This step is not necessary but we advice this nomenclature of files.
 4. Create `styles.css` in parent directry and copy the code snippet below.
 ```css
 *,
@@ -102,7 +102,7 @@ body {
 ```
 Chart Context is the main context object that helps in orchestrating ThoughtSpot APIs to render charts. It also acts as a core central point of all interactions on the charts.
 
-5. We are creating this sample chart with the help GEOJson([GEOJson Documentation](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.7)) that will be feed to leaflet ([can read about it hear](https://leafletjs.com/examples/geojson/)) using leaflet GEOJson example we have created a sample `geo-charts.js` to use it a get started with the leaflet.Here is the snippet-
+5. We are creating this sample chart with the help GEOJson([GEOJson Documentation](https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.7)) that will be feed to leaflet ([can read about it hear](https://leafletjs.com/examples/geojson/)) using leaflet GEOJson example we have created a sample `geo-charts.js` to use it a get started with the leaflet. Here is the snippet-
 ```ts
 var freeBus = {
   "type": "FeatureCollection",
@@ -374,7 +374,7 @@ function onEachFeature(feature:any, layer:any) {
   }
 
   layer.bindPopup(popupContent);
-} //  u can implement basic event trigger and popup that u want in onEachFeature.
+} // you can implement basic event trigger and popup that you want in onEachFeature.
 
 /* global campus, bicycleRental, freeBus, coorsField */
 const bicycleRentalLayer = L.geoJSON([bicycleRental as any, campus], {
@@ -432,7 +432,7 @@ const coorsLayer = L.geoJSON(coorsField as any, {
 ├── styles.css
 └── tsconfig.json
 ``` 
-7. Now u can run this using `npm run dev` command in your project root directry
+7. Now you can run this using `npm run dev` command in your project root directry
 
 ## Intialize Chart Context
 
@@ -515,7 +515,7 @@ This function takes in a [ChartModel](https://ts-chart-sdk-docs.vercel.app/inter
 
 Here we are creating geo map for US county data so we will get to column with one column as attribute and other as measure so we are classifying them as `x` and `y` labels.
 
-To create a Leaflet version of the data set, the above-mentioned headers must be presented as columns from ThoughtSpot. The query on the ThoughtSpot Answer page should have all the above columns to plot a Gantt chart.
+To create a Leaflet version of the data set, the above-mentioned headers must be presented as columns from ThoughtSpot. The query on the ThoughtSpot Answer page should have all the above columns to plot a Geo chart.
 
 ### getQueriesFromChartConfig (Doc)
 
@@ -531,7 +531,7 @@ This `renderChart (Doc)` function is required to render the chart implemented in
 You can control render and re-render by implementing more granular control for the updates on data, visual props, or chart model.
 >
 
-Till now u will be seeing error on `renderChart` function.Let's implement this-
+Till now you will be seeing error on `renderChart` function. Let's implement this-
 
 ## Implement the renderChart function
 
@@ -566,7 +566,7 @@ To implement renderChart, complete the following steps:
         return Promise.resolve();
 };
 ```
-2. Run the app and open console u and the check the message:`Chart context: intialization start`
+1. Run the app and open console you and the check the message:`Chart context: intialization start`
 
 ## Run the chart in the Playground
 
@@ -587,7 +587,7 @@ To run the chart and test your implementation, you need a Playground.
 
 ## Create a Data Model from input data
 
-The data model is unique to every chart. It defines how each point will be plotted on the chart.In this step we will deal with thoughtspot ChartModel to create dataModel and feed that dataModel to leaflet in `L.geoJSON()` in geojson format.
+The data model is unique to every chart. It defines how each point will be plotted on the chart. In this step we will deal with thoughtspot ChartModel to create dataModel and feed that dataModel to leaflet in `L.geoJSON()` in geojson format.
 For this we will need a geojson which will have geometry configuration for all the counties of US.
 
 Let's create dataModel with the following steps:
@@ -619,7 +619,7 @@ function getDataModel(chartModel: ChartModel) {
 ## Implementing the renderChart
 In this section we will be setting up `renderChart` function with the chartModel context.
 1. Clear the content inside the `renderChart` function.
-2. Create a `render(ctx:CustomChartContext)` function which will deal with leaflet setup with the basic tile that we will taking from openstreetmap and passing dataModel in leaflet.Implement below code snippet for render function:
+2. Create a `render(ctx:CustomChartContext)` function which will deal with leaflet setup with the basic tile that we will taking from openstreetmap and passing dataModel in leaflet. Implement below code snippet for render function:
 ```ts
 const render = (ctx: CustomChartContext) => {
   const chartModel = ctx.getChartModel();
@@ -662,7 +662,7 @@ const render = (ctx: CustomChartContext) => {
 }
 ```
 
-3. In `renderChart` we will be calling render function and integrating it some custom `CharttoTSEvent` that will help in notifying ThoughtSpot different rendering stages.Copy the snippet below to implement it:
+3. In `renderChart` we will be calling render function and integrating it some custom `CharttoTSEvent` that will help in notifying ThoughtSpot different rendering stages. Copy the snippet below to implement it:
 
 > NOTE: 
 >For more information about the ChartToTSEvents component, refer to the following documentation resources:
@@ -685,12 +685,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
 ##Integrate to thoughtspot
 
-In this sectiom we will be working on integrating your custom chart with thoughtspot.For integrating do the following steps->
+In this sectiom we will be working on integrating your custom chart with thoughtspot. For integrating do the following steps->
 
-1. Deploy this custom app on any hosting services currenly i am using ngrok to local take a url with ngrok u will get url `https://<random_string>.ngrok-free.app`
+1. Deploy this custom app on any hosting services currenly i am using ngrok to local take a url with ngrok you will get url `https://<random_string>.ngrok-free.app`
 2. Redeploy the cluster with the correct flag settings.
 2. Open thoughtspot go `admin` go to `chart customization` then go to `custom charts`   
-3. Click on `create charts` then name it.We are going with `custom-geo-map` for current example put the url where you deployed the app for example:``https://<random_string>.ngrok-free.app``.
+3. Click on `create charts` then name it. We are going with `custom-geo-map` for current example put the url where you deployed the app for example:``https://<random_string>.ngrok-free.app``.
 
 
 

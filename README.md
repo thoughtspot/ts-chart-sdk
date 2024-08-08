@@ -6,7 +6,11 @@
 
 # ThoughtSpot Charts SDK <br/>
 
-ThoughtSpot Charts SDK allows developers to integrate custom charts into ThoughtSpot. Developers can create custom charts in Javascript using charting libraries such as HighCharts and upload them to ThoughtSpot.   
+ThoughtSpot Charts SDK allows developers to integrate custom charts into ThoughtSpot. Developers can create custom charts in Javascript using charting libraries such as HighCharts and upload them to ThoughtSpot.
+
+## Doc for custom chart examples
+ - [Custom Map charts](./example/custom-bar-chart/README.md)
+ - [Custom Bar Charts](./example/custom-bar-chart/README.md)
 
 ## ⚠️ Important Information ⚠️
 
@@ -796,7 +800,7 @@ To allow the use of Vercel application content in Thoughtspot, add the Vercel do
 
 #### How to save some chart specific state after client have made some changes in charts?
 
-You can use `ChartToTSEvent.UpdateVisualProps` eventType inside `ctx.emitEvent()`.Since the payload type for this event is `JSON` u can just add a key value pair naming `clientState`.
+You can use `ChartToTSEvent.UpdateVisualProps` eventType inside `ctx.emitEvent()`. Since the payload type for this event is `unkown` you can just add a key value pair naming `clientState`.
 
 **Sample** -
 ```js
@@ -808,15 +812,15 @@ ctx.emitEvent(ChartTOTSEvent.UpdateVisualProps,{
 })
 ```
 
-- NOTE: client State currently support only string data type.
+- NOTE: client State currently support only string data type. To use it with json object you can use `JSON.stringify(somelocalstate)`
 
-#### Why my chart is getting re render in a infinte loop?
-Probably you are implementing `update client state` logic inside the the `render` function of `getChartContext`.Since it `render` will be calling `update client state` logic and this logic might again cause `render` this will cause a cyclic call of `render`.Hence,it is advised not to implement it inside `render` function.
+#### Why my chart is getting re render in an infinte loop?
+Probably you are implementing `update client state` logic inside the the `render` function of `getChartContext`. Since it `render` will be calling `update client state` logic and this logic might again cause `render` this will cause a cyclic call of `render`. Hence,it is advised not to implement it inside `render` function.
 
 
 #### How to add dynamic config for visualPorpEditorDefintion?
 
-Since in our previous implementation of `visualPropEditorDefintion` we provided this as an static object of type `VisualPropEditorDefinition` but with the resent update this is converted function of type `VisualEditorDefinitonSetter` along with `VisualEditorDefintion`.So currently you can provide static config or diynamic config based on use case.
+Since in our previous implementation of `visualPropEditorDefintion` we provided this as an static object of type `VisualPropEditorDefinition` but with the resent update this is converted function of type `VisualEditorDefinitonSetter` along with `VisualEditorDefintion`. So currently you can provide static config or diynamic config based on use case.
 
 
 
