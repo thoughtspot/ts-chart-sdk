@@ -26,10 +26,10 @@
         "prepublishOnly": "npm run ci; npm run build; npm run bundle-dts;",
         "about:publish-dev": "echo '===== patch dev workflow ====='",
         "patch-dev": "npm version prerelease --no-git-tag-version",
-        "publish-dev": "npm publish --tag latest --access public",
+        "publish-dev": "npm publish --tag dev --access public",
         "about:publish-prod": "echo '===== patch prod workflow ====='",
         "patch-prod": "npm version prepatch --no-git-tag-version",
-        "publish-prod": "npm publish --access public"
+        "publish-prod": "npm publish --tag latest --access public"
     },
     "devDependencies": {
         "@testing-library/react": "12.1.5",
