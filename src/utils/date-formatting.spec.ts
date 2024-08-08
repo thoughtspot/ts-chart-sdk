@@ -8,6 +8,7 @@
 
 import {
     ChartColumn,
+    ChartSpecificColumnType,
     ColumnTimeBucket,
     ColumnType,
     DataType,
@@ -33,6 +34,7 @@ describe('date-formatting', () => {
             id: 'testId',
             name: 'test',
             type: ColumnType.MEASURE,
+            chartSpecificColumnType: ChartSpecificColumnType.UNKNOWN,
             timeBucket: ColumnTimeBucket.AUTO,
             dataType: DataType.UNKNOWN,
             calenderGuid: '12345',
