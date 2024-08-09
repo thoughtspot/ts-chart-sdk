@@ -6,8 +6,19 @@
 
 # ThoughtSpot Charts SDK <br/>
 
-ThoughtSpot Charts SDK allows developers to integrate custom charts into ThoughtSpot. Developers can create custom charts in Javascript using charting libraries such as HighCharts and upload them to ThoughtSpot.   
+ThoughtSpot Charts SDK allows developers to integrate custom charts into ThoughtSpot. Developers can create custom charts in Javascript using charting libraries such as HighCharts and upload them to ThoughtSpot.
 
+## Doc for custom chart examples
+ - [Custom Map charts](./example/custom-bar-chart/README.md)
+ - [Custom Bar Charts](./example/custom-bar-chart/README.md)
+
+## ⚠️ Important Information ⚠️
+
+### 🚀 Use `ts-chart-sdk` with TypeScript to enable static type checking.
+
+### 📊 See [Custom Bar Chart](./example/custom-bar-chart/) example for the latest update.
+
+---
 
 # Get started
 This tutorial demonstrates how to create a Gantt chart using HighCharts. 
@@ -776,6 +787,42 @@ For more information about Vercel deployment, see <a href="https://vercel.com/do
 ### Content Security Policy Overrides
 
 To allow the use of Vercel application content in Thoughtspot, add the Vercel domain URL to the CSP allow-list. For more information, see the <a href="https://developers.thoughtspot.com/docs/?pageid=security-settings" target="_blank">Security settings section in ThoughtSpot documentation</a>.
+## Useful URLs
+
+### API references
+* Check out [ts-charts-sdk docs](https://ts-chart-sdk-docs.vercel.app/) to get API reference.
+### Test framework
+* Open [Playground]( https://ts-chart-playground.vercel.app/) to play with ts-chart-sdk with mock chartModel.
+### Code Walkthrough
+* Play [demo](https://drive.google.com/drive/u/0/folders/1DbfiT1VP7j4SqhiCtM2JksTeIjbkI8h3) to get a viedo demo of code walkthrough and custom gantt-chart implementation.
+
+## FAQ
+
+#### How to save some chart specific state after client have made some changes in charts?
+
+You can use `ChartToTSEvent.UpdateVisualProps` eventType inside `ctx.emitEvent()`. Since the payload type for this event is `unkown` you can just add a key value pair naming `clientState`.
+
+**Sample** -
+```js
+ctx.emitEvent(ChartTOTSEvent.UpdateVisualProps,{
+    visualProps:{
+        clientState:"<req_state_in_string_format>"
+        ...rest_of_visualProp
+    }
+})
+```
+
+- NOTE: client State currently support only string data type. To use it with json object you can use `JSON.stringify(somelocalstate)`
+
+#### Why my chart is getting re render in an infinte loop?
+Probably you are implementing `update client state` logic inside the the `render` function of `getChartContext`. Since it `render` will be calling `update client state` logic and this logic might again cause `render` this will cause a cyclic call of `render`. Hence,it is advised not to implement it inside `render` function.
+
+
+#### How to add dynamic config for visualPorpEditorDefintion?
+
+Since in our previous implementation of `visualPropEditorDefintion` we provided this as an static object of type `VisualPropEditorDefinition` but with the resent update this is converted function of type `VisualEditorDefinitonSetter` along with `VisualEditorDefintion`. So currently you can provide static config or diynamic config based on use case.
+
+
 
 <br/>
 
