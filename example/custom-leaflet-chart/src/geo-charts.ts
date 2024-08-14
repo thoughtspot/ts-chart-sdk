@@ -30,18 +30,15 @@ function getDataModel(chartModel: ChartModel) {
             const idx = updatedCounties?.indexOf(
                 feature.properties.NAME.toLowerCase(),
             );
-            if (idx === -1) return null;
-            let newFeature;
-            if (idx !== undefined) {
-                const newProperties = {
-                    ...feature.properties,
-                    XData: updatedNameCounties?.[idx][1] ?? 0,
-                };
-                newFeature = {
-                    ...feature,
-                    properties: newProperties,
-                };
-            }
+            if (idx === -1 || idx === undefined) return null;
+            const newProperties = {
+                ...feature.properties,
+                XData: updatedNameCounties?.[idx][1] ?? 0,
+            };
+            const newFeature = {
+                ...feature,
+                properties: newProperties,
+            };
             return newFeature;
         },
     );
@@ -63,9 +60,9 @@ const render = (ctx: CustomChartContext) => {
     };
     // magnification with which the map will start
     const zoom = 3;
-    // // co-ordinates
-    const lat = 4.279353181890746;
-    const lng = 50.809065488305514;
+    // co-ordinates
+    const lat = 4.279353181890746; // latitude for intial center for map
+    const lng = 50.809065488305514; // longitude for intial center for map
     const map = L.map('map', config).setView([lat, lng], zoom);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
@@ -81,7 +78,7 @@ const render = (ctx: CustomChartContext) => {
         },
         onEachFeature(feature, layer) {
             layer.bindPopup(
-                `<h1>${feature.properties.NAME}</h1><p>Total Poverty Percentage: ${feature.properties.XData}</p>`,
+                `<h1>${feature.properties.NAME}</h1><p>${chartModel.columns[1].name} : ${feature.properties.XData}</p>`,
                 { closeButton: false, offset: L.point(0, -20) },
             );
             layer.on('mouseover', (e) => {
