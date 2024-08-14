@@ -1,7 +1,6 @@
-## Integrate Bar Charts through ts-chart-sdk 
+## Integrate Bar Charts through ts-chart-sdk
 
 In this tutorial, we will walk you through the process of creating custom bar charts using the `Charts.js` library and integrating them with the TS-Chart-SDK. By the end of this tutorial, you will be able to create interactive bar charts that leverage ThoughtSpot's powerful capabilities, such as data drilling and embedding data into your application. Let's get started!
-
 
 To integrate ThoughtSpot Chart SDK and complete these steps:
 
@@ -14,22 +13,21 @@ To integrate ThoughtSpot Chart SDK and complete these steps:
 
 ### Setup Your Environment
 
-- For this you can refer to [setup your environment](../../README.md#set-up-your-environment) above section with the following changes:
-    - While creating folder name it with **bar-chart**.
-    - Give project name as **custom-bar-charts** or you can directly us `npm create vite@latest custom-bar-chart -- --template vanilla-ts`
-    - Instead of highcharts install your chart library (which in this case is `charts.js`) using command-`npm i chart.js` to install chart.js and `npm install chartjs-plugin-datalabels` to install datalabels plugin.
-> NOTE: 
->For more information about the chart.js and chartjs-plugin-datalabels, refer to the following documentation resources respectively:
-  >  * [chart.js getting started](https://www.chartjs.org/docs/latest/getting-started/)
-  > * [chart-plugin-datalabels](https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents)
-
+-   For this you can refer to [setup your environment](../../README.md#set-up-your-environment) above section with the following changes: - While creating folder name it with **bar-chart**. - Give project name as **custom-bar-charts** or you can directly us `npm create vite@latest custom-bar-chart -- --template vanilla-ts` - Instead of highcharts install your chart library (which in this case is `charts.js`) using command-`npm i chart.js` to install chart.js and `npm install chartjs-plugin-datalabels` to install datalabels plugin.
+    > NOTE:
+    > For more information about the chart.js and chartjs-plugin-datalabels, refer to the following documentation resources respectively:
+    >
+    > -   [chart.js getting started](https://www.chartjs.org/docs/latest/getting-started/)
+    > -   [chart-plugin-datalabels](https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents)
 
 ### Implementing Sample Bar Chart
+
 In this section we will be Rendering a sample bar chart in the application created from the preceding steps.
 
 To implement the chart code in your application, complete these steps:
 
 1. Delete the unwanted files from your project folder.These are metioned as follow-
+
 ```
 /public [whole folder]
 /src/counter.ts
@@ -40,69 +38,75 @@ To implement the chart code in your application, complete these steps:
 1. Clear `main.ts` and rename it to `custom-charts.ts`. This step is not necessary but we advice this nomenclature of files.
 
 2. Replace the content of `index.html` with the following snippet:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TS custom chart</title>
-  </head>
-  <body>
-    <div style="width:99vw; height:95vh; position: relative;">
-      <canvas id="chart" style="display:flex;"></canvas>
-    </div>
-    <script type="module" src="./custom-chart.ts"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TS custom chart</title>
+    </head>
+    <body>
+        <div style="width:99vw; height:95vh; position: relative;">
+            <canvas id="chart" style="display:flex;"></canvas>
+        </div>
+        <script type="module" src="./custom-chart.ts"></script>
+    </body>
 </html>
 ```
-1. Import `Charts` and `ChartsDataLabels` using  following lines from the prop
+
+1. Import `Charts` and `ChartsDataLabels` using following lines from the prop
 
 2. We are creating this sample chart with the help `chart.js` and `chartjs-plugin-datalabels` plugin. Here is the snippet-
+
 ```ts
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
+        datasets: [
+            {
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    },
+    options: {
         plugins: {
-          datalabels: {
-            color: 'white',
-            anchor: 'end',
-            align: 'top',
-            formatter: function(value, context) {
-              return value + '%';
-            }
-          }
-        }
-      }
-    });
+            datalabels: {
+                color: 'white',
+                anchor: 'end',
+                align: 'top',
+                formatter: function (value, context) {
+                    return value + '%';
+                },
+            },
+        },
+    },
+});
 ```
 
 1. Your final folder structure should look like this:
+
 ```
 .
 ├── index.html
@@ -111,7 +115,8 @@ To implement the chart code in your application, complete these steps:
 ├── src
 │   └── custom-charts.ts
 └── tsconfig.json
-``` 
+```
+
 1. Now you can run this using `npm run dev` command in your project root directry.You should see chart rendering.
 
 ## Intialize Chart Context
@@ -124,7 +129,6 @@ To initialize the chart context, call `getChartContext`
 (async () => {
   const ctx = await getChartContext({
       getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
-          console.log(chartModel)
           const cols = chartModel.columns;
 
           const measureColumns = _.filter(
@@ -283,18 +287,23 @@ To initialize the chart context, call `getChartContext`
 })();
 ```
 
-> NOTE: 
->For more information about the chart context component, refer to the following documentation resources:
-  >  * [https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html](https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html)
-  > * [https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40](https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40)
-The custom chart context component must include the following mandatory properties to function:
+> NOTE:
+>
+> -   Naming of folders does not affect functionality it is just advised to use this nomenclature, you can name file or folder according to your choice.
 
-* [`getDefaultChartConfig (Doc)`](#getdefaultchartconfig-doc)
-* [`getQueriesFromChartConfig (Doc)`](#getQueriesFromChartConfig-doc)
-* [`validateConfig (Doc)`](#validateConfig-doc)
-* [`chartConfigEditorDefinition (Doc)`](#chartConfigEditorDefinition-doc)
-* [`visualPropEditorDefinition (Doc)`](#visualPropEditorDefinition-doc)
-* [`renderChart (Doc)`](#renderChart-doc)
+> NOTE:
+> For more information about the chart context component, refer to the following documentation resources:
+>
+> -   [https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html](https://ts-chart-sdk-docs.vercel.app/types/CustomChartContextProps.html)
+> -   [https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40](https://github.com/thoughtspot/ts-chart-sdk/blob/main/src/main/custom-chart-context.ts#L40)
+>     The custom chart context component must include the following mandatory properties to function:
+
+-   [`getDefaultChartConfig (Doc)`](#getdefaultchartconfig-doc)
+-   [`getQueriesFromChartConfig (Doc)`](#getQueriesFromChartConfig-doc)
+-   [`validateConfig (Doc)`](#validateConfig-doc)
+-   [`chartConfigEditorDefinition (Doc)`](#chartConfigEditorDefinition-doc)
+-   [`visualPropEditorDefinition (Doc)`](#visualPropEditorDefinition-doc)
+-   [`renderChart (Doc)`](#renderChart-doc)
 
 #### getDefaultChartConfig (Doc)
 
@@ -312,20 +321,20 @@ This example bar chart all the columns in the configuration as an array of colum
 
 #### validateConfig (Doc)
 
-This method use to apply any custom validation that is reqired by developer on the chartconfig and chartModel. For example you want to user have a certain input validation in some form that changing chartconfig or chartModel you can validations here. This a optional method.
+This method use to apply any custom validation that is required by developer on the chartconfig and chartModel. For example you want to user have a certain input validation in some form that changing chartconfig or chartModel you can do validations here. This a optional method.
 
 In the code snippet we are checking if config is not empty. You can send your custom error message in `validationErrorMessage`.
 
-
 #### chartConfigEditorDefinition (Doc)
-This is a optional method provided in getChartContext where you can define the cutom config editor that will be shown in settings in TS and leverage TS feature from there. It take `chartModel` and `customChartContext` as parameter and return the `chartConfigEditorDefinition[]` which contain `columnSection` where you can deifne editor column for each config axis.
+
+This is a optional method provided in getChartContext where you can define the custom config editor that will be shown in settings in TS and leverage TS feature from there. It take `chartModel` and `customChartContext` as parameter and return the `chartConfigEditorDefinition[]` which contain `columnSection` where you can define editor column for each config axis.
 
 In the current example we are defining editor for one attribute and remaining measure column values.
 
 #### visualPropEditorDefinition (Doc)
 
 This is a optional method provided in getChartContext where you can define custom visual editor property that can levarage TS features. This will be shown in setting in TS. It takes `currentVisualProp` and `customChartContext`based on which can define the current
-visual prop editor. You can see type of propElement we support in [doc](https://ts-chart-sdk-docs.vercel.app/types/PropElement.html) 
+visual prop editor. You can see type of propElement we support in [doc](https://ts-chart-sdk-docs.vercel.app/types/PropElement.html)
 
 In this example we are defining radio element for applying different color in bar element and accordian for datalabels that when set to true will show `color2` which will used to select color for data labels.
 
@@ -334,65 +343,67 @@ In this example we are defining radio element for applying different color in ba
 This `renderChart (Doc)` function is required to render the chart implemented in your code. This function ensures that every time `chartContext` tries to re-render the chart due to the changes in data or chart model, the chart rendered in your application is updated.
 
 > **Note**:
-You can control render and re-render by implementing more granular control for the updates on data, visual props, or chart model.
+> You can control render and re-render by implementing more granular control for the updates on data, visual props, or chart model.
 
 Till now you will be seeing error on `renderChart` function. Let's implement this-
 
 #### Implement the renderChart function
-
 
 To implement renderChart, complete the following steps:
 
 1. Create a function and move all the custom bar chart code inside the `renderChart` function.
 
 ```jsx
-    const renderChart = (ctx) => {
-     var ctx = document.getElementById('myChart').getContext('2d');
+const renderChart = (ctx) => {
+    var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        plugins: {
-          datalabels: {
-            color: 'white',
-            anchor: 'end',
-            align: 'top',
-            formatter: function(value, context) {
-              return value + '%';
-            }
-          }
-        }
-      }
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [
+                {
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                    ],
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            plugins: {
+                datalabels: {
+                    color: 'white',
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: function (value, context) {
+                        return value + '%';
+                    },
+                },
+            },
+        },
     });
     return Promise.resolve();
 };
 ```
 
 > **Note**:
-Put following import statement while implementing `getchartcontext`. This will be used in this as well as in future context-
+> Put following import statement while implementing `getchartcontext`. This will be used in this as well as in future context-
+
 ```js
 import {
     ValidationResponse,
@@ -429,15 +440,17 @@ To run the chart and test your implementation, you need a Playground.
 
 2. Add the following details as shown in the following example:
 
-* App Url : `<your localhost url with port>`
-* Chart Model: `Gantt - 3 Attribute - 2 Date - 1 Measure`
+-   App Url : `<your localhost url with port>`
+-   Chart Model: `Gantt - 3 Attribute - 2 Date - 1 Measure`
 
 ## Create a Data Model from input data
 
 The data model is unique to every chart. It defines how each point will be plotted on the chart. In this step we will deal with thoughtspot ChartModel to create dataModel and feed that dataModel to to `new Charts` in `render` function that we will be create in next step in `chart.js` required format.
 
 Let's create dataModel with the following steps:
+
 1. Create the function `getDataModel` that will take `chartModel` and return `columnchartModel` object. Code snippet is as follow-
+
 ```js
 function getDataModel(chartModel: ChartModel) {
     // column chart model
@@ -451,7 +464,9 @@ function getDataModel(chartModel: ChartModel) {
     return columnChartModel;
 }
 ```
+
 2. Create two gloabal array that will have with name `availableColor` and `visualPropKeyMap` that will be used to provide default color configurations and mapping key value pair that we will be getting from in `visualProp`. The code snippet is as follow-
+
 ```ts
 const availableColor = ['red', 'green', 'blue'];
 
@@ -461,9 +476,10 @@ const visualPropKeyMap = {
     2: 'accordion.datalabels',
 };
 ```
-3. In this we will be implementing `getColumnDataModel` that is there in `getDataModel`. This will `chartConfig`,`chartData`(data),`type`and `visualprop`(current prop key and value) and return object with function such as `getLabel`,`getDatasets`(axisId,type,colorConfiguration),`getScales`(chart.js display configurations) and `getPointDetails`. Code snippet is given below-
-```ts
 
+3. In this we will be implementing `getColumnDataModel` that is there in `getDataModel`. This will `chartConfig`,`chartData`(data),`type`and `visualprop`(current prop key and value) and return object with function such as `getLabel`,`getDatasets`(axisId,type,colorConfiguration),`getScales`(chart.js display configurations) and `getPointDetails`. Code snippet is given below-
+
+```ts
 function getColumnDataModel(
     configDimensions,
     dataArr: DataPointsArray,
@@ -530,7 +546,7 @@ function getColumnDataModel(
 ```
 
 4. In the above implementation you will be getting error inside `getPointsdetails`
-beacuse we have a undefined function `getDataForColumn`. This function will take the column IDS and return the specific cloumn data. Implement this function in with the following code snippet->
+   beacuse we have a undefined function `getDataForColumn`. This function will take the column IDS and return the specific cloumn data. Implement this function in with the following code snippet->
 
 ```js
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
@@ -538,10 +554,14 @@ function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 ```
+
 ## Implementing the renderChart
+
 In this section we will be setting up `renderChart` function with the chartModel context.
+
 1. Clear the content inside the `renderChart` function.
 2. Since we will be creating some custom options in using `ChartToTSEvent.OpenContextMenu`(sending post messages from chart to TS) in `render` with label `Custom user action 1` and `Download chart` we need to create some function curresponding to that. Here are the snippet for that->
+
 ```ts
 function getParsedEvent(evt: any) {
     return _.pick(evt.native, ['clientX', 'clientY']); // create a object with clicked position to open context menu there.
@@ -555,12 +575,12 @@ function downloadChartAsPNG() {
     imageLink.click();
 } // that will be there in onClick.
 ```
-- Note:
-  - For more info on `CharttoTSEvent` refer [doc](https://ts-chart-sdk-docs.vercel.app/enums/ChartToTSEvent.html).
 
-
+-   Note:
+    -   For more info on `CharttoTSEvent` refer [doc](https://ts-chart-sdk-docs.vercel.app/enums/ChartToTSEvent.html).
 
 3. Create a `render(ctx:CustomChartContext)` function which will deal with `chart.js` setup and using `dataModel`.Do the following steps to create a `render` function.
+
 ```ts
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
@@ -623,12 +643,6 @@ function render(ctx: CustomChartContext) {
                     const dataX = activeElement.index;
                     const dataY = activeElement.datasetIndex;
 
-                    console.log(
-                        'ChartPoint',
-                        dataX,
-                        dataY,
-                        dataModel.getPointDetails(dataX, dataY),
-                    );
                     ctx.emitEvent(ChartToTSEvent.OpenContextMenu, {
                         event: getParsedEvent(e),
                         clickedPoint: {
@@ -668,23 +682,25 @@ function render(ctx: CustomChartContext) {
 
 3. In `renderChart` we will be calling render function and integrating it some custom `CharttoTSEvent` that will help in notifying ThoughtSpot different rendering stages. Copy the snippet below to implement it:
 
-> NOTE: 
->For more information about the ChartToTSEvents component, refer to the following documentation resources:
-  >  * [https://ts-chart-sdk-docs.vercel.app/interfaces/ChartToTSEventsPayloadMap.html](https://ts-chart-sdk-docs.vercel.app/interfaces/ChartToTSEventsPayloadMap.html)
+> NOTE:
+> For more information about the ChartToTSEvents component, refer to the following documentation resources:
+>
+> -   [https://ts-chart-sdk-docs.vercel.app/interfaces/ChartToTSEventsPayloadMap.html](https://ts-chart-sdk-docs.vercel.app/interfaces/ChartToTSEventsPayloadMap.html)
+
 ```ts
 const renderChart = async (ctx: CustomChartContext): Promise<void> => {
-  try {
-      ctx.emitEvent(ChartToTSEvent.RenderStart);
-      render(ctx);
-  } catch (e) {
-      ctx.emitEvent(ChartToTSEvent.RenderError, {
-          hasError: true,
-          error: e,
-      });
-  } finally {
-      ctx.emitEvent(ChartToTSEvent.RenderComplete);
-  }
-};                
+    try {
+        ctx.emitEvent(ChartToTSEvent.RenderStart);
+        render(ctx);
+    } catch (e) {
+        ctx.emitEvent(ChartToTSEvent.RenderError, {
+            hasError: true,
+            error: e,
+        });
+    } finally {
+        ctx.emitEvent(ChartToTSEvent.RenderComplete);
+    }
+};
 ```
 
 ## Integrate to thoughtspot
@@ -693,16 +709,9 @@ In this sectiom we will be working on integrating your custom chart with thought
 
 1. Deploy this custom app on any hosting services currenly i am using ngrok to local take a url with ngrok you will get url `https://<random_string>.ngrok-free.app`
 2. Redeploy the cluster with the correct flag settings.
-2. Open thoughtspot go `admin` go to `chart customization` then go to `custom charts`   
-3. Click on `create charts` then name it. We are going with `custom-bar-chart` for current example put the url where you deployed the app for example:``https://<random_string>.ngrok-free.app``.
-
-
-
-
-
-
-
-
-
-
-
+3. Open thoughtspot go `admin` go to `chart customization` then go to `custom charts`
+4. Click on `create charts` then name it. We are going with `custom-bar-chart` for current example put the url where you deployed the app for example:`https://<random_string>.ngrok-free.app`.
+    > NOTE:
+    >
+    > - This is for local development and to add charts to cluster this needs to be deployed to a service preferably vercel.
+    > - Urls needs to be whitelisted in TS cluster please contact your TS admin to whitelist for the same.
