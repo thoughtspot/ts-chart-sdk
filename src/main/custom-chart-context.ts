@@ -572,7 +572,7 @@ export class CustomChartContext {
         const messageResponse = this.executeEventListenerCBs(data);
 
         // respond back to parent to confirm/ack the receipt
-        return messageResponse;
+        return messageResponse || {};
     };
 
     /**
