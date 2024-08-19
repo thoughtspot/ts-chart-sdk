@@ -113,6 +113,17 @@ describe('CustomChartContext', () => {
             expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
+        test('should return responseMessage as empty instead of undefine', async () => {
+            expect(mockInitMessage).toHaveBeenCalled();
+
+            const initResp = await eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            expect(initResp).toEqual({});
+            expect(mockPostMessageToHost).not.toHaveBeenCalled();
+        });
+
         test('type check string for visualProps on initialize payload should not throw an error.', async () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
