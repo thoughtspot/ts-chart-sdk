@@ -115,6 +115,12 @@ export interface TextInputFormDetail {
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
     inputValidation?: InputValidation;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -148,6 +154,12 @@ export interface NumberInputFormDetail {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     inputValidation?: InputValidation;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -182,6 +194,12 @@ export interface ColorPickerFormDetail {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     defaultValue?: string;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -209,6 +227,12 @@ export interface ToggleFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: boolean;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -237,9 +261,9 @@ export interface CheckboxFormDetail {
      */
     defaultValue?: boolean;
     /**
-     * Determines whether the checkbox should be disabled
+     * Determines whether it should be disabled or not
      *
-     * @version SDK: 0.1 | ThoughtSpot:
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
      */
     disabled?: boolean;
 }
@@ -276,9 +300,9 @@ export interface RadioButtonFormDetail {
      */
     values: string[];
     /**
-     * Determines whether the radio button should be disabled
+     * Determines whether it should be disabled or not
      *
-     * @version SDK: 0.1 | ThoughtSpot:
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
      */
     disabled?: boolean;
 }
@@ -314,6 +338,12 @@ export interface DropDownFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     values: string[];
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -355,6 +385,12 @@ export interface Section {
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
     layoutType?: 'accordion' | 'tab' | 'none';
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.11 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
