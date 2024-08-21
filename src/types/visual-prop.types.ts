@@ -236,6 +236,12 @@ export interface CheckboxFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: boolean;
+    /**
+     * Determines whether the checkbox should be disabled
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -269,6 +275,12 @@ export interface RadioButtonFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     values: string[];
+    /**
+     * Determines whether the radio button should be disabled
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
