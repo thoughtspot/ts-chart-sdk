@@ -446,7 +446,6 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     defaultValue: 'red',
                     values: ['red', 'green', 'yellow'],
                     label: 'Colors',
-                    disabled: false,
                 },
                 {
                     type: 'section',
