@@ -39,6 +39,23 @@ function App() {
         ]);
     };
 
+    const triggerInitializeComplete = () => {
+        const payload = {
+            eventType: 'InitializeComplete',
+            payload: {},
+            source: 'ts-host-app',
+        };
+
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (res: any) => {
+            channel.port1.close();
+            triggerChartRender();
+        };
+        iFrameWindow.current?.contentWindow?.postMessage(payload, appUrl, [
+            channel.port2,
+        ]);
+    };
+
     const updateChartModel = (res: any) => {
         const payload = {
             eventType: 'ChartModelUpdate',
@@ -56,7 +73,7 @@ function App() {
         const channel = new MessageChannel();
         channel.port1.onmessage = (res: any) => {
             channel.port1.close();
-            triggerChartRender();
+            triggerInitializeComplete();
         };
         iFrameWindow.current?.contentWindow?.postMessage(payload, appUrl, [
             channel.port2,
@@ -99,23 +116,23 @@ function App() {
                 @thoughtspot/ts-chart-sdk Playground (ALPHA)
             </h1>
             <div className="flex min-h-screen">
-
-
                 <div className="w-1/4 bg-gray-200 p-4">
                     {' '}
                     {/* Left Sidebar */}
                     <div id="left-panel">
                         <Form
-                            updateChart={(appUrl: string, model: any, modelName: string) => {
+                            updateChart={(
+                                appUrl: string,
+                                model: any,
+                                modelName: string,
+                            ) => {
                                 setChartModel(model);
                                 setChartModelName(modelName);
                                 setAppUrl(appUrl);
                             }}
                         />
                     </div>
-
                     <div className="event-log"></div>
-
                 </div>
                 <div className="w-3/4 p-4">
                     {/* Center Content */}
