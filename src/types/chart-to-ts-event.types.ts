@@ -25,6 +25,7 @@ export enum ChartToTSEvent {
     /**
      * Render life cycle events
      */
+    InitStart = 'InitStart',
     RenderStart = 'RenderStart',
     RenderError = 'RenderError',
     RenderComplete = 'RenderComplete',
@@ -72,6 +73,12 @@ export interface ChartToTSEventsPayloadMap {
      */
     [ChartToTSEvent.CloseContextMenu]: [];
 
+    /**
+     * Trigger to notify the Initialization start
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    [ChartToTSEvent.InitStart]: [];
     /**
      * Trigger to notify the render start
      *
