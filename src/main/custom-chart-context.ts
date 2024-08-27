@@ -269,6 +269,9 @@ export class CustomChartContext {
         this.hasInitializedPromise = new Promise((resolve, reject) => {
             this.triggerInitResolve = resolve;
         });
+        // Not using this.emitEvent as the context is not yet completely
+        // initialized, thus short circuiting.
+        postMessageToHostApp('', '*', null, ChartToTSEvent.InitStart);
     }
 
     /**

@@ -110,7 +110,6 @@ describe('CustomChartContext', () => {
                     allowMeasureNamesAndValues: false,
                 },
             });
-            expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
         test('should return responseMessage as empty instead of undefine', async () => {
@@ -121,7 +120,6 @@ describe('CustomChartContext', () => {
                 eventType: TSToChartEvent.InitializeComplete,
             });
             expect(initResp).toEqual({});
-            expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
         test('type check string for visualProps on initialize payload should not throw an error.', async () => {
@@ -152,7 +150,6 @@ describe('CustomChartContext', () => {
             const chartModel = customChartContext.getChartModel();
             expect(typeof chartModel.visualProps).toEqual('string');
             expect(chartModel.visualProps).toEqual('visualPropStringPayload');
-            expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
         test('type check object for visualProps on initialize payload should not throw an error.', async () => {
@@ -187,7 +184,6 @@ describe('CustomChartContext', () => {
             expect(chartModel.visualProps).toEqual({
                 data: 'sample data',
             });
-            expect(mockPostMessageToHost).not.toHaveBeenCalled();
         });
 
         test('multiple intializations should throw an error', async () => {
@@ -679,7 +675,6 @@ describe('CustomChartContext', () => {
             );
 
             // Check that the result is defined
-            expect(mockPostMessageToHost).not.toHaveBeenCalled();
             await expect(result).rejects.toBeDefined();
         });
 

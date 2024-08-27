@@ -236,7 +236,6 @@ describe('useChartContext emit', () => {
         });
         const promise = result.current.emitRenderStart();
         await expect(promise).rejects.toThrow('Context not initialized');
-        expect(mockPostMessageToHost).not.toHaveBeenCalled();
     });
 });
 
