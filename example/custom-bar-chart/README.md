@@ -13,7 +13,7 @@ To integrate ThoughtSpot Chart SDK and complete these steps:
 
 ### Setup Your Environment
 
--   For this you can refer to [setup your environment](../../README.md#set-up-your-environment) above section with the following changes: - While creating folder name it with **bar-chart**. - Give project name as **custom-bar-charts** or you can directly us `npm create vite@latest custom-bar-chart -- --template vanilla-ts` - Instead of highcharts install your chart library (which in this case is `charts.js`) using command-`npm i chart.js` to install chart.js and `npm install chartjs-plugin-datalabels` to install datalabels plugin.
+-   For this you can refer to [setup your environment](../../README.md#set-up-your-environment) above section with the following changes: - While creating folder name it with **bar-chart**. - Give project name as **custom-bar-charts** or you can directly use `npm create vite@latest custom-bar-chart -- --template vanilla-ts` - Instead of highcharts install your chart library (which in this case is `charts.js`) using command-`npm i chart.js` to install chart.js and `npm install chartjs-plugin-datalabels` to install datalabels plugin.
     > NOTE:
     > For more information about the chart.js and chartjs-plugin-datalabels, refer to the following documentation resources respectively:
     >
@@ -22,7 +22,7 @@ To integrate ThoughtSpot Chart SDK and complete these steps:
 
 ### Implementing Sample Bar Chart
 
-In this section we will be Rendering a sample bar chart in the application created from the preceding steps.
+In this section we will be rendering a sample bar chart in the application created from the preceding steps.
 
 To implement the chart code in your application, complete these steps:
 
@@ -56,12 +56,17 @@ To implement the chart code in your application, complete these steps:
 </html>
 ```
 
-1. Import `Charts` and `ChartsDataLabels` using following lines from the prop
+1. Import `Charts` and `ChartsDataLabels` using following lines :
+
+```ts
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+```
 
 2. We are creating this sample chart with the help `chart.js` and `chartjs-plugin-datalabels` plugin. Here is the snippet-
 
 ```ts
-var ctx = document.getElementById('myChart').getContext('2d');
+var ctx = document.getElementById('chart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -112,8 +117,7 @@ var myChart = new Chart(ctx, {
 ├── index.html
 ├── package-lock.json
 ├── package.json
-├── src
-│   └── custom-charts.ts
+│── custom-charts.ts
 └── tsconfig.json
 ```
 
@@ -355,7 +359,7 @@ To implement renderChart, complete the following steps:
 
 ```jsx
 const renderChart = (ctx) => {
-    var ctx = document.getElementById('myChart').getContext('2d');
+    var ctx = document.getElementById('chart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -409,6 +413,7 @@ import {
     ValidationResponse,
     VisualPropEditorDefinition,
 } from '@thoughtspot/ts-chart-sdk';
+import _ from 'loadash';
 import {
     ChartColumn,
     ChartConfig,
@@ -435,8 +440,9 @@ To run the chart and test your implementation, you need a Playground.
 
 [https://ts-chart-playground.vercel.app/](https://ts-chart-playground.vercel.app/)
 
-> **NOTE**
-> You can check out the playground code on the GitHub repository to your local environment and modify the data set to test your charts effectively.
+> **NOTE :**
+>
+> You can check out the playground code on the [GitHub repository](https://github.com/thoughtspot/ts-chart-sdk/tree/main/playground/app) to your local environment and modify the data set to test your charts effectively.
 
 2. Add the following details as shown in the following example:
 
@@ -468,6 +474,10 @@ function getDataModel(chartModel: ChartModel) {
 2. Create two gloabal array that will have with name `availableColor` and `visualPropKeyMap` that will be used to provide default color configurations and mapping key value pair that we will be getting from in `visualProp`. The code snippet is as follow-
 
 ```ts
+Chart.register(ChartDataLabels);
+
+let globalChartReference: Chart;
+
 const availableColor = ['red', 'green', 'blue'];
 
 const visualPropKeyMap = {
@@ -546,7 +556,7 @@ function getColumnDataModel(
 ```
 
 4. In the above implementation you will be getting error inside `getPointsdetails`
-   beacuse we have a undefined function `getDataForColumn`. This function will take the column IDS and return the specific cloumn data. Implement this function in with the following code snippet->
+   beacuse we have a undefined function `getDataForColumn`. This function will take the column ids and return the specific cloumn data. Implement this function in with the following code snippet->
 
 ```js
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
@@ -680,7 +690,7 @@ function render(ctx: CustomChartContext) {
 }
 ```
 
-3. In `renderChart` we will be calling render function and integrating it some custom `CharttoTSEvent` that will help in notifying ThoughtSpot different rendering stages. Copy the snippet below to implement it:
+4. In `renderChart` we will be calling render function and integrating it some custom `CharttoTSEvent` that will help in notifying ThoughtSpot different rendering stages. Copy the snippet below to implement it:
 
 > NOTE:
 > For more information about the ChartToTSEvents component, refer to the following documentation resources:
