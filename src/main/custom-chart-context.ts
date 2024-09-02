@@ -143,7 +143,8 @@ export type CustomChartContextProps = {
 
     // Whether user wants thoughtspot default number and conditional formatting
     allowedConfigurations?: AllowedConfigurations;
-    // batchsize TODO
+    // TODO: needs to implement this on TS side
+    batchSizeLimit?: number;
 };
 
 export type ValidationFunctions =
