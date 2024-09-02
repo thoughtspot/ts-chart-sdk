@@ -8,6 +8,18 @@
  * Copyright: ThoughtSpot Inc. 2024
  */
 
+/**
+ * Creates a custom Chart.js plugin to draw plotlines on the chart.
+ *
+ * The plugin iterates over the datasets in the chart and draws horizontal
+ * lines at specified values on the y-axis. These plotlines are typically
+ * used to highlight specific threshold values or boundaries defined by
+ * conditional formatting.
+ *
+ * @param {Object} dataModel - The data model containing the datasets with plotlines.
+ * @returns {Object} The plugin configuration object for Chart.js.
+ */
+
 export function createPlotlinePlugin(dataModel) {
     return {
         id: 'cfPlotlinePlugin',
@@ -19,7 +31,7 @@ export function createPlotlinePlugin(dataModel) {
                 plotlines?.forEach((plotline) => {
                     const yScale = chart.scales[axisId];
                     const yValue = yScale.getPixelForValue(plotline.value);
-                    ctx.strokeStyle = plotline.color;
+                    ctx.strokeStyle = plotline.color || 'white';
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(chart.chartArea.left, yValue);
@@ -30,6 +42,18 @@ export function createPlotlinePlugin(dataModel) {
         },
     };
 }
+
+/**
+ * Creates a custom Chart.js plugin to draw plotbands on the chart.
+ *
+ * The plugin iterates over the datasets in the chart and draws shaded
+ * areas (plotbands) between specified values on the y-axis. These plotbands
+ * are typically used to highlight ranges of values defined by conditional
+ * formatting.
+ *
+ * @param {Object} dataModel - The data model containing the datasets with plotbands.
+ * @returns {Object} The plugin configuration object for Chart.js.
+ */
 
 export function createPlotbandPlugin(dataModel) {
     return {
@@ -45,7 +69,7 @@ export function createPlotbandPlugin(dataModel) {
                     const yValueFrom = yScale.getPixelForValue(plotband.from);
                     const yValueTo = yScale.getPixelForValue(plotband.to);
 
-                    ctx.fillStyle = plotband.color;
+                    ctx.fillStyle = plotband.color || 'white';
                     ctx.beginPath();
                     ctx.moveTo(chartArea.left, yValueFrom);
                     ctx.lineTo(chartArea.right, yValueFrom);

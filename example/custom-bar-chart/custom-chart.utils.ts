@@ -10,30 +10,11 @@
 
 import {
     applicableConditionalFormatting,
-    ChartColumn,
-    ChartConfig,
-    ChartModel,
     ChartSdkCustomStylingConfig,
-    ChartToTSEvent,
-    ColumnType,
     ConditionalFormatting,
-    CustomChartContext,
-    DataPointsArray,
-    dateFormatter,
-    getCfForColumn,
-    getChartContext,
-    isDateColumn,
-    isDateNumColumn,
     Operators,
-    PointVal,
-    Query,
-    ValidationResponse,
-    VisualPropEditorDefinition,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
-import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
-import Chart from 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 
 export const visualPropKeyMap = {
@@ -43,6 +24,25 @@ export const visualPropKeyMap = {
 };
 
 export const availableColor = ['red', 'green', 'blue'];
+
+/**
+ * Determines the background color for a chart element based on custom styling
+ * configurations, visual properties, and conditional formatting.
+ *
+ * This function first checks if a custom color palette is provided in the
+ * `customStyleConfig`. If not, it falls back to default colors defined in
+ * `visualProps` or a set of available colors. It also considers conditional
+ * formatting rules to apply specific colors if certain conditions are met.
+ *
+ * @param {ChartSdkCustomStylingConfig} customStyleConfig - The custom styling configuration object.
+ * @param {VisualProps} visualProps - The visual properties object containing styling details.
+ * @param {any} idx - The index of the current dataset or chart element.
+ * @param {any} dataArr - The array of data points used in the chart.
+ * @param {any} CFforColumn - The conditional formatting rules applicable to the column.
+ * @param {number} index - The index of the current data point within the dataset.
+ * @param {any} colId - The identifier of the column being processed.
+ * @returns {string} The determined background color as a string.
+ */
 
 export function getBackgroundColor(
     customStyleConfig: ChartSdkCustomStylingConfig,
@@ -71,6 +71,19 @@ export function getBackgroundColor(
     }
     return color2 ?? color;
 }
+
+/**
+ * Extracts plotlines and plotbands from the given conditional formatting rules.
+ *
+ * This function processes conditional formatting rules (e.g., thresholds, ranges)
+ * applied to a chart column and generates plotlines and plotbands that can be used
+ * to visually indicate these conditions on the chart. Plotlines are single lines
+ * drawn at specific values, while plotbands are shaded areas between two values.
+ *
+ * @param {ConditionalFormatting | undefined} CFforColumn - The conditional formatting rules for the column.
+ * @param {string} axisId - The identifier of the axis to which the plotlines/plotbands will be applied.
+ * @returns {Object} An object containing arrays of plotlines and plotbands.
+ */
 
 export function getPlotLinesAndBandsFromConditionalFormatting(
     CFforColumn: ConditionalFormatting | undefined,
