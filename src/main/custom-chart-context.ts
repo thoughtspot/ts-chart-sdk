@@ -57,9 +57,9 @@ import {
 } from './post-message-event-bridge';
 
 export type AllowedConfigurations = {
-    allowColumnNumberFormatting: boolean;
-    allowColumnConditionalFormatting: boolean;
-    allowMeasureNamesAndValues: boolean;
+    allowColumnNumberFormatting?: boolean;
+    allowColumnConditionalFormatting?: boolean;
+    allowMeasureNamesAndValues?: boolean;
 };
 
 export type CustomChartContextProps = {
@@ -143,6 +143,8 @@ export type CustomChartContextProps = {
 
     // Whether user wants thoughtspot default number and conditional formatting
     allowedConfigurations?: AllowedConfigurations;
+    // TODO: needs to implement this on TS side
+    batchSizeLimit?: number;
 };
 
 export type ValidationFunctions =

@@ -503,25 +503,42 @@ function getColumnDataModel(
     return {
         getLabels: () => getDataForColumn(xAxisColumns[0], dataArr),
         getDatasets: () =>
-            _.map(yAxisColumns, (col, idx) => ({
-                label: col.name,
-                data: getDataForColumn(col, dataArr),
-                yAxisID: `${type}-y${idx.toString()}`,
-                type: `${type}`,
-                backgroundColor: _.get(
-                    visualProps,
-                    visualPropKeyMap?.[idx],
-                    availableColor[idx],
-                ),
-                borderColor: _.get(
-                    visualProps,
-                    visualPropKeyMap?.[idx],
-                    availableColor[idx],
-                ),
-                datalabels: {
-                    anchor: 'end',
-                },
-            })),
+            _.map(yAxisColumns, (col, idx) => {
+                const coldata = getDataForColumn(col, dataArr);
+                const CFforColumn = getCfForColumn(col);
+                const axisId = `${type}-y${idx.toString()}`;
+                const color = coldata.map((value, index) =>
+                    getBackgroundColor(
+                        customStyleConfig,
+                        visualProps,
+                        idx,
+                        dataArr,
+                        CFforColumn,
+                        index,
+                        col.id,
+                    ),
+                );
+                const { plotlines, plotbands } =
+                    getPlotLinesAndBandsFromConditionalFormatting(
+                        CFforColumn,
+                        axisId,
+                    );
+
+                return {
+                    label: col.name,
+                    data: coldata,
+                    yAxisID: axisId,
+                    type: `${type}`,
+                    backgroundColor: color,
+                    borderColor: color,
+                    datalabels: {
+                        anchor: 'end',
+                    },
+                    plotlines, // Include plotlines in the dataset
+                    plotbands, // Include plotbands in the dataset
+                };
+            }),
+
         getScales: () =>
             _.reduce(
                 yAxisColumns,
@@ -564,6 +581,93 @@ function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     return _.map(dataArr.dataValue, (row) => row[idx]);
 }
 ```
+5. In the above implementation, you will need to implement the following functions to ensure that the conditional formatting and background colors are correctly applied, and that the plotlines and plotbands are drawn on the chart.
+
+    `getBackgroundColor`: This function determines the background color for each data point based on custom style configurations, visual properties, and any applicable conditional formatting rules. Implement this function with the following code snippet:
+
+    ```js
+    export function getBackgroundColor(
+        customStyleConfig: ChartSdkCustomStylingConfig,
+        visualProps: VisualProps,
+        idx: any,
+        dataArr: any,
+        CFforColumn: any,
+        index: number,
+        colId: any,
+    ) {
+        const color =
+            customStyleConfig?.chartColorPalettes?.length &&
+            customStyleConfig?.chartColorPalettes[0].colors.length > 0
+                ? customStyleConfig?.chartColorPalettes[0].colors
+                : _.get(visualProps, visualPropKeyMap?.[idx], availableColor[idx]);
+
+        const applicableFormatting = applicableConditionalFormatting(
+            index,
+            colId,
+            dataArr,
+            CFforColumn,
+        );
+        let color2 = applicableFormatting?.solidBackgroundAttrs?.color;
+        if (applicableFormatting?.plotAsBand) {
+            color2 = null;
+        }
+        return color2 ?? color;
+    }
+    ```
+
+    `getPlotLinesAndBandsFromConditionalFormatting`: This function extracts plotlines and plotbands from the given conditional formatting rules. Plotlines are single lines drawn at specific values on the chart, while plotbands are shaded areas between two values. Implement this function with the following code snippet:
+
+    ```js    
+        export function getPlotLinesAndBandsFromConditionalFormatting(
+        CFforColumn: ConditionalFormatting | undefined,
+        axisId: string,
+    ) {
+        const plotlines: any = [];
+        const plotbands: any = [];
+
+        CFforColumn?.rows?.forEach((metric) => {
+            const value = metric?.value ? parseFloat(metric.value) : null;
+
+            const color = metric?.solidBackgroundAttrs?.color;
+            if (metric?.operator === Operators.IsBetween) {
+                const value1 = metric?.rangeValues?.min ?? null;
+                const value2 = metric?.rangeValues?.max ?? null;
+                if (value1 !== null && value2 !== null) {
+                    plotlines.push(
+                        {
+                            value: value1,
+                            axisId,
+                            color,
+                            fill: metric?.plotAsBand,
+                        },
+                        {
+                            value: value2,
+                            axisId,
+                            color,
+                            fill: metric?.plotAsBand,
+                        },
+                    );
+                    if (metric?.plotAsBand) {
+                        plotbands.push({
+                            from: value1,
+                            to: value2,
+                            axisId,
+                            color,
+                        });
+                    }
+                }
+            } else if (value !== null) {
+                plotlines.push({
+                    value,
+                    axisId,
+                    color,
+                    fill: metric?.plotAsBand,
+                });
+            }
+        });
+        return { plotlines, plotbands };
+    }
+    ```
 
 ## Implementing the renderChart
 
@@ -682,6 +786,10 @@ function render(ctx: CustomChartContext) {
                     });
                 },
             },
+            plugins: [
+                createPlotlinePlugin(dataModel), // Add the custom plotline plugin
+                createPlotbandPlugin(dataModel), // Add the custom plotband plugin
+            ],
         });
     } catch (e) {
         console.error('renderfailed', e);
