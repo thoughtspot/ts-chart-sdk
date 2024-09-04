@@ -7,8 +7,6 @@
  */
 
 import { ChartColumn } from './answer-column.types';
-import { ChartConfigEditorDefinition } from './configurator.types';
-import { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
  * Defines types of features for which font can be customised with Custom style config used in TS.

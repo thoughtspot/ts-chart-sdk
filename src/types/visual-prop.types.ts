@@ -8,8 +8,8 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-import { CustomChartContext } from '../main/custom-chart-context';
-import { ChartModel } from './common.types';
+import type { CustomChartContext } from '../main/custom-chart-context';
+import type { ChartModel } from './common.types';
 /**
  * Configuration for input validation rules
  */

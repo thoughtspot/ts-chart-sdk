@@ -1,6 +1,5 @@
-import { AllowedConfigurations } from '../main/custom-chart-context';
+import type { AllowedConfigurations } from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
-import { Point } from './chart-to-ts-event.types';
 import {
     AppConfig,
     ChartConfig,
@@ -9,6 +8,7 @@ import {
     ValidationResponse,
     VisualProps,
 } from './common.types';
+import { Point } from './common-event-types';
 import { ChartConfigEditorDefinition } from './configurator.types';
 import { VisualPropEditorDefinition } from './visual-prop.types';
 
