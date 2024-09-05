@@ -7,8 +7,8 @@
  */
 
 import { ChartColumn } from './answer-column.types';
-import { ChartConfigEditorDefinition } from './configurator.types';
-import { VisualPropEditorDefinition } from './visual-prop.types';
+import type { ChartConfigEditorDefinition } from './configurator.types';
+import type { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
  * Defines types of features for which font can be customised with Custom style config used in TS.
@@ -16,6 +16,24 @@ import { VisualPropEditorDefinition } from './visual-prop.types';
  * Use chartFeatureToFontGuid to get the guid for the feature and get the font face from guid
  * from customFontFaces
  */
+
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+
+export type Scalars = {
+    ID: string;
+    String: string;
+    Boolean: boolean;
+    Int: number;
+    Float: number;
+    FileUpload: any;
+    GUID: string;
+    JSON: {
+        [key: string]: any;
+    };
+    JSONObject: any;
+    Long: any;
+};
 
 export enum CustomizableChartFeature {
     X_AXIS_LABEL,

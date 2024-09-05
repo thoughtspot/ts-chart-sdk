@@ -3,30 +3,16 @@
  * @fileoverview All CF types for the Custom Chart implementations
  * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
  *
- * Copyright: ThoughtSpot Inc. 2023
+ * Copyright: ThoughtSpot Inc. 2024
  */
 
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+import type { InputMaybe, Maybe, Scalars } from './common.types';
 
 export type ConditionalFormatting = {
     __typename?: 'ConditionalFormatting';
     rows?: Maybe<Array<Maybe<ConditionalMetric>>>;
 };
-export type Scalars = {
-    ID: string;
-    String: string;
-    Boolean: boolean;
-    Int: number;
-    Float: number;
-    FileUpload: any;
-    GUID: string;
-    JSON: {
-        [key: string]: any;
-    };
-    JSONObject: any;
-    Long: any;
-};
+
 export declare enum BackgroundFormatTypes {
     Gradient = 'GRADIENT',
     Solid = 'SOLID',
