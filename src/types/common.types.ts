@@ -26,13 +26,13 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    FileUpload: any;
+    FileUpload: unknown;
     GUID: string;
     JSON: {
-        [key: string]: any;
+        [key: string]: unknown;
     };
-    JSONObject: any;
-    Long: any;
+    JSONObject: unknown;
+    Long: unknown;
 };
 
 export enum CustomizableChartFeature {

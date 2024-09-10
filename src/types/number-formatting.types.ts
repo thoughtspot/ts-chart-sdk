@@ -23,6 +23,12 @@ export enum Unit {
     Trillion = 'TRILLION',
 }
 
+export enum NegativeValueFormat {
+    BracesNodash = 'BRACES_NODASH',
+    PrefixDash = 'PREFIX_DASH',
+    SuffixDash = 'SUFFIX_DASH',
+}
+
 export type CurrencyFormatConfig = {
     __typename?: 'CurrencyFormatConfig';
     /** default to 2 */
@@ -40,12 +46,6 @@ export type CustomFormatConfig = {
     __typename?: 'CustomFormatConfig';
     format?: Maybe<Scalars['String']>;
 };
-
-export enum NegativeValueFormat {
-    BracesNodash = 'BRACES_NODASH',
-    PrefixDash = 'PREFIX_DASH',
-    SuffixDash = 'SUFFIX_DASH',
-}
 
 export type NumberFormatConfig = {
     __typename?: 'NumberFormatConfig';

@@ -12,7 +12,6 @@ export type ConditionalFormatting = {
     __typename?: 'ConditionalFormatting';
     rows?: Maybe<Array<Maybe<ConditionalMetric>>>;
 };
-
 export declare enum BackgroundFormatTypes {
     Gradient = 'GRADIENT',
     Solid = 'SOLID',
