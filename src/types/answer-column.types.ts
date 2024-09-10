@@ -1,4 +1,6 @@
-import { ConditionalFormatting, Maybe } from './conditional-formatting.types';
+import type { Maybe } from './common.types';
+import { ConditionalFormatting } from './conditional-formatting.types';
+import { FormatConfig } from './number-formatting.types';
 
 export enum ColumnType {
     UNKNOWN,
@@ -234,10 +236,11 @@ export interface ChartColumn {
     /**
      * Column Properties of the columns
      *
-     * @version SDK: 0.1 | ThoughtSpot:
+     * @version SDK: 0.0.2-alpha.15 | ThoughtSpot:
      */
     columnProperties?: {
         conditionalFormatting?: Maybe<ConditionalFormatting>;
+        numberFormatting?: Maybe<FormatConfig>;
     };
 
     /**
