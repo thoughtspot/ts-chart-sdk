@@ -442,6 +442,28 @@ export class CustomChartContext {
     };
 
     /**
+     * Funtions return the column level custom editor config
+     * @param {ChartConfig[]} currentChartConfig
+     * @param {VisualProps}
+     * @returns {ChartConfigEditorDefinition[]}
+     */
+    private getColumnSettingsEditorDefinition = (
+        columnId: string,
+        currentState: Partial<ChartModel> = {},
+    ) => {
+        if (_.isFunction(this.chartContextProps.chartConfigEditorDefinition)) {
+            return this.chartContextProps.chartConfigEditorDefinition(
+                {
+                    ...this.chartModel,
+                    ...currentState,
+                },
+                this,
+            );
+        }
+        return this.chartContextProps.chartConfigEditorDefinition;
+    };
+
+    /**
      * Function to store the axis menu custom action callback mapped with action id
      * @param  {[OpenAxisMenuEventPayload]} eventPayload Event payload bound
      *          to the type of the event

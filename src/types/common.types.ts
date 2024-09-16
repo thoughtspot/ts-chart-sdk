@@ -162,18 +162,6 @@ export interface ChartModel {
     };
 }
 
-// Validation Response for valid config or visual props
-export type SuccessValidationResponse = {
-    chartConfigEditorDefinition: ChartConfigEditorDefinition[];
-    visualPropEditorDefinition: VisualPropEditorDefinition;
-};
-
-// Generic Validation Response
-export type ValidationResponse = {
-    isValid: boolean;
-    validationErrorMessage?: string[];
-};
-
 /**
  * Custom Visual props is the stored metadata for the visual props definition
  * configured by the user in the visual prop editor

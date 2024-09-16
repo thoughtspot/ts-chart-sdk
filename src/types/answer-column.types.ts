@@ -238,6 +238,7 @@ export interface ChartColumn {
      */
     columnProperties?: {
         conditionalFormatting?: Maybe<ConditionalFormatting>;
+        columnCustomProps?: unknown;
     };
 
     /**
