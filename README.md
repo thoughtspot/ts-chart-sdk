@@ -849,6 +849,10 @@ Probably you are implementing `update client state` logic inside the the `render
 
 Since in our previous implementation of `visualPropEditorDefintion` we provided this as an static object of type `VisualPropEditorDefinition` but with the resent update this is converted function of type `VisualEditorDefinitonSetter` along with `VisualEditorDefintion`. So currently you can provide static config or dynamic config based on use case.
 
+#### Only 1000 points are getting fetched for my query even though there are more results. How to increase that?
+
+In `getQueriesFromChartConfig` along with `QueryColumn` you can provide additional optional key `queryParams`. In `queryParams` you can provide `size` to deal with the number of data points that need to fetched. Also there is hard limit of 100K data points to be fetched from the backend.
+
 <br/>
 
 ThoughtSpot Chart SDK, © ThoughtSpot, Inc. 2023
