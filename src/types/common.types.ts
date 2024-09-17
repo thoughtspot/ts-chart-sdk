@@ -282,7 +282,7 @@ export interface AppConfig {
     customCalendarConfig?: any; // this is to initialize custom calendar service
 
     /**
-     * Unique identifier for the customer. This is used to identify the customer
+     * Unique identifier for the customer. This can be used as a way to maintain licensing by the third party developer
      */
-    customerId?: string;
+    chartAppAccessToken?: string;
 }
