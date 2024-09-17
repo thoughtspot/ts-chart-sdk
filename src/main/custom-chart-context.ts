@@ -57,9 +57,9 @@ import {
 } from './post-message-event-bridge';
 
 export type AllowedConfigurations = {
-    allowColumnNumberFormatting: boolean;
-    allowColumnConditionalFormatting: boolean;
-    allowMeasureNamesAndValues: boolean;
+    allowColumnNumberFormatting?: boolean;
+    allowColumnConditionalFormatting?: boolean;
+    allowMeasureNamesAndValues?: boolean;
 };
 
 export type CustomChartContextProps = {
@@ -143,6 +143,8 @@ export type CustomChartContextProps = {
 
     // Whether user wants thoughtspot default number and conditional formatting
     allowedConfigurations?: AllowedConfigurations;
+    // TODO: needs to implement this on TS side
+    batchSizeLimit?: number;
 };
 
 export type ValidationFunctions =
@@ -269,6 +271,9 @@ export class CustomChartContext {
         this.hasInitializedPromise = new Promise((resolve, reject) => {
             this.triggerInitResolve = resolve;
         });
+        // Not using this.emitEvent as the context is not yet completely
+        // initialized, thus short circuiting.
+        postMessageToHostApp('', '*', null, ChartToTSEvent.InitStart);
     }
 
     /**
@@ -572,7 +577,7 @@ export class CustomChartContext {
         const messageResponse = this.executeEventListenerCBs(data);
 
         // respond back to parent to confirm/ack the receipt
-        return messageResponse;
+        return messageResponse || {};
     };
 
     /**

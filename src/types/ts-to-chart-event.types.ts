@@ -220,8 +220,22 @@ export interface GetDataQueryPayload {
  *
  * @group ThoughtSpot to Chart Events
  */
+export interface QueryColumn extends ChartColumn {
+    /**
+     * Flag to identify if the column is a measure value,
+     * to be used along with MEASURE_NAME/MEASUE_VALUE column in the query
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    isMeasureValue?: boolean;
+}
+
+/**
+ *
+ * @group ThoughtSpot to Chart Events
+ */
 export interface Query {
-    queryColumns: ChartColumn[];
+    queryColumns: QueryColumn[];
     queryParams?: {
         offset?: number;
         size?: number;

@@ -115,6 +115,12 @@ export interface TextInputFormDetail {
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
     inputValidation?: InputValidation;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -148,6 +154,12 @@ export interface NumberInputFormDetail {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     inputValidation?: InputValidation;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -209,6 +221,12 @@ export interface ToggleFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: boolean;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -236,6 +254,12 @@ export interface CheckboxFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     defaultValue?: boolean;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -269,6 +293,12 @@ export interface RadioButtonFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     values: string[];
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-3 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -302,6 +332,12 @@ export interface DropDownFormDetail {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     values: string[];
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
