@@ -430,8 +430,8 @@ export class CustomChartContext {
      * @returns {VisualPropEditorDefinition}
      */
     private getVisualPropEditorDefinition = (
-        currentState: Partial<ChartModel> = {},
         activeColumnId?: string,
+        currentState: Partial<ChartModel> = {},
     ) => {
         if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
             return this.chartContextProps.visualPropEditorDefinition(
@@ -511,8 +511,8 @@ export class CustomChartContext {
         activeColumnId?: string,
     ) {
         const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
-            currentValidationState,
             activeColumnId,
+            currentValidationState,
         );
         const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
             currentValidationState,
