@@ -116,6 +116,7 @@ export type CustomChartContextProps = {
     validateVisualProps?: (
         updatedVisualProps: VisualProps,
         chartModel: ChartModel,
+        activeColumnId?: string,
     ) => ValidationResponse;
 
     /**
@@ -430,6 +431,7 @@ export class CustomChartContext {
      */
     private getVisualPropEditorDefinition = (
         currentState: Partial<ChartModel> = {},
+        activeColumnId?: string,
     ) => {
         if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
             return this.chartContextProps.visualPropEditorDefinition(
@@ -438,6 +440,7 @@ export class CustomChartContext {
                     ...currentState,
                 },
                 this,
+                activeColumnId,
             );
         }
         return this.chartContextProps.visualPropEditorDefinition;
@@ -505,9 +508,11 @@ export class CustomChartContext {
     private validationsResponseProcessor(
         currentValidationState: Partial<ChartModel>,
         validationResponse: ValidationResponse,
+        activeColumnId?: string,
     ) {
         const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
             currentValidationState,
+            activeColumnId,
         );
         const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
             currentValidationState,
@@ -622,15 +627,17 @@ export class CustomChartContext {
                         this.chartContextProps.validateVisualProps(
                             payload.visualProps,
                             this.chartModel,
+                            payload?.activeColumnId,
                         );
                     if (validationResponse.isValid) {
                         const currentVisualState = {
                             visualProps: payload.visualProps,
                         };
-
+                        const activeColumnId = payload?.activeColumnId;
                         return this.validationsResponseProcessor(
                             currentVisualState,
                             validationResponse,
+                            activeColumnId,
                         );
                     }
                     return validationResponse;
