@@ -398,8 +398,8 @@ export type PropElement =
     | DropDownFormDetail;
 
 /**
- * Define Column settings, based on column type, settings needs to be defined in visualPropEditorDefinition
- * using the current config columns,
+ * Define Column settings, based on column type, settings needs to be defined in
+ * visualPropEditorDefinition using the current config columns,
  * @version SDK: 0.2 | ThoughtSpot:
  */
 export interface ColumnProp {

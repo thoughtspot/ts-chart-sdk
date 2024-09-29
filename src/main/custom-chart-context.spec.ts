@@ -6,14 +6,12 @@
 
 import _ from 'lodash';
 import { mockInitializeContextPayload } from '../test/test-utils';
+import { ColumnType } from '../types/answer-column.types';
 import { ChartToTSEvent, ErrorType } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
+import { PropElement } from '../types/visual-prop.types';
 import { CustomChartContext, getChartContext } from './custom-chart-context';
 import * as PostMessageEventBridge from './post-message-event-bridge';
-import { ColumnType } from '../types/answer-column.types';
-import { PropElement } from '../types/visual-prop.types';
-
-// jest.mock('./post-message-event-bridge');
 
 jest.spyOn(console, 'log').mockImplementation(() => {
     // do nothing.
