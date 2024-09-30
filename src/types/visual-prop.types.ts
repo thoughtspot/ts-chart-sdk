@@ -9,6 +9,7 @@
  */
 
 import { CustomChartContext } from '../main/custom-chart-context';
+import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
 /**
  * Configuration for input validation rules
@@ -397,6 +398,18 @@ export type PropElement =
     | DropDownFormDetail;
 
 /**
+ * Define Column settings, based on column type, settings needs to be defined in
+ * visualPropEditorDefinition using the current config columns,
+ * @version SDK: 0.2 | ThoughtSpot:
+ */
+export interface ColumnProp {
+    type: ColumnType;
+    columnSettingsDefinition: {
+        [columnId: string]: { elements: PropElement[] };
+    };
+}
+
+/**
  * Visual property editor definition object
  *
  * @group Visual Properties Editor
@@ -409,11 +422,18 @@ export interface VisualPropEditorDefinition {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     elements: PropElement[];
+    /**
+     *To Define column level settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    columnsVizPropDefinition?: ColumnProp[];
 }
 
 export type VisualEditorDefinitionSetter = (
     currentState: ChartModel,
     ctx: CustomChartContext,
+    activeColumnId?: string,
 ) => VisualPropEditorDefinition;
 
 /**

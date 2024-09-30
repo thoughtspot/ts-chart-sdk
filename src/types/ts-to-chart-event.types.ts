@@ -295,6 +295,13 @@ export interface VisualPropsValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualProps: VisualProps;
+    /**
+     * used to identify active column for column level settings, empty string in case of overall
+     * chart settings
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    activeColumnId?: string;
 }
 
 /**

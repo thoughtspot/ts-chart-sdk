@@ -6,16 +6,24 @@
 
 import _ from 'lodash';
 import { mockInitializeContextPayload } from '../test/test-utils';
+import { ColumnType } from '../types/answer-column.types';
 import { ChartToTSEvent, ErrorType } from '../types/chart-to-ts-event.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
+import { PropElement } from '../types/visual-prop.types';
 import { CustomChartContext, getChartContext } from './custom-chart-context';
 import * as PostMessageEventBridge from './post-message-event-bridge';
-
-// jest.mock('./post-message-event-bridge');
 
 jest.spyOn(console, 'log').mockImplementation(() => {
     // do nothing.
 });
+
+const mockFormElements: PropElement = {
+    key: 'color',
+    type: 'radio',
+    defaultValue: 'red',
+    values: ['red', 'green', 'yellow'],
+    label: 'Colors',
+};
 
 describe('CustomChartContext', () => {
     let eventProcessor: any;
@@ -220,6 +228,45 @@ describe('CustomChartContext', () => {
             }
             expect(error).toBe(ErrorType.MultipleContextsNotSupported);
         });
+        test('correct app options config should be set on initialize', async () => {
+            const mockAppConfigOptions = {
+                appOptions: {
+                    isMobile: false,
+                    isPrintMode: false,
+                    isLiveboardContext: false,
+                    isDebugMode: true,
+                },
+            };
+            expect(mockInitMessage).toHaveBeenCalled();
+
+            // Call the initialize function and wait for it to resolve
+            const promise = customChartContext.initialize();
+
+            // Check that the hasInitializedPromise has resolved
+
+            const mockInitializeContextPayloadWithVisualProps = {
+                ...mockInitializeContextPayload,
+                appConfig: mockAppConfigOptions,
+                chartModel: {
+                    ...mockInitializeContextPayload.chartModel,
+                    visualProps: {
+                        data: 'sample data',
+                    },
+                },
+            };
+
+            await eventProcessor({
+                payload: mockInitializeContextPayloadWithVisualProps,
+                eventType: TSToChartEvent.Initialize,
+            });
+            eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            await expect(promise).resolves.toBeUndefined();
+            const appConfig = customChartContext.getAppConfig();
+            expect(appConfig).toStrictEqual(mockAppConfigOptions);
+        });
     });
 
     describe('on', () => {
@@ -296,6 +343,53 @@ describe('CustomChartContext', () => {
                 ],
             });
         });
+        test('TSToChartEvent.ChartConfigValidate validation response for invalid config', async () => {
+            // Define initial context with object definitions
+            const mockChartConfigValidate = jest
+                .fn()
+                .mockReturnValue({ isValid: false });
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [],
+                validateConfig: mockChartConfigValidate,
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with object definitions
+            expect(responseWithInitialContext).toStrictEqual({
+                isValid: false,
+            });
+        });
+        test('TSToChartEvent.ChartConfigValidate validation response return invalid without validate function', async () => {
+            // Define initial context with object definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: { elements: [] },
+                chartConfigEditorDefinition: [],
+                validateConfig: undefined,
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = await eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.ChartConfigValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with object definitions
+            expect(responseWithInitialContext).toStrictEqual({
+                isValid: false,
+            });
+        });
 
         test('TSToChartEvent.validateVisualProps validation response testing', () => {
             // Define initial context with object definitions
@@ -353,6 +447,184 @@ describe('CustomChartContext', () => {
                     },
                 ],
             });
+        });
+
+        test('TSToChartEvent.validateVisualProps should work with activeColumnId', () => {
+            // Define initial context with object definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: {
+                    elements: [mockFormElements],
+                    columnsVizPropDefinition: [
+                        {
+                            type: ColumnType.MEASURE,
+                            columnSettingsDefinition: {
+                                'column-id': { elements: [mockFormElements] },
+                            },
+                        },
+                    ],
+                },
+                chartConfigEditorDefinition: [],
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = eventProcessor({
+                payload: {
+                    ...mockInitializeContextPayload,
+                    activeColumnId: 'column-id',
+                },
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            // Verify response with object definitions
+            expect(responseWithInitialContext).toStrictEqual({
+                isValid: true,
+                visualPropEditorDefinition: {
+                    elements: [mockFormElements],
+                    columnsVizPropDefinition: [
+                        {
+                            type: ColumnType.MEASURE,
+                            columnSettingsDefinition: {
+                                'column-id': { elements: [mockFormElements] },
+                            },
+                        },
+                    ],
+                },
+                chartConfigEditorDefinition: [],
+            });
+        });
+
+        test('TSToChartEvent.validateVisualProps should be called with correct activeColumnId', () => {
+            // Define initial context with object definitions
+            const mockValidateVisualProps = jest
+                .fn()
+                .mockImplementation(
+                    (_visualProps, _chartModel, activeColumnId) => {
+                        if (activeColumnId === 'column-id')
+                            return { isValid: true };
+                        return { isValid: false };
+                    },
+                );
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: {
+                    elements: [mockFormElements],
+                    columnsVizPropDefinition: [
+                        {
+                            type: ColumnType.MEASURE,
+                            columnSettingsDefinition: {
+                                'column-id': { elements: [mockFormElements] },
+                            },
+                        },
+                    ],
+                },
+                chartConfigEditorDefinition: [],
+                validateVisualProps: mockValidateVisualProps,
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = eventProcessor({
+                payload: {
+                    ...mockInitializeContextPayload,
+                    activeColumnId: 'column-id',
+                },
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            // we only want the correct active columnId to be passed
+            expect(mockValidateVisualProps).toHaveBeenCalledWith(
+                undefined,
+                {},
+                'column-id',
+            );
+            const validationResponse = eventProcessor({
+                payload: {
+                    ...mockInitializeContextPayload,
+                    activeColumnId: 'column-id-1',
+                },
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            expect(validationResponse).toStrictEqual({ isValid: false });
+        });
+        test('TSToChartEvent.validateVisualProps returns invalid if no function is provided.', () => {
+            // Define initial context with object definitions
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: {
+                    elements: [mockFormElements],
+                    columnsVizPropDefinition: [
+                        {
+                            type: ColumnType.MEASURE,
+                            columnSettingsDefinition: {
+                                'column-id': { elements: [mockFormElements] },
+                            },
+                        },
+                    ],
+                },
+                chartConfigEditorDefinition: [],
+                validateVisualProps: undefined, // mocking undefined value
+            });
+
+            const validationResponse = eventProcessor({
+                payload: {
+                    ...mockInitializeContextPayload,
+                },
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            expect(validationResponse).toStrictEqual({ isValid: false });
+        });
+        test('VisualPropEditorDefintion function should recieve columnId', () => {
+            // Define initial context with object definitions
+            const mockValidateVisualProps = jest
+                .fn()
+                .mockImplementation(
+                    (_visualProps, _chartModel, activeColumnId) => {
+                        if (activeColumnId === 'column-id')
+                            return { isValid: true };
+                        return { isValid: false };
+                    },
+                );
+            const mockVisualPropEditorDefintion = jest.fn().mockReturnValue({
+                elements: [mockFormElements],
+                columnsVizPropDefinition: [
+                    {
+                        type: ColumnType.MEASURE,
+                        columnSettingsDefinition: {
+                            'column-id': { elements: [mockFormElements] },
+                        },
+                    },
+                ],
+            });
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                visualPropEditorDefinition: mockVisualPropEditorDefintion,
+                chartConfigEditorDefinition: [],
+                validateVisualProps: mockValidateVisualProps,
+            });
+
+            // Trigger event processor with initial context
+            const responseWithInitialContext = eventProcessor({
+                payload: {
+                    ...mockInitializeContextPayload,
+                    activeColumnId: 'column-id',
+                },
+                eventType: TSToChartEvent.VisualPropsValidate,
+                source: 'ts-host-app',
+            });
+            // we only want the correct active columnId to be passed
+            expect(mockVisualPropEditorDefintion.mock.calls[0][2]).toBe(
+                'column-id',
+            );
         });
 
         test('should not trigger post message if host is not accurate', async () => {
