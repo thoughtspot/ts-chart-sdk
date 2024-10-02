@@ -45,7 +45,7 @@ jobs:
               with:
                   path: coverage/sdk/cobertura-coverage.xml
                   repo_token: ${{ secrets.GITHUB_TOKEN }}
-                  minimum_coverage: 0
+                  minimum_coverage: 90
 
             # Runs TypeScript compiler
             - name: Run TypeScript compiler
