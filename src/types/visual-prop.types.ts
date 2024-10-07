@@ -380,6 +380,12 @@ export interface Section {
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
     layoutType?: 'accordion' | 'tab' | 'none';
+    /**
+     * Determines whether section should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.18 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
