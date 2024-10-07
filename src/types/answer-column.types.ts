@@ -185,7 +185,7 @@ export interface ChartColumn {
      */
     id: string;
     /**
-     * Column name
+     * Column name property
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
