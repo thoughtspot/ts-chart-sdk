@@ -368,7 +368,7 @@ export interface Section {
     children?: PropElement[];
     /**
      * Defines form alignment in the view for the section
-     *
+     * [Testing docs Ignore this comment]
      * @version SDK: 0.1 | ThoughtSpot:
      */
     alignment?: 'row' | 'column';
