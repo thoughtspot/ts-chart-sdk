@@ -214,7 +214,7 @@ export type VisualProps = unknown;
  *
  */
 
-export type CustomFontFaces = {
+export type TSFontFace = {
     guid: string;
     family?: string;
     format?: string;
@@ -244,7 +244,7 @@ export type ChartSdkCustomStylingConfig = {
     chartColorPalettes?: Array<{ colors: Array<string> }>;
     disableColorRotation?: boolean;
     chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
-    customFontFaces?: Array<CustomFontFaces>;
+    fontFaces?: Array<TSFontFace>;
 };
 
 export interface AppConfig {
