@@ -210,12 +210,14 @@ export type ValidationResponse = {
 export type VisualProps = unknown;
 
 /**
- * Custom Font Faces type from TS.
- *
+ *  Font Faces type from TS.
+ *  guid will be null in case of default Font types
+ *  If a custom Font is added in Dev section on TS this guid can be used to Match
+ *  the Font Face That needs to be applied to @link CustomizableChartFeature
  */
 
 export type TSFontFace = {
-    guid: string;
+    guid: string | null;
     family?: string;
     format?: string;
     url?: string;
