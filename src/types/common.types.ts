@@ -242,6 +242,7 @@ export type ChartSdkCustomStylingConfig = {
         color?: string;
     };
     chartColorPalettes?: Array<{ colors: Array<string> }>;
+    numColorPalettes?: number;
     disableColorRotation?: boolean;
     chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
     fontFaces?: Array<TSFontFace>;
