@@ -386,6 +386,12 @@ export interface Section {
      * @version SDK: 0.0.2-alpha.18 | ThoughtSpot:
      */
     disabled?: boolean;
+    /* Optional property to make the accordian expanded by default. If
+     * not passed the accordian will remain closed by default. Only works with layout type 'accordian'
+     *
+     * @version SDK: 0.0.2-alpha.19 | ThoughtSpot:
+     */
+    isAccordianExpanded?: boolean;
 }
 
 /**
