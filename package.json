@@ -34,6 +34,7 @@
     "devDependencies": {
         "@testing-library/react": "12.1.5",
         "@testing-library/react-hooks": "^7.0.2",
+        "@types/globalize": "^1.5.5",
         "@types/jest": "^27.0.3",
         "@types/lodash": "4.14.175",
         "@types/luxon": "^3.4.2",
@@ -74,6 +75,7 @@
         "vite": "4.2.1"
     },
     "dependencies": {
+        "cldr-data": "^36.0.2",
         "lodash": "^4.17.21",
         "luxon": "^3.4.4",
         "promise-postmessage": "^3.5.0",
