@@ -32,8 +32,16 @@ import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
-import { availableColor, getBackgroundColor, getPlotLinesAndBandsFromConditionalFormatting, visualPropKeyMap } from './custom-chart.utils';
-import { createPlotbandPlugin, createPlotlinePlugin } from './custom-chart-plugins';
+import {
+    availableColor,
+    getBackgroundColor,
+    getPlotLinesAndBandsFromConditionalFormatting,
+    visualPropKeyMap,
+} from './custom-chart.utils';
+import {
+    createPlotbandPlugin,
+    createPlotlinePlugin,
+} from './custom-chart-plugins';
 
 Chart.register(ChartDataLabels);
 
@@ -487,6 +495,16 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
         },
         allowedConfigurations: {
             allowColumnConditionalFormatting: true,
+            allowMeasureNamesAndValues: true,
+        },
+        configOptions: {
+            measureNameValueColumns: {
+                enableMeasureNameColumn: true,
+                enableMeasureValueColumn: true,
+                measureNameColumnAlias: 'Name',
+                measureValueColumnAlias: 'Value',
+            },
+            batchSizeLimit: 20000,
         },
     });
 

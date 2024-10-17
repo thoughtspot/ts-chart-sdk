@@ -117,6 +117,15 @@ describe('CustomChartContext', () => {
                     allowColumnConditionalFormatting: false,
                     allowMeasureNamesAndValues: false,
                 },
+                configOptions: {
+                    measureNameValueColumns: {
+                        enableMeasureNameColumn: false,
+                        enableMeasureValueColumn: false,
+                        measureNameColumnAlias: 'Measure Name',
+                        measureValueColumnAlias: 'Measure Values',
+                    },
+                    batchSizeLimit: 20000,
+                },
             });
         });
 

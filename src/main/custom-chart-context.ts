@@ -62,6 +62,16 @@ export type AllowedConfigurations = {
     allowMeasureNamesAndValues?: boolean;
 };
 
+export type ConfigOptions = {
+    measureNameValueColumns?: {
+        enableMeasureNameColumn: boolean;
+        enableMeasureValueColumn: boolean;
+        measureNameColumnAlias: string;
+        measureValueColumnAlias: string;
+    };
+    batchSizeLimit?: number;
+};
+
 export type CustomChartContextProps = {
     /**
      * Generate the default axis configuration for rendering the chart on first load.
@@ -144,8 +154,8 @@ export type CustomChartContextProps = {
 
     // Whether user wants thoughtspot default number and conditional formatting
     allowedConfigurations?: AllowedConfigurations;
-    // TODO: needs to implement this on TS side
-    batchSizeLimit?: number;
+
+    configOptions?: ConfigOptions;
 };
 
 export type ValidationFunctions =
@@ -163,6 +173,15 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
         allowColumnNumberFormatting: false,
         allowColumnConditionalFormatting: false,
         allowMeasureNamesAndValues: false,
+    },
+    configOptions: {
+        measureNameValueColumns: {
+            enableMeasureNameColumn: false,
+            enableMeasureValueColumn: false,
+            measureNameColumnAlias: 'Measure Name',
+            measureValueColumnAlias: 'Measure Values',
+        },
+        batchSizeLimit: 20000,
     },
 };
 
@@ -913,6 +932,7 @@ export class CustomChartContext {
                     this.getVisualPropEditorDefinition(),
                 allowedConfigurations:
                     this.chartContextProps.allowedConfigurations,
+                configOptions: this.chartContextProps.configOptions,
             };
         };
 
