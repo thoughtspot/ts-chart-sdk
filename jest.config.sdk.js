@@ -17,7 +17,7 @@ module.exports = {
             lines: 92,
         },
     },
-    coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
+    coverageReporters: ['html', 'text', 'text-summary', 'cobertura', 'json'],
     testPathIgnorePatterns: ['/lib/', '/docs/', '/cjs/'],
     testMatch: ['<rootDir>/src/**/*.spec.(ts|tsx)'],
     setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
