@@ -62,12 +62,12 @@ export type AllowedConfigurations = {
     allowMeasureNamesAndValues?: boolean;
 };
 
-export type ConfigOptions = {
+export type ChartConfigParameters = {
     measureNameValueColumns?: {
-        enableMeasureNameColumn: boolean;
-        enableMeasureValueColumn: boolean;
-        measureNameColumnAlias: string;
-        measureValueColumnAlias: string;
+        enableMeasureNameColumn?: boolean;
+        enableMeasureValueColumn?: boolean;
+        measureNameColumnAlias?: string;
+        measureValueColumnAlias?: string;
     };
     batchSizeLimit?: number;
 };
@@ -155,7 +155,7 @@ export type CustomChartContextProps = {
     // Whether user wants thoughtspot default number and conditional formatting
     allowedConfigurations?: AllowedConfigurations;
 
-    configOptions?: ConfigOptions;
+    chartConfigParameters?: ChartConfigParameters;
 };
 
 export type ValidationFunctions =
@@ -174,7 +174,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
         allowColumnConditionalFormatting: false,
         allowMeasureNamesAndValues: false,
     },
-    configOptions: {
+    chartConfigParameters: {
         measureNameValueColumns: {
             enableMeasureNameColumn: false,
             enableMeasureValueColumn: false,
@@ -932,7 +932,8 @@ export class CustomChartContext {
                     this.getVisualPropEditorDefinition(),
                 allowedConfigurations:
                     this.chartContextProps.allowedConfigurations,
-                configOptions: this.chartContextProps.configOptions,
+                chartConfigParameters:
+                    this.chartContextProps.chartConfigParameters,
             };
         };
 

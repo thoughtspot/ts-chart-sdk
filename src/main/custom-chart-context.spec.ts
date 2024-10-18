@@ -117,7 +117,7 @@ describe('CustomChartContext', () => {
                     allowColumnConditionalFormatting: false,
                     allowMeasureNamesAndValues: false,
                 },
-                configOptions: {
+                chartConfigParameters: {
                     measureNameValueColumns: {
                         enableMeasureNameColumn: false,
                         enableMeasureValueColumn: false,
