@@ -497,7 +497,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             allowColumnConditionalFormatting: true,
             allowMeasureNamesAndValues: true,
         },
-        configOptions: {
+        chartConfigParameters: {
             measureNameValueColumns: {
                 enableMeasureNameColumn: true,
                 enableMeasureValueColumn: true,
