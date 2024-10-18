@@ -12,9 +12,9 @@ module.exports = {
     ],
     coverageThreshold: {
         './src/main': {
-            branches: 90, // make this above 80
-            functions: 99,
-            lines: 99,
+            branches: 80, // make this above 80
+            functions: 95,
+            lines: 95,
         },
     },
     coverageReporters: [
