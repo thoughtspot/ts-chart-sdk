@@ -28,12 +28,23 @@ import {
     VisualPropEditorDefinition,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
-import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
+import {
+    ChartConfigEditorDefinition,
+    getFormattedValue,
+} from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import _ from 'lodash';
-import { availableColor, getBackgroundColor, getPlotLinesAndBandsFromConditionalFormatting, visualPropKeyMap } from './custom-chart.utils';
-import { createPlotbandPlugin, createPlotlinePlugin } from './custom-chart-plugins';
+import _, { values } from 'lodash';
+import {
+    availableColor,
+    getBackgroundColor,
+    getPlotLinesAndBandsFromConditionalFormatting,
+    visualPropKeyMap,
+} from './custom-chart.utils';
+import {
+    createPlotbandPlugin,
+    createPlotlinePlugin,
+} from './custom-chart-plugins';
 
 Chart.register(ChartDataLabels);
 
@@ -100,6 +111,13 @@ function getColumnDataModel(
                     borderColor: color,
                     datalabels: {
                         anchor: 'end',
+                        align: 'end',
+                        formatter: (value) => {
+                            return getFormattedValue(
+                                value,
+                                col.columnProperties.numberFormatting,
+                            );
+                        },
                     },
                     plotlines,
                     plotbands,
@@ -487,6 +505,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
         },
         allowedConfigurations: {
             allowColumnConditionalFormatting: true,
+            allowColumnNumberFormatting: true,
         },
     });
 
