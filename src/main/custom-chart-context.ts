@@ -56,10 +56,103 @@ import {
     postMessageToHostApp,
 } from './post-message-event-bridge';
 
+/**
+ * Configuration for allowing or disallowing specific TS UI features.
+ *
+ * @fileoverview
+ * This configuration defines the ability to toggle specific features such as
+ * column number formatting, conditional formatting, and measure names/values.
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
 export type AllowedConfigurations = {
+    /**
+     * Allows column-level number formatting.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowColumnNumberFormatting?: boolean;
+
+    /**
+     * Allows conditional formatting at the column level.
+     * This allows users to apply rules that visually highlight or differentiate data.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowColumnConditionalFormatting?: boolean;
+
+    /**
+     * Enables measure_name and measure_values in the chart configuration.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowMeasureNamesAndValues?: boolean;
+};
+
+/**
+ * Configuration parameters for setting chart-specific options.
+ *
+ * @fileoverview
+ * This configuration includes settings for controlling measure name/value columns
+ * and batch size limits for data processing.
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export type ChartConfigParameters = {
+    /**
+     * Configurations related to measure name and value columns.
+     * These parameters allow for enabling/disabling and aliasing the columns
+     * used to represent measure names and values.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    measureNameValueColumns?: {
+        /**
+         * Enables or disables the measure_name column.
+         *
+         * @default false
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        enableMeasureNameColumn?: boolean;
+
+        /**
+         * Enables or disables the measure_value column.
+         *
+         * @default false
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        enableMeasureValueColumn?: boolean;
+
+        /**
+         * Alias for the measure_name column.
+         * This allows users to define a custom name for the measure_name column.
+         *
+         * @default 'Measure Name'
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        measureNameColumnAlias?: string;
+
+        /**
+         * Alias for the measure_value column.
+         * This allows users to define a custom name for the measure_value column.
+         *
+         * @default 'Measure Value'
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        measureValueColumnAlias?: string;
+    };
+
+    /**
+     * Limit on the batch size for data processing.
+     * This sets an upper limit on how much data can be processed in a single batch.
+     *
+     * @default 20000
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    batchSizeLimit?: number;
 };
 
 export type CustomChartContextProps = {
@@ -142,10 +235,21 @@ export type CustomChartContextProps = {
         | VisualEditorDefinitionSetter
         | VisualPropEditorDefinition;
 
-    // Whether user wants thoughtspot default number and conditional formatting
+    /**
+     * Optional configuration to toggle native TS UI configurations, such as column number formatting
+     * and conditional formatting.
+     *
+     * @type {AllowedConfigurations}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowedConfigurations?: AllowedConfigurations;
-    // TODO: needs to implement this on TS side
-    batchSizeLimit?: number;
+    /**
+     * Optional parameters for configuring specific chart-related features, such as measure name and value columns.
+     *
+     * @type {ChartConfigParameters}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    chartConfigParameters?: ChartConfigParameters;
 };
 
 export type ValidationFunctions =
@@ -163,6 +267,15 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
         allowColumnNumberFormatting: false,
         allowColumnConditionalFormatting: false,
         allowMeasureNamesAndValues: false,
+    },
+    chartConfigParameters: {
+        measureNameValueColumns: {
+            enableMeasureNameColumn: false,
+            enableMeasureValueColumn: false,
+            measureNameColumnAlias: 'Measure Name',
+            measureValueColumnAlias: 'Measure Values',
+        },
+        batchSizeLimit: 20000,
     },
 };
 
@@ -913,6 +1026,8 @@ export class CustomChartContext {
                     this.getVisualPropEditorDefinition(),
                 allowedConfigurations:
                     this.chartContextProps.allowedConfigurations,
+                chartConfigParameters:
+                    this.chartContextProps.chartConfigParameters,
             };
         };
 

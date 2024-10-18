@@ -8,7 +8,7 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-import { CustomChartContext } from '../main/custom-chart-context';
+import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
 /**

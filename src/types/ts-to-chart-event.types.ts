@@ -1,6 +1,9 @@
-import { AllowedConfigurations } from '../main/custom-chart-context';
+import type {
+    AllowedConfigurations,
+    ChartConfigParameters,
+} from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
-import { Point } from './chart-to-ts-event.types';
+import type { Point } from './chart-to-ts-event.types';
 import {
     AppConfig,
     ChartConfig,
@@ -9,8 +12,8 @@ import {
     ValidationResponse,
     VisualProps,
 } from './common.types';
-import { ChartConfigEditorDefinition } from './configurator.types';
-import { VisualPropEditorDefinition } from './visual-prop.types';
+import type { ChartConfigEditorDefinition } from './configurator.types';
+import type { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
  * All the events sent from the ThoughtSpot application to Custom Chart App
@@ -206,6 +209,13 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     allowedConfigurations?: AllowedConfigurations;
+    /**
+     * Additional chart configuration parameters supported by TS UI. Ex: show/hide Measure Name/
+     * Value columns.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    chartConfigParameters?: ChartConfigParameters;
 }
 
 /**
