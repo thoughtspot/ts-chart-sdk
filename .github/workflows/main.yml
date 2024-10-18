@@ -48,8 +48,8 @@ jobs:
                   minimum_coverage: 90
 
             # Run jest coverage
-            - name: Jest Coverage Comment
-              uses: MishaKav/jest-coverage-comment@main
+            - name: Jest Coverage Report
+              uses: ArtiomTr/jest-coverage-report-action@v2
 
             # Runs TypeScript compiler
             - name: Run TypeScript compiler
