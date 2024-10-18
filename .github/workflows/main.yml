@@ -41,10 +41,10 @@ jobs:
 
             # Collect coverage report
             - uses: 5monkeys/cobertura-action@master
-              fail_below_threshold: true
               with:
                   path: coverage/sdk/cobertura-coverage.xml
                   repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  fail_below_threshold: true
                   minimum_coverage: 90
 
             # Runs TypeScript compiler
