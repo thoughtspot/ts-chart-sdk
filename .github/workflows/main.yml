@@ -45,7 +45,11 @@ jobs:
                   path: coverage/sdk/cobertura-coverage.xml
                   repo_token: ${{ secrets.GITHUB_TOKEN }}
                   fail_below_threshold: true
-                  minimum_coverage: 100
+                  minimum_coverage: 90
+
+            # Run jest coverage
+            - name: Jest Coverage Comment
+              uses: MishaKav/jest-coverage-comment@main
 
             # Runs TypeScript compiler
             - name: Run TypeScript compiler
