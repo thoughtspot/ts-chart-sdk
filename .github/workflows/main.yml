@@ -50,8 +50,6 @@ jobs:
             # Run jest coverage
             - name: Jest Coverage Comment
               uses: MishaKav/jest-coverage-comment@main
-              with:
-                  coverage-summary-path: coverage/sdk/coverage-final.json
 
             # Runs TypeScript compiler
             - name: Run TypeScript compiler
