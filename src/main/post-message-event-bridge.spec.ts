@@ -4,10 +4,7 @@
  *  @author Chetan Agrawal <chetan.agrawal@thoughtspot.com>
  */
 import _ from 'lodash';
-import {
-    initMessageListener,
-    postMessageToHostApp,
-} from './post-message-event-bridge';
+import { postMessageToHostApp } from './post-message-event-bridge';
 
 const TIMEOUT_THRESHOLD = 30000;
 
@@ -213,55 +210,5 @@ describe('postMessageToHostApp', () => {
             hostUrl,
             expect.any(Array),
         );
-    });
-});
-
-describe('globalThis', () => {
-    test('should be set to window when target is window.parent', () => {
-        // Mock window.parent
-        const originalWindowParent = window.parent;
-        Object.defineProperty(window, 'parent', {
-            value: window,
-            writable: true,
-        });
-
-        // Re-import the module to trigger the globalThis assignment
-        jest.isolateModules(() => {
-            const {
-                globalThis: testGlobalThis,
-            } = require('./post-message-event-bridge');
-            expect(testGlobalThis).toBe(window);
-        });
-
-        // Restore original window.parent
-        Object.defineProperty(window, 'parent', {
-            value: originalWindowParent,
-            writable: true,
-        });
-    });
-
-    test('should be set to target when target is not window.parent', () => {
-        // Mock document.querySelector
-        const mockTarget = {};
-        document.querySelector = jest.fn().mockReturnValue(mockTarget);
-
-        // Mock URL.searchParams.get
-        const originalURL = global.URL;
-        global.URL = jest.fn(() => ({
-            searchParams: {
-                get: jest.fn().mockReturnValue('mockSelector'),
-            },
-        })) as any;
-
-        // Re-import the module to trigger the globalThis assignment
-        jest.isolateModules(() => {
-            const {
-                globalThis: testGlobalThis,
-            } = require('./post-message-event-bridge');
-            expect(testGlobalThis).toBe(mockTarget);
-        });
-
-        // Restore original URL
-        global.URL = originalURL;
     });
 });

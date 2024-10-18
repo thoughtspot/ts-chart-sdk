@@ -11,7 +11,9 @@ describe('timeout function', () => {
     });
 
     it('should reject with a timeout error if the promise takes too long', async () => {
-        const promise = new Promise((resolve) => setTimeout(resolve, 2000));
+        const promise = new Promise((resolve) => {
+            setTimeout(resolve, 2000);
+        });
         const result = timeout(promise, 1000);
 
         jest.advanceTimersByTime(1000);
@@ -20,7 +22,9 @@ describe('timeout function', () => {
     });
 
     it('should use the custom error message when provided', async () => {
-        const promise = new Promise((resolve) => setTimeout(resolve, 2000));
+        const promise = new Promise((resolve) => {
+            setTimeout(resolve, 2000);
+        });
         const result = timeout(promise, 1000, 'Custom timeout message');
 
         jest.advanceTimersByTime(1000);

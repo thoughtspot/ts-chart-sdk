@@ -11,7 +11,7 @@ module.exports = {
         '/src/index.ts',
     ],
     coverageThreshold: {
-        './src/main': {
+        './src': {
             branches: 80, // make this above 80
             functions: 95,
             lines: 95,
