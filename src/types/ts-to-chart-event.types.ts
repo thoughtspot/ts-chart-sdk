@@ -10,6 +10,7 @@ import {
     ChartModel,
     QueryData,
     ValidationResponse,
+    VisualConfig,
     VisualProps,
 } from './common.types';
 import type { ChartConfigEditorDefinition } from './configurator.types';
@@ -216,6 +217,16 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfigParameters?: ChartConfigParameters;
+
+    /**
+     * @description
+     * Optional parameter to control certain visual elements on the chart For example visibleAction
+     * array if Passed will only show those actions in context menu/Action menu of the chart on
+     * answer page. To be passed to TS via this payload
+     * @type {VisualConfig}
+     * @memberof InitializeEventResponsePayload
+     */
+    customChartVisualConfig?: VisualConfig;
 }
 
 /**
