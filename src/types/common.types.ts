@@ -250,9 +250,25 @@ export type ChartSdkCustomStylingConfig = {
     fontFaces?: Array<TSFontFace>;
 };
 
+/**
+ * Date Formats Config for Custom Chart SDK
+ * This is used to define the date formats for the custom chart SDK
+ * The date formats are used to format the date values in the chart
+ * @remarks
+ * The date formats are used to format the date values in the chart
+ */
+
+export type ChartSdkDateFormatsConfig = {
+    tsLocaleBasedDateFormats?: Record<string, string>;
+    tsLocaleBasedStringsFromats?: Record<string, string>;
+    tsDateConstants?: Record<string, string>;
+    calanders?: any;
+    DEFAULT_DATASOURCE_ID?: any;
+};
+
 export interface AppConfig {
     styleConfig?: ChartSdkCustomStylingConfig;
-
+    dateFormatsConfig?: ChartSdkDateFormatsConfig;
     appOptions?: {
         isMobile?: boolean;
         isPrintMode?: boolean; // export mode on/off
