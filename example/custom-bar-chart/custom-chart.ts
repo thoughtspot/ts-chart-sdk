@@ -20,6 +20,7 @@ import {
     dateFormatter,
     getCfForColumn,
     getChartContext,
+    getCustomCalendarGuidFromColumn,
     isDateColumn,
     isDateNumColumn,
     PointVal,
@@ -29,6 +30,10 @@ import {
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
 import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
+import {
+    generateMapOptions,
+    getDataFormatter,
+} from '@thoughtspot/ts-chart-sdk/src/utils/formatting-util';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
@@ -47,6 +52,9 @@ Chart.register(ChartDataLabels);
 
 let globalChartReference: Chart;
 
+let locale;
+let quarterStartMonth;
+
 const exampleClientState = {
     id: 'chart-id',
     name: 'custom-bar-chart',
@@ -54,14 +62,26 @@ const exampleClientState = {
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
+    const formatter = getDataFormatter(column, { isMillisIncluded: false });
     const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => {
+    const dataForCol = _.map(dataArr.dataValue, (row) => {
         const colValue = row[idx];
-        if (isDateColumn(column) || isDateNumColumn(column)) {
-            return dateFormatter(colValue, column);
-        }
         return colValue;
     });
+    const options = generateMapOptions(
+        locale,
+        quarterStartMonth,
+        column,
+        dataForCol,
+    );
+    const formattedValuesForData = _.map(dataArr.dataValue, (row) => {
+        const colValue = row[idx];
+        if (getCustomCalendarGuidFromColumn(column))
+            return formatter(colValue.v.s, options);
+        return formatter(colValue, options);
+    });
+
+    return formattedValuesForData;
 }
 
 function getColumnDataModel(
@@ -190,6 +210,8 @@ function insertCustomFont(customFontFaces) {
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const appConfig = ctx.getAppConfig();
+    locale = appConfig?.localeOptions?.locale;
+    quarterStartMonth = appConfig?.localeOptions?.quarterStartMonth;
 
     ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
         visualProps: JSON.parse(
