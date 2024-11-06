@@ -311,8 +311,9 @@ const formatDateTime = (
     }
     if (dateFormats[newFormat]) {
         if (_.get(options, 'omitYear')) {
-            if (yearlessFormats[newFormat]) {
-                newFormat = yearlessFormats[newFormat];
+            if (yearlessFormats[newFormat as keyof typeof yearlessFormats]) {
+                newFormat =
+                    yearlessFormats[newFormat as keyof typeof yearlessFormats];
             }
         }
         newFormat = dateFormats[newFormat];
