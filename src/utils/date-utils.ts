@@ -3,7 +3,9 @@ import { ChartColumn, ColumnTimeBucket } from '../types/answer-column.types';
 import { bucketizationToDatePreset, timeBuckets } from './date-formatting';
 
 export function getFormatPatternForBucket(bucket: ColumnTimeBucket): any {
-    return bucketizationToDatePreset[ColumnTimeBucket[bucket]];
+    return bucketizationToDatePreset[
+        ColumnTimeBucket[bucket] as keyof typeof bucketizationToDatePreset
+    ];
 }
 
 export const getTimeBucket = (col: ChartColumn): string =>
