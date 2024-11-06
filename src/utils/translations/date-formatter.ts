@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const dateFormats: any = {
     DATE_SHORT: 'dd/MM/yyyy',
     DATE_SHORT_2_DIGIT_YEAR: 'dd/MM/yy',
