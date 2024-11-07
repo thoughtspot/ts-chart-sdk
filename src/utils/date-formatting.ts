@@ -239,7 +239,10 @@ export function getStartEpoch(date: CustomCalendarDate): number | null {
     return null;
 }
 
-export const assign = (quarter_of_year: any, value: any) => {
+export const assignQuarterValueToString = (
+    quarter_of_year: any,
+    value: any,
+) => {
     return quarter_of_year.replace(/\{.*?\}/, value);
 };
 
@@ -479,7 +482,7 @@ export function formatDateNum(
         case dateNumTypes.DATE_NUM_QUARTER_IN_YEAR:
             // Falcon returns quarter as 1 indexed, which is passed on by
             // callosum to blink, so we can use value instead of value + 1.
-            return assign(
+            return assignQuarterValueToString(
                 options.tsLocaleBasedStringsFormats.quarter_of_year,
                 value,
             );

@@ -75,7 +75,7 @@ function getBaseTypeFormatterInstanceExpensive(
                     getCustomCalendarGuid(
                         'fiscal',
                         options.defaultDataSourceId,
-                        options.calanders,
+                        options.tsDefinedCustomCalenders,
                     );
             const optionsWithFiscalOffset = {
                 ...options,
@@ -154,7 +154,8 @@ export const generateMapOptions = (
         tsLocaleBasedStringsFormats:
             appConfig?.dateFormatsConfig?.tsLocaleBasedStringsFormats,
         tsDateConstants: appConfig?.dateFormatsConfig?.tsDateConstants,
-        calanders: appConfig?.dateFormatsConfig?.calanders,
+        tsDefinedCustomCalenders:
+            appConfig?.dateFormatsConfig?.tsDefinedCustomCalenders,
         defaultDataSourceId:
             appConfig?.dateFormatsConfig?.DEFAULT_DATASOURCE_ID,
         displayToCustomCalendarValueMap: customCalenderMap,
