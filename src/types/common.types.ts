@@ -291,7 +291,7 @@ export type ChartSdkDateFormatsConfig = {
     tsLocaleBasedDateFormats?: Record<string, DateFormats>;
     tsLocaleBasedStringsFormats?: Record<string, string>;
     tsDateConstants?: Record<string, string>;
-    calanders?: any;
+    tsDefinedCustomCalenders?: any;
     defaultDataSourceId?: string;
 };
 
