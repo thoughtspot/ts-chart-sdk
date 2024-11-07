@@ -239,11 +239,15 @@ export function getStartEpoch(date: CustomCalendarDate): number | null {
     return null;
 }
 
-function getMonthOfYear(num: any, options: any) {
-    let monthNum = num + options.quarterStartMonth - 1;
+export const assign = (quarter_of_year: any, value: any) => {
+    return quarter_of_year.replace(/\{.*?\}/, value);
+};
+
+function getMonthOfYear(num: any, quarterStartMonth: any, monthOfYear: any) {
+    let monthNum = num + quarterStartMonth - 1;
     monthNum = monthNum > 12 ? monthNum - 12 : monthNum;
 
-    return months[monthNum - 1]; // -1 as monthNum is 1 indexed
+    return monthOfYear[months[monthNum - 1]]; // -1 as monthNum is 1 indexed
 }
 
 export function getDisplayString(date: CustomCalendarDate): string | null {
@@ -279,7 +283,43 @@ const parseDate = (dateString: string, format: string) => {
     ).toJSDate();
 };
 
-function sanitizeDate(inputDate: string | number, format: string) {
+export function getSpecialFormatData(value: string | number, options: any) {
+    if (
+        value ===
+            options.tsLocaleBasedStringsFormats.null_value_placeholder_label ||
+        value ===
+            options.tsLocaleBasedStringsFormats.empty_value_placeholder_label
+    ) {
+        return value;
+    }
+
+    if (value === options.tsDateConstants.special_value_unavailable) {
+        return options.tsLocaleBasedStringsFormats
+            .unavailabe_column_sample_value;
+    }
+
+    // This (==) checks for both null and undefined
+    if (value === null || value === undefined) {
+        return options.tsLocaleBasedStringsFormats.null_value_placeholder_label;
+    }
+    // {Empty} placeholder is set for empty string or no characters
+    // other than spaces.
+    if (value === '') {
+        return options.tsLocaleBasedStringsFormats
+            .empty_value_placeholder_label;
+    }
+    return null;
+}
+
+function sanitizeDate(
+    inputDate: string | number,
+    format: string,
+    options: any,
+) {
+    const specialVal = getSpecialFormatData(inputDate, options);
+    if (specialVal) {
+        return specialVal;
+    }
     if (typeof inputDate === 'string') {
         if (!_.isNaN(Number(inputDate))) {
             return parseInt(inputDate, 10);
@@ -309,14 +349,14 @@ const formatDateTime = (
     } catch (e) {
         return 'Invalid Date';
     }
-    if (dateFormats[newFormat]) {
+    if (options.tsLocaleBasedDateFormats[newFormat]) {
         if (_.get(options, 'omitYear')) {
             if (yearlessFormats[newFormat as keyof typeof yearlessFormats]) {
                 newFormat =
                     yearlessFormats[newFormat as keyof typeof yearlessFormats];
             }
         }
-        newFormat = dateFormats[newFormat];
+        newFormat = options.tsLocaleBasedDateFormats[newFormat];
     }
     const customCalendarOverridesFiscalOffset = _.get(
         options,
@@ -348,22 +388,9 @@ const formatDateTime = (
     ).toFormat(newFormat);
 };
 
-function getSpecialFormatData(value: any) {
-    if (value === '{Empty}' || value === '{Null}') {
-        return value;
-    }
-    if (value === null || value === undefined) {
-        return '{Null}';
-    }
-    if (value === '') {
-        return '{Empty}';
-    }
-    return null;
-}
-
-function getDayOfWeek(num: any) {
+function getDayOfWeek(num: any, weekOfDay: any) {
     const new_num = num % 7;
-    return weekdays[new_num];
+    return weekOfDay[weekdays[new_num]];
 }
 
 function getOrdinalSuffixedValue(i: number | string): string {
@@ -400,9 +427,9 @@ export function formatDateNum(
     }
 
     if (!value && value !== 0) {
-        return '{Null}';
+        return options.tsLocaleBasedStringsFormats.null_value_placeholder_label;
     }
-    const specialVal = getSpecialFormatData(value);
+    const specialVal = getSpecialFormatData(value, options);
     if (specialVal) {
         return specialVal;
     }
@@ -413,34 +440,52 @@ export function formatDateNum(
         case dateNumTypes.DATE_NUM_ABS_YEAR:
             return `${value}`;
         case dateNumTypes.DATE_NUM_DAY_IN_MONTH:
-            return formatPattern === 'e'
+            return formatPattern === options.tsDateConstants.day_in_month_format
                 ? `${value}`
                 : `${getOrdinalSuffixedValue(value)} day of month`;
         case dateNumTypes.DATE_NUM_DAY_IN_QUARTER:
-            return formatPattern === 'm'
+            return formatPattern ===
+                options.tsDateConstants.day_in_quarter_format
                 ? `${value}`
                 : `${getOrdinalSuffixedValue(value)} day of quarter`;
         case dateNumTypes.DATE_NUM_DAY_IN_YEAR:
-            return formatPattern === 'j'
+            return formatPattern === options.tsDateConstants.day_in_year_format
                 ? `${value}`
                 : `${getOrdinalSuffixedValue(value)} day of year`;
         case dateNumTypes.DATE_NUM_DAY_OF_WEEK:
-            return formatPattern === 'e'
+            console.log(options);
+            return formatPattern === options.tsDateConstants.day_of_week_format
                 ? // eslint-disable-next-line @typescript-eslint/no-use-before-define
-                  getDayOfWeek(value)
+                  getDayOfWeek(
+                      value,
+                      options.tsLocaleBasedStringsFormats.weekOfDay,
+                  )
                 : `${value}`;
         case dateNumTypes.DATE_NUM_MONTH_IN_QUARTER:
-            return formatPattern === 'm'
+            return formatPattern ===
+                options.tsDateConstants.month_in_quarter_format
                 ? `${value}`
                 : `${getOrdinalSuffixedValue(value)} month of quarter`;
         case dateNumTypes.DATE_NUM_MONTH_IN_YEAR:
-            return formatPattern === 'm'
+            return formatPattern ===
+                options.tsDateConstants.month_in_year_format
                 ? // eslint-disable-next-line @typescript-eslint/no-use-before-define
-                  getMonthOfYear(value, options)
+                  getMonthOfYear(
+                      value,
+                      options.quarterStartMonth,
+                      options.tsLocaleBasedStringsFormats.monthOfYear,
+                  )
                 : `${value}`;
+        case dateNumTypes.DATE_NUM_QUARTER_IN_YEAR:
+            // Falcon returns quarter as 1 indexed, which is passed on by
+            // callosum to blink, so we can use value instead of value + 1.
+            return assign(
+                options.tsLocaleBasedStringsFormats.quarter_of_year,
+                value,
+            );
         case dateNumTypes.DATE_NUM_WEEK_IN_YEAR:
             // +1 to value as Falcon values start with 0.
-            return formatPattern === 'V'
+            return formatPattern === options.tsDateConstants.week_in_year_format
                 ? `${value}`
                 : `${getOrdinalSuffixedValue(value)} week of year`;
         case dateNumTypes.DATE_NUM_WEEK_IN_QUARTER:
@@ -474,21 +519,24 @@ export function formatDate(
     let formatPattern = format;
     let newInputDate: any = inputDate;
     if (newInputDate === undefined || newInputDate === null) {
-        return '{Null}';
+        return options.tsLocaleBasedStringsFormats.null_value_placeholder_label;
     }
     if (!formatPattern) {
         formatPattern = dateFormatPresets.DATE_SHORT;
     }
     if (
-        newInputDate === '{Null}' ||
-        newInputDate === '{Empty}' ||
-        newInputDate === '{Other}'
+        newInputDate ===
+            options.tsLocaleBasedStringsFormats.null_value_placeholder_label ||
+        newInputDate ===
+            options.tsLocaleBasedStringsFormats.empty_value_placeholder_label ||
+        newInputDate ===
+            options.tsLocaleBasedStringsFormats.other_value_placeholder_label
     ) {
         return newInputDate;
     }
-    newInputDate = sanitizeDate(newInputDate, format);
+    newInputDate = sanitizeDate(newInputDate, format, options);
     if (_.isNaN(newInputDate)) {
-        return '{Null}';
+        return options.tsLocaleBasedStringsFormats.null_value_placeholder_label;
     }
     let epochMillis = newInputDate;
     if (_.isDate(epochMillis)) {

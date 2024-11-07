@@ -9,6 +9,7 @@
  */
 
 import {
+    AppConfig,
     ChartColumn,
     ChartConfig,
     ChartModel,
@@ -52,8 +53,7 @@ Chart.register(ChartDataLabels);
 
 let globalChartReference: Chart;
 
-let locale;
-let quarterStartMonth;
+let appConfigGlobal: AppConfig;
 
 const exampleClientState = {
     id: 'chart-id',
@@ -68,12 +68,7 @@ function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
         const colValue = row[idx];
         return colValue;
     });
-    const options = generateMapOptions(
-        locale,
-        quarterStartMonth,
-        column,
-        dataForCol,
-    );
+    const options = generateMapOptions(appConfigGlobal, column, dataForCol);
     const formattedValuesForData = _.map(dataArr.dataValue, (row) => {
         const colValue = row[idx];
         if (getCustomCalendarGuidFromColumn(column))
@@ -210,8 +205,7 @@ function insertCustomFont(customFontFaces) {
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const appConfig = ctx.getAppConfig();
-    locale = appConfig?.localeOptions?.locale;
-    quarterStartMonth = appConfig?.localeOptions?.quarterStartMonth;
+    appConfigGlobal = appConfig;
 
     ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
         visualProps: JSON.parse(

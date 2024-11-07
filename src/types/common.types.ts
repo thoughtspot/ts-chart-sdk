@@ -260,7 +260,7 @@ export type ChartSdkCustomStylingConfig = {
 
 export type ChartSdkDateFormatsConfig = {
     tsLocaleBasedDateFormats?: Record<string, string>;
-    tsLocaleBasedStringsFromats?: Record<string, string>;
+    tsLocaleBasedStringsFormats?: Record<string, string>;
     tsDateConstants?: Record<string, string>;
     calanders?: any;
     DEFAULT_DATASOURCE_ID?: any;
