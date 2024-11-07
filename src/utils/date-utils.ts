@@ -18,3 +18,13 @@ export const showDateFinancialYearFormat = (col: ChartColumn) => {
         return supportedBucketization === currentBucketization;
     });
 };
+
+export function getCustomCalendarGuid(
+    name: string,
+    datasourceId: string,
+    datsourceIdToCustomCalendarMap: any,
+) {
+    return datsourceIdToCustomCalendarMap[datasourceId]
+        ? datsourceIdToCustomCalendarMap[datasourceId][name]
+        : undefined;
+}

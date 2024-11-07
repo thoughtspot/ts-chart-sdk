@@ -22,6 +22,7 @@ import {
     isDateTimeColumn,
 } from './date-formatting';
 import {
+    getCustomCalendarGuid,
     getFormatPatternForBucket,
     showDateFinancialYearFormat,
 } from './date-utils';
@@ -70,7 +71,12 @@ function getBaseTypeFormatterInstanceExpensive(
             }
             const customCalendarOverridesFiscalOffset =
                 hasCustomCalendar(col) &&
-                getCustomCalendarGuidFromColumn(col) !== 'FISCAL_CALENDER_GUID'; // TODO: replace with guid we get from ts-app;
+                getCustomCalendarGuidFromColumn(col) !==
+                    getCustomCalendarGuid(
+                        'fiscal',
+                        options.defaultDataSourceId,
+                        options.calanders,
+                    );
             const optionsWithFiscalOffset = {
                 ...options,
                 customCalendarOverridesFiscalOffset:
@@ -120,9 +126,9 @@ export const getDataFormatter = (
 
     return getBaseTypeFormatterInstanceExpensive(col, options);
 };
+
 export const generateMapOptions = (
-    locale: string,
-    quarterStartMonth: number,
+    appConfig: any,
     col: ChartColumn,
     data: any,
 ): any => {
@@ -141,8 +147,16 @@ export const generateMapOptions = (
         }
     }
     return {
-        locale,
-        quarterStartMonth,
+        locale: appConfig?.localeOptions?.locale,
+        quarterStartMonth: appConfig?.localeOptions?.quarterStartMonth,
+        tsLocaleBasedDateFormats:
+            appConfig?.dateFormatsConfig?.tsLocaleBasedDateFormats,
+        tsLocaleBasedStringsFormats:
+            appConfig?.dateFormatsConfig?.tsLocaleBasedStringsFormats,
+        tsDateConstants: appConfig?.dateFormatsConfig?.tsDateConstants,
+        calanders: appConfig?.dateFormatsConfig?.calanders,
+        defaultDataSourceId:
+            appConfig?.dateFormatsConfig?.DEFAULT_DATASOURCE_ID,
         displayToCustomCalendarValueMap: customCalenderMap,
     };
 };
