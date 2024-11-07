@@ -250,6 +250,35 @@ export type ChartSdkCustomStylingConfig = {
     fontFaces?: Array<TSFontFace>;
 };
 
+export interface DateFormats {
+    DATE_SHORT: string;
+    DATE_SHORT_2_DIGIT_YEAR: string;
+    DATE_SHORT_WITH_HOUR: string;
+    DATE_SHORT_WITH_HOUR_WITHOUT_YEAR: string;
+    DATE_SHORT_WITH_HOUR_24: string;
+    DATE_SHORT_WITH_HOUR_24_WITHOUT_YEAR: string;
+    DATETIME_SHORT: string;
+    DATETIME_SHORT_WITHOUT_YEAR: string;
+    DATETIME_24_SHORT: string;
+    DATETIME_24_SHORT_WITH_MILLIS: string;
+    DATETIME_24_SHORT_WITH_MILLIS_WITHOUT_YEAR: string;
+    DATETIME_SHORT_WITH_SECONDS: string;
+    DATETIME_SHORT_WITH_SECONDS_WITHOUT_YEAR: string;
+    DATETIME_SHORT_WITH_MILLIS: string;
+    DATETIME_SHORT_WITH_MILLIS_WITHOUT_YEAR: string;
+    QUARTER_WITH_YEAR: string;
+    QUARTER_WITH_2_DIGIT_YEAR: string;
+    DEFAULT_TIME_FORMAT: string;
+    MONTH_WITH_YEAR: string;
+    MONTH_WITH_DAY_AND_YEAR: string;
+    MONTH_WITH_2_DIGIT_YEAR: string;
+    DAY_WITH_MONTH: string;
+    DAY_WITH_MONTH_NUM: string;
+    QUARTER: string;
+    MONTH_ONLY: string;
+    DATETIME_WITH_SHORT_OFFSET: string;
+}
+
 /**
  * Date Formats Config for Custom Chart SDK
  * This is used to define the date formats for the custom chart SDK
@@ -259,11 +288,11 @@ export type ChartSdkCustomStylingConfig = {
  */
 
 export type ChartSdkDateFormatsConfig = {
-    tsLocaleBasedDateFormats?: Record<string, string>;
+    tsLocaleBasedDateFormats?: Record<string, DateFormats>;
     tsLocaleBasedStringsFormats?: Record<string, string>;
     tsDateConstants?: Record<string, string>;
     calanders?: any;
-    DEFAULT_DATASOURCE_ID?: any;
+    defaultDataSourceId?: string;
 };
 
 export interface AppConfig {
