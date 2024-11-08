@@ -27,7 +27,7 @@ import {
     showDateFinancialYearFormat,
 } from './date-utils';
 
-interface formatOptionsType {
+interface FormatOptionsType {
     isMillisIncluded: boolean;
 }
 
@@ -36,15 +36,16 @@ const getBucketization = (col: ChartColumn) => col.timeBucket;
 export const getFormatPattern = (col: ChartColumn): string =>
     getFormatPatternForBucket(getBucketization(col)) || col.format?.pattern;
 
-function getBaseTypeFormatterInstanceExpensive(
+export function getBaseTypeFormatterInstanceExpensive(
     col: ChartColumn,
-    options: formatOptionsType,
+    options: FormatOptionsType,
 ): any {
     let formatPattern = getFormatPattern(col);
     // TODO: add numberic formatter if the col is numeric.
     if (isDateColumn(col)) {
         const showFinancialFormat = showDateFinancialYearFormat(col);
         const isDateTime = isDateTimeColumn(col);
+
         if (!formatPattern) {
             if (isDateTime) {
                 if (options.isMillisIncluded) {
@@ -66,7 +67,7 @@ function getBaseTypeFormatterInstanceExpensive(
             const customCalendarDisplayStr = getDisplayString(
                 customCalendarValueFromEpoch,
             );
-            if (customCalendarValueFromEpoch && customCalendarDisplayStr) {
+            if (customCalendarDisplayStr) {
                 return customCalendarDisplayStr;
             }
             const customCalendarOverridesFiscalOffset =
@@ -112,13 +113,13 @@ function getBaseTypeFormatterInstanceExpensive(
             );
         };
     }
-    return (dataValue: any, options?: any) => {
+    return (dataValue: any) => {
         return dataValue;
     };
 }
 export const getDataFormatter = (
     col: ChartColumn,
-    options: formatOptionsType,
+    options: FormatOptionsType,
     aggrTypeOverride?: ColumnAggregationType,
 ) => {
     // TODO: number formatter for column based on column type based on
@@ -156,8 +157,7 @@ export const generateMapOptions = (
         tsDateConstants: appConfig?.dateFormatsConfig?.tsDateConstants,
         tsDefinedCustomCalenders:
             appConfig?.dateFormatsConfig?.tsDefinedCustomCalenders,
-        defaultDataSourceId:
-            appConfig?.dateFormatsConfig?.DEFAULT_DATASOURCE_ID,
+        defaultDataSourceId: appConfig?.dateFormatsConfig?.defaultDataSourceId,
         displayToCustomCalendarValueMap: customCalenderMap,
     };
 };

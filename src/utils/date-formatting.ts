@@ -14,7 +14,6 @@ import {
     ColumnType,
     DataType,
 } from '../types/answer-column.types';
-import { dateFormats } from './translations/date-formatter';
 
 export interface CustomCalendarDate {
     v: {
@@ -74,7 +73,7 @@ const yearlessFormats = {
     DATE_SHORT_WITH_HOUR_24: 'DATE_SHORT_WITH_HOUR_24_WITHOUT_YEAR',
 };
 
-const dateNumTypes = {
+export const dateNumTypes = {
     DATE_NUM_ABS_DAY: 'DATE_NUM_ABS_DAY',
     DATE_NUM_ABS_MONTH: 'DATE_NUM_ABS_MONTH',
     DATE_NUM_ABS_QUARTER: 'DATE_NUM_ABS_QUARTER',
@@ -246,7 +245,11 @@ export const assignQuarterValueToString = (
     return quarter_of_year.replace(/\{.*?\}/, value);
 };
 
-function getMonthOfYear(num: any, quarterStartMonth: any, monthOfYear: any) {
+export function getMonthOfYear(
+    num: any,
+    quarterStartMonth: any,
+    monthOfYear: any,
+) {
     let monthNum = num + quarterStartMonth - 1;
     monthNum = monthNum > 12 ? monthNum - 12 : monthNum;
 
@@ -260,7 +263,7 @@ export function getDisplayString(date: CustomCalendarDate): string | null {
     return null;
 }
 
-const useQuarterStart = (luxonDate: any, quarterStartMonth: any) => {
+export const useQuarterStart = (luxonDate: any, quarterStartMonth: any) => {
     const newLuxonDate = luxonDate;
     newLuxonDate.quarterStartMonth = quarterStartMonth;
     return newLuxonDate;
@@ -279,10 +282,10 @@ export const getCustomCalendarValueFromEpoch = (
     }
     return null;
 };
-const parseDate = (dateString: string, format: string) => {
+const parseDate = (dateString: string, format: string, options: any) => {
     return DateTime.fromFormat(
         dateString,
-        dateFormats[format] || format,
+        options.tsLocaleBasedDateFormats[format] || format,
     ).toJSDate();
 };
 
@@ -314,7 +317,7 @@ export function getSpecialFormatData(value: string | number, options: any) {
     return null;
 }
 
-function sanitizeDate(
+export function sanitizeDate(
     inputDate: string | number,
     format: string,
     options: any,
@@ -327,7 +330,7 @@ function sanitizeDate(
         if (!_.isNaN(Number(inputDate))) {
             return parseInt(inputDate, 10);
         }
-        return parseDate(inputDate, format);
+        return parseDate(inputDate, format, options);
     }
     return inputDate;
 }
@@ -339,7 +342,7 @@ function sanitizeDate(
  * or pass the format pattern for non localized results
  * @returns {string}
  */
-const formatDateTime = (
+export const formatDateTime = (
     epochMillis: number,
     format: string,
     useSystemCalendar?: boolean,
@@ -396,7 +399,7 @@ function getDayOfWeek(num: any, weekOfDay: any) {
     return weekOfDay[weekdays[new_num]];
 }
 
-function getOrdinalSuffixedValue(i: number | string): string {
+export function getOrdinalSuffixedValue(i: number | string): string {
     let ni = i;
     // eslint-disable-next-line radix
     ni = parseInt(ni.toString());
@@ -456,7 +459,6 @@ export function formatDateNum(
                 ? `${value}`
                 : `${getOrdinalSuffixedValue(value)} day of year`;
         case dateNumTypes.DATE_NUM_DAY_OF_WEEK:
-            console.log(options);
             return formatPattern === options.tsDateConstants.day_of_week_format
                 ? // eslint-disable-next-line @typescript-eslint/no-use-before-define
                   getDayOfWeek(
@@ -553,24 +555,4 @@ export function formatDate(
         return `${inputDate}`;
     }
     return formatDateTime(epochMillis, format, useSystemCalendar, options);
-}
-
-/**
- * Formats the date value based on the column's properties and custom calendar settings.
- *
- * @param dataValue - The date value to format.
- * @param col - The chart column.
- * @returns The formatted date string.
- */
-export function dateFormatter(dataValue: any, col: ChartColumn) {
-    if (hasCustomCalendar(col)) {
-        if (getDisplayString(dataValue)) {
-            return getDisplayString(dataValue);
-        }
-        const startEpoch = getStartEpoch(dataValue);
-        return startEpoch !== null
-            ? DateTime.fromMillis(startEpoch * 1000).toFormat('dd-MM-yyyy')
-            : null;
-    }
-    return DateTime.fromMillis(dataValue * 1000).toFormat('dd-MM-yyyy');
 }
