@@ -539,7 +539,7 @@ export function formatDate(
     ) {
         return newInputDate;
     }
-    newInputDate = sanitizeDate(newInputDate, format, options);
+    newInputDate = sanitizeDate(newInputDate, formatPattern, options);
     if (_.isNaN(newInputDate)) {
         return options.tsLocaleBasedStringsFormats.null_value_placeholder_label;
     }
@@ -554,5 +554,11 @@ export function formatDate(
         );
         return `${inputDate}`;
     }
-    return formatDateTime(epochMillis, format, useSystemCalendar, options);
+    console.log(formatPattern);
+    return formatDateTime(
+        epochMillis,
+        formatPattern,
+        useSystemCalendar,
+        options,
+    );
 }

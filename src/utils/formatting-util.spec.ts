@@ -69,7 +69,7 @@ describe('formatting utils', () => {
             week_in_year_format: 'V',
         },
         tsLocaleBasedDateFormats: {
-            DATE_SHORT: 'MM/dd/yyyy',
+            DATE_SHORT: 'y',
         },
         quarter_of_year: 'Q{1}',
         tsDefinedCustomCalenders: {
@@ -130,13 +130,13 @@ describe('formatting utils', () => {
 
         expect(typeof formatter).toBe('function');
         const formattedDate = formatter(1234567890, mockOptions);
-        expect(formattedDate).toBe('2/14/2009');
+        expect(formattedDate).toBe('2009');
         const customFormattedDate = formatter(1234567891, mockOptions);
         const customFormattedDateWithoutDisplayValue = formatter(
             1234567892,
             mockOptions,
         );
-        expect(customFormattedDateWithoutDisplayValue).toBe('2/14/2009');
+        expect(customFormattedDateWithoutDisplayValue).toBe('2009');
         expect(customFormattedDate).toBe('custom Date');
         expect(showDateFinancialYearFormat).toHaveBeenCalledWith(column);
     });
@@ -201,13 +201,13 @@ describe('formatting utils', () => {
 
         expect(typeof formatter).toBe('function');
         const formattedDate = formatter(1234567890, mockOptions);
-        expect(formattedDate).toBe('2/14/2009');
+        expect(formattedDate).toBe('2009');
         const customFormattedDate = formatter(1234567891, mockOptions);
         const customFormattedDateWithoutDisplayValue = formatter(
             1234567892,
             mockOptions,
         );
-        expect(customFormattedDateWithoutDisplayValue).toBe('2/14/2009');
+        expect(customFormattedDateWithoutDisplayValue).toBe('2009');
         expect(customFormattedDate).toBe('custom Date');
         expect(showDateFinancialYearFormat).toHaveBeenCalledWith(column);
     });
