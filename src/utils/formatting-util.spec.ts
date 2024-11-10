@@ -12,7 +12,7 @@ import {
 } from './date-utils';
 import {
     generateMapOptions,
-    getBaseTypeFormatterInstanceExpensive,
+    getBaseTypeFormatterInstance,
     getDataFormatter,
     getFormatPattern,
 } from './formatting-util';
@@ -123,10 +123,7 @@ describe('formatting utils', () => {
         } as ChartColumn;
         const options = { isMillisIncluded: true };
 
-        const formatter = getBaseTypeFormatterInstanceExpensive(
-            column,
-            options,
-        );
+        const formatter = getBaseTypeFormatterInstance(column, options);
 
         expect(typeof formatter).toBe('function');
         const formattedDate = formatter(1234567890, mockOptions);
@@ -151,10 +148,7 @@ describe('formatting utils', () => {
             calenderGuid: '12345',
         } as ChartColumn;
         const options = { isMillisIncluded: true };
-        const formatter = getBaseTypeFormatterInstanceExpensive(
-            column,
-            options,
-        );
+        const formatter = getBaseTypeFormatterInstance(column, options);
 
         expect(typeof formatter).toBe('function');
         const formattedDate = formatter(1234567890, mockOptions);
@@ -178,10 +172,7 @@ describe('formatting utils', () => {
             calenderGuid: '12345',
         } as ChartColumn;
         const options = { isMillisIncluded: true };
-        const formatter = getBaseTypeFormatterInstanceExpensive(
-            column,
-            options,
-        );
+        const formatter = getBaseTypeFormatterInstance(column, options);
 
         expect(formatter('test')).toBe('test');
     });
@@ -254,10 +245,7 @@ describe('formatting utils', () => {
             calenderGuid: '12345',
         } as ChartColumn;
         const options = { isMillisIncluded: true };
-        const formatter = getBaseTypeFormatterInstanceExpensive(
-            column,
-            options,
-        );
+        const formatter = getBaseTypeFormatterInstance(column, options);
         expect(typeof formatter).toBe('function');
     });
     test('should correctly set format pattern for date-time column with and without milliseconds', () => {
@@ -275,11 +263,11 @@ describe('formatting utils', () => {
         const optionsWithMillis = { isMillisIncluded: true };
         const optionsWithoutMillis = { isMillisIncluded: false };
 
-        const formatterWithMillis = getBaseTypeFormatterInstanceExpensive(
+        const formatterWithMillis = getBaseTypeFormatterInstance(
             column,
             optionsWithMillis,
         );
-        const formatterWithoutMillis = getBaseTypeFormatterInstanceExpensive(
+        const formatterWithoutMillis = getBaseTypeFormatterInstance(
             column,
             optionsWithoutMillis,
         );
