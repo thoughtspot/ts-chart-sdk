@@ -250,6 +250,12 @@ export type ChartSdkCustomStylingConfig = {
     fontFaces?: Array<TSFontFace>;
 };
 
+/**
+ * Defines a set of standardized date and datetime format strings used for
+ * displaying dates and times in various formats. Each format string represents
+ * a specific date or time pattern that can be used for localized display purposes.
+ */
+
 export interface DateFormats {
     DATE_SHORT: string;
     DATE_SHORT_2_DIGIT_YEAR: string;
@@ -280,11 +286,21 @@ export interface DateFormats {
 }
 
 /**
- * Date Formats Config for Custom Chart SDK
- * This is used to define the date formats for the custom chart SDK
- * The date formats are used to format the date values in the chart
- * @remarks
- * The date formats are used to format the date values in the chart
+ * Configuration object for date formats and settings in the Chart SDK.
+ * Provides locale-specific date and string formats, constants, and custom calendars.
+ *
+ * @type ChartSdkDateFormatsConfig
+ *
+ * @property tsLocaleBasedDateFormats - Optional. A record mapping locale identifiers to date format settings,
+ *   each represented by a `DateFormats` object.
+ * @property tsLocaleBasedStringsFormats - Optional. A record mapping locale identifiers to localized string
+ *   formats, where each format is represented by a string.
+ * @property tsDateConstants - Optional. A record mapping string keys to date-related constants, often used
+ *   for standard date patterns or other fixed date-related values(mostly used to identify the case
+ *   for backend proccessed date in case of MONTH_OF_YEAR,DAY_OF_WEEK).
+ * @property tsDefinedCustomCalenders - Optional. Custom calendar configurations, which have GUID of TS defined Custom calenders.
+ * @property defaultDataSourceId - Optional. The data source identifier for the date formats, used
+ *   to specify the primary data source for TS defined custom calenders.
  */
 
 export type ChartSdkDateFormatsConfig = {
