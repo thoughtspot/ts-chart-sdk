@@ -670,7 +670,6 @@ export function formatDate(
         );
         return `${inputDate}`;
     }
-    console.log(formatPattern);
     return formatDateTime(
         epochMillis,
         formatPattern,
