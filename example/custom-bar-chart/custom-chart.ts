@@ -18,7 +18,6 @@ import {
     ColumnType,
     CustomChartContext,
     DataPointsArray,
-    dateFormatter,
     getCfForColumn,
     getChartContext,
     getCustomCalendarGuidFromColumn,

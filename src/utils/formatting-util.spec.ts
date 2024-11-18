@@ -308,6 +308,5 @@ describe('formatting utils', () => {
                 customCalendarOverridesFiscalOffset: true,
             },
         );
-        // expect(formattedDateWithoutMillis).toBe('MM/DD/YYYY HH:mm:ss'); // Expect pattern without millis
     });
 });

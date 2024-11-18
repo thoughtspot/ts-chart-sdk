@@ -3,7 +3,7 @@ import {
     getCustomCalendarGuid,
     getFormatPatternForBucket,
     showDateFinancialYearFormat,
-} from './date-utils'; // Adjust path
+} from './date-utils';
 
 describe('getFormatPatternForBucket', () => {
     const mockDatasourceIdToCustomCalendarMap = {

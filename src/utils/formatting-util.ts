@@ -207,17 +207,16 @@ export const generateMapOptions = (
 ): any => {
     let customCalenderMap = {};
 
-    if (
-        getCustomCalendarGuidFromColumn(col) !== null &&
-        getCustomCalendarGuidFromColumn(col) !== undefined &&
-        getCustomCalendarGuidFromColumn(col) !== ''
-    ) {
-        for (let i = 0; i < data.length; i++) {
-            customCalenderMap = {
-                ...customCalenderMap,
-                [data[i].v.s]: data[i],
-            };
-        }
+    if (!_.isEmpty(getCustomCalendarGuidFromColumn(col))) {
+        customCalenderMap = data.reduce(
+            (customCalenderMapAcc: any, dataValue: any) => {
+                return {
+                    ...customCalenderMapAcc,
+                    [dataValue.v.s]: dataValue,
+                };
+            },
+            {},
+        );
     }
     return {
         locale: appConfig?.localeOptions?.locale,
