@@ -482,11 +482,17 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             const { visualProps } = currentVisualProps;
             const elements = [
                 {
-                    key: 'color',
+                    key: 'coloraaa',
                     type: 'radio',
                     defaultValue: 'red',
                     values: ['red', 'green', 'yellow'],
                     label: 'Colors',
+                },
+                {
+                    key: 'tooltipconfig1',
+                    type: 'tooltipconfig',
+                    defaultValue: 'true',
+                    label: 'ToolTip',
                 },
                 {
                     type: 'section',

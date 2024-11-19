@@ -11,6 +11,11 @@
 import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
+
+export type TSTooltipConfig = {
+    columnIds: Array<string>;
+};
+
 /**
  * Configuration for input validation rules
  */
@@ -408,7 +413,11 @@ export interface NativeEditToolTip {
      */
     key: string;
 
-    defaultValue?: string;
+    /*
+     List of column ids that are present in ToolTipConfig by default 
+    */
+
+    defaultValue?: TSTooltipConfig;
 
     /**
      * I18n'ed string to show on the form label

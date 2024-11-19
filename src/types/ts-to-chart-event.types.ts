@@ -74,9 +74,6 @@ export enum TSToChartEvent {
      */
     AxisMenuActionClick = 'AxisMenuActionClick',
 
-    /**
-     * @version SDK: 0.2 | ThoughtSpot:
-     */
     GetColumnData = 'GetColumnData',
 }
 
