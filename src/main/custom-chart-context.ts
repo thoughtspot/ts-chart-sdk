@@ -35,6 +35,8 @@ import {
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
+    GetColumnDataPayload,
+    GetColumnDataResponsePayload,
     GetDataQueryPayload,
     GetDataQueryResponsePayload,
     InitializeEventPayload,
@@ -236,15 +238,16 @@ export type CustomChartContextProps = {
         | VisualPropEditorDefinition;
 
     /**
-     * Optional configuration to toggle native TS UI configurations, such as column number formatting
-     * and conditional formatting.
+     * Optional configuration to toggle native TS UI configurations, such as column number
+     * formatting and conditional formatting.
      *
      * @type {AllowedConfigurations}
      * @version SDK: 0.1 | ThoughtSpot:
      */
     allowedConfigurations?: AllowedConfigurations;
     /**
-     * Optional parameters for configuring specific chart-related features, such as measure name and value columns.
+     * Optional parameters for configuring specific chart-related features, such as measure name
+     * and value columns.
      *
      * @type {ChartConfigParameters}
      * @version SDK: 0.1 | ThoughtSpot:
@@ -811,6 +814,28 @@ export class CustomChartContext {
                     );
                 return {
                     queries,
+                };
+            },
+        );
+
+        /**
+         * This event is triggered when the TS app asks for data in a specific columns
+         * for certain validations for settings and drop down options related to Conditional
+         * formatting and other advanced settings
+         */
+        this.onInternal(
+            TSToChartEvent.GetColumnData,
+            (payload: GetColumnDataPayload): GetColumnDataResponsePayload => {
+                const parsedData = this.chartModel.data?.[0].data;
+                const dataIdx = parsedData?.columns.findIndex(
+                    (columnId) => columnId === payload.columnId,
+                );
+                const dataArray =
+                    !_.isNil(dataIdx) && dataIdx > -1
+                        ? parsedData?.dataValue.map((it) => it[dataIdx])
+                        : [];
+                return {
+                    data: dataArray,
                 };
             },
         );
