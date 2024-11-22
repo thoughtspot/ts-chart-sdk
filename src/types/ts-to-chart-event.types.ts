@@ -8,6 +8,7 @@ import {
     AppConfig,
     ChartConfig,
     ChartModel,
+    DataPointsArray,
     QueryData,
     ValidationResponse,
     VisualProps,
@@ -72,6 +73,11 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     AxisMenuActionClick = 'AxisMenuActionClick',
+
+    /**
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    GetColumnData = 'GetColumnData',
 }
 
 /**
@@ -109,6 +115,10 @@ export interface TSToChartInternalEventsPayloadMap {
     [TSToChartEvent.GetDataQuery]: (
         payload: GetDataQueryPayload,
     ) => GetDataQueryResponsePayload;
+
+    [TSToChartEvent.GetColumnData]: (
+        payload: GetColumnDataPayload,
+    ) => GetColumnDataResponsePayload;
 
     [TSToChartEvent.ChartConfigValidate]: (
         payload: ChartConfigValidateEventPayload,
@@ -226,6 +236,10 @@ export interface GetDataQueryPayload {
     config: ChartConfig[];
 }
 
+export interface GetColumnDataPayload {
+    columnId: string;
+}
+
 /**
  *
  * @group ThoughtSpot to Chart Events
@@ -258,6 +272,11 @@ export interface Query {
  */
 export interface GetDataQueryResponsePayload {
     queries: Query[];
+}
+
+export interface GetColumnDataResponsePayload {
+    // Marked as any as the data from columns can be of any type
+    data?: any[];
 }
 
 /**

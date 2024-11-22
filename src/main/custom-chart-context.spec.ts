@@ -505,6 +505,67 @@ describe('CustomChartContext', () => {
             });
         });
 
+        test('should handle GetColumnData event with valid columnId', async () => {
+            // Set up mock data in the chart model
+            const mockData = {
+                data: [
+                    {
+                        data: {
+                            columns: ['col1', 'col2', 'col3'],
+                            dataValue: [
+                                [1, 2, 3],
+                                [4, 5, 6],
+                                [7, 8, 9],
+                            ],
+                        },
+                    },
+                ],
+            };
+
+            (customChartContext as any).chartModel = mockData;
+
+            const response = await eventProcessor({
+                payload: {
+                    columnId: 'col2',
+                },
+                eventType: TSToChartEvent.GetColumnData,
+            });
+
+            expect(response).toEqual({
+                data: [2, 5, 8],
+            });
+        });
+
+        test('should return empty array for non-existent columnId', async () => {
+            // Set up mock data in the chart model
+            const mockData = {
+                data: [
+                    {
+                        data: {
+                            columns: ['col1', 'col2', 'col3'],
+                            dataValue: [
+                                [1, 2, 3],
+                                [4, 5, 6],
+                            ],
+                        },
+                    },
+                ],
+            };
+
+            (customChartContext as any).chartModel = mockData;
+
+            const response = await eventProcessor({
+                payload: {
+                    columnId: 'non-existent-column',
+                },
+                eventType: TSToChartEvent.GetColumnData,
+            });
+
+            expect(response).toEqual({
+                data: [],
+            });
+        });
+
         test('TSToChartEvent.validateVisualProps should be called with correct activeColumnId', () => {
             // Define initial context with object definitions
             const mockValidateVisualProps = jest
