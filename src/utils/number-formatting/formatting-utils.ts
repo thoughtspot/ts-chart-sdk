@@ -3,12 +3,9 @@
  *
  * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
  *
- * Copyright: ThoughtSpot Inc. 2023
+ * Copyright: ThoughtSpot Inc. 2024
  */
 
-/* eslint-disable no-param-reassign */
-/* eslint-disable import/no-extraneous-dependencies */
-import Globalize from 'globalize';
 import _ from 'lodash';
 import {
     ColumnFormat,
@@ -38,6 +35,9 @@ export const PROTO_TO_NEGATIVE_VALUE_FORMAT = {
     3: NegativeValueFormat.BracesNodash,
 };
 
+/**
+ * Constants for unit conversions and suffixes.
+ */
 export const UNITS_TO_DIVIDING_FACTOR: Record<Unit, number> = {
     [Unit.None]: 1,
     [Unit.Thousands]: 1000,
@@ -56,6 +56,9 @@ export const PROTO_TO_UNITS = {
     6: Unit.Auto,
 };
 
+/**
+ * Default strings for placeholders.
+ */
 const strings = {
     NULL_VALUE_PLACEHOLDER_LABEL: '{Null}',
     EMPTY_VALUE_PLACEHOLDER_LABEL: '{Empty}',
@@ -72,25 +75,19 @@ export const UNITS_TO_SUFFIX: Record<Unit, string> = {
 
 const DEFAULT_DECIMAL_PRECISION = 2;
 
-export function formatNumberSafely<
-    FormatOptions extends Globalize.NumberFormatterOptions
->(format: FormatOptions, num: number): string {
-    try {
-        const formattedNumber = Globalize.numberFormatter(format)(num);
-        return formattedNumber;
-    } catch (e) {
-        if (Math.abs(num) < 1e-7) {
-            return '0';
-        }
-        return String(num);
-    }
-}
-
+/**
+ * Formats negative values according to the specified format.
+ *
+ * @param formattedValue - The formatted value to modify.
+ * @param negativeFormat - The desired negative value format.
+ * @returns The formatted negative value.
+ */
 export const formatNegativeValue = (
     formattedValue: string,
     negativeFormat?: Maybe<NegativeValueFormat>,
 ): string => {
     if (typeof negativeFormat === 'number') {
+        // eslint-disable-next-line no-param-reassign
         negativeFormat = PROTO_TO_NEGATIVE_VALUE_FORMAT[negativeFormat];
     }
     switch (negativeFormat) {
@@ -105,6 +102,12 @@ export const formatNegativeValue = (
     }
 };
 
+/**
+ * Determines the appropriate unit for auto-scaling values.
+ *
+ * @param value - The numeric value to evaluate.
+ * @returns The appropriate unit (e.g., Thousand, Million, etc.).
+ */
 export const getAutoUnit = (value: number): Unit => {
     if (value >= UNITS_TO_DIVIDING_FACTOR[Unit.Trillion]) {
         return Unit.Trillion;
@@ -120,16 +123,27 @@ export const getAutoUnit = (value: number): Unit => {
     }
     return Unit.None;
 };
+
+/**
+ * Retrieves the locale name based on the provided currency format.
+ *
+ * @param currencyFormat - The currency format configuration.
+ * @returns The locale name as a string.
+ */
 export const getLocaleName = (currencyFormat: CurrencyFormat): string => {
-    let locale = null;
+    let locale = getDefaultCurrencyCode();
     if (currencyFormat.type === CurrencyFormatType.ISO_CODE) {
         locale = currencyFormat.isoCode;
-    } else if (currencyFormat.type === CurrencyFormatType.USER_LOCALE) {
-        locale = getDefaultCurrencyCode();
     }
     return locale;
 };
 
+/**
+ * Generates a default format configuration based on the column settings.
+ *
+ * @param columnFormatConfig - The column-specific formatting settings.
+ * @returns The default format configuration.
+ */
 export const defaultFormatConfig = (
     columnFormatConfig: ColumnFormat,
 ): FormatConfig => {
@@ -179,11 +193,20 @@ export const defaultFormatConfig = (
     };
     return formatConfig;
 };
+
+/**
+ * Maps configuration details to a formatter configuration object.
+ *
+ * @param absFloatValue - The absolute value of the number being formatted.
+ * @param configDetails - The number or currency format configuration.
+ * @returns A mapped formatter configuration.
+ */
 export const mapFormatterConfig = (
     absFloatValue: number,
     configDetails: NumberFormatConfig | CurrencyFormatConfig,
 ): FormatterConfig => {
     if (typeof configDetails.unit === 'number') {
+        // eslint-disable-next-line no-param-reassign
         configDetails.unit = PROTO_TO_UNITS[configDetails.unit];
     }
     const isAutoFormatted = configDetails.unit === Unit.Auto;
@@ -206,12 +229,11 @@ export const mapFormatterConfig = (
 };
 
 /**
- * This checks if the value is of special type like NaN, Infinity, etc
+ * Handles formatting of special data values (e.g., null, empty, NaN, Infinity).
  *
- * @param value - the value to format
- * @returns {*} - formatted value if it was a special case and null if it wasn't
+ * @param value - The value to check and format.
+ * @returns A formatted special value or null if not applicable.
  */
-
 export function formatSpecialDataValue(value: any) {
     if (
         value === strings.NULL_VALUE_PLACEHOLDER_LABEL ||

@@ -31,11 +31,11 @@ import {
 import {
     ChartConfigEditorDefinition,
     getFormattedValue,
+    initializeGlobalize,
 } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
-import { initializeGlobalize } from '../../src/utils/globalize-setup';
 import {
     availableColor,
     getBackgroundColor,

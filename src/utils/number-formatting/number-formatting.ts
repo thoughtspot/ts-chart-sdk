@@ -3,24 +3,32 @@
  *
  * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
  *
- * Copyright: ThoughtSpot Inc. 2023
+ * Copyright: ThoughtSpot Inc. 2024
  */
-
-/* eslint-disable import/no-extraneous-dependencies */
-import Globalize from 'globalize';
 import _ from 'lodash';
-import { ColumnFormat } from '../../types/answer-column.types';
+import {
+    ColumnFormat,
+    CurrencyFormat,
+    CurrencyFormatType,
+} from '../../types/answer-column.types';
 import {
     CategoryType,
     FormatConfig,
     Unit,
 } from '../../types/number-formatting.types';
-import { getDefaultCurrencyCode } from '../globalize-setup';
+import {
+    formatNumberSafely,
+    getDefaultCurrencyCode,
+    globalizeCurrencyFormatter,
+    globalizeNumberFormatter,
+    sanitizeFormat,
+    validateNumberFormat,
+} from '../globalize-setup';
 import {
     defaultFormatConfig,
     formatNegativeValue,
-    formatNumberSafely,
     formatSpecialDataValue,
+    getLocaleName,
     mapFormatterConfig,
     UNITS_TO_DIVIDING_FACTOR,
     UNITS_TO_SUFFIX,
@@ -28,43 +36,30 @@ import {
 
 const CURRENCY_CODE_EXTRACTOR_REGEX = /[\d.,]+/g;
 
-const sanitizeFormat = (format: string) => {
-    // Globalize needs to have a zero before the decimal point
-    // or at the end of format if no decimal point
-    let sanitizedFormat = format.replace(/#\./, '0.');
-    if (!sanitizedFormat.includes('.')) {
-        sanitizedFormat = sanitizedFormat.replace(/#(%?)$/, '0$1');
-    }
-    return sanitizedFormat;
-};
-
-const validateNumberFormat = (format: string) => {
-    try {
-        Globalize.numberFormatter({
-            ...({ raw: sanitizeFormat(format) } as any),
-        })(123);
-    } catch (e) {
-        console.log('Format pattern validator error', format, e);
-        return false;
-    }
-    return true;
-};
-
+/**
+ * Formats a number with a custom pattern and combines it with a currency symbol.
+ *
+ * @param value - The numeric value to format.
+ * @param currencyCode - The ISO currency code (e.g., 'USD').
+ * @param formatPattern - The custom format pattern (e.g., '#,##0.00').
+ * @returns The formatted value with the currency symbol.
+ */
 const formatCurrencyWithCustomPattern = (
     value: number,
     currencyCode: string,
     formatPattern: string,
 ): string => {
-    // Format the value with the custom pattern
+    // Sanitize the custom format pattern
     const sanitizedPattern = sanitizeFormat(formatPattern);
-    const customFormatter = Globalize.numberFormatter({
+
+    // Create a custom number formatter
+    const customFormatter = globalizeNumberFormatter({
         ...({ raw: sanitizedPattern } as any),
     });
 
     const formattedValue = customFormatter(value);
 
-    // Format the currency symbol
-    const currencyFormatter = Globalize.currencyFormatter(currencyCode, {
+    const currencyFormatter = globalizeCurrencyFormatter(currencyCode, {
         style: 'symbol',
     });
 
@@ -77,25 +72,40 @@ const formatCurrencyWithCustomPattern = (
     return `${currencySymbol}${formattedValue}`;
 };
 
+/**
+ * Formats a value based on the provided format configuration and column settings.
+ *
+ * @param value - The value to format (can be a string or number).
+ * @param formatConfigProp - The format configuration for the value.
+ * @param columnFormatConfig - The column-specific formatting settings.
+ * @returns The formatted value as a string.
+ */
 export const getFormattedValue = (
     value: string | number,
     formatConfigProp: FormatConfig,
     columnFormatConfig: ColumnFormat,
 ): string => {
     let formatConfig = _.cloneDeep(formatConfigProp);
+
+    // Use default configuration if none is provided
     if (_.isNil(formatConfig)) {
         formatConfig = defaultFormatConfig(columnFormatConfig);
     }
-
+    // Normalize category to a proper type
     if (typeof formatConfig.category === 'number') {
         formatConfig.category = CategoryType.Number;
     }
+
+    // Handle special data values (e.g., NaN, Infinity)
     const specialVal = formatSpecialDataValue(value);
     if (specialVal) {
         return specialVal;
     }
-    const floatValue = parseFloat(value.toString()); // converts string value into number, x.00 into 0
+
+    // Convert value to a float
+    const floatValue = parseFloat(value.toString());
     const absFloatValue = Math.abs(floatValue);
+
     if (formatConfig.category === CategoryType.Number) {
         const configDetails = formatConfig.numberFormatConfig || {};
         const formatterConfigMap = mapFormatterConfig(
@@ -117,10 +127,9 @@ export const getFormattedValue = (
             },
             compactValue,
         );
-        const absFormattedValue = !_.isNil(absFloatValue)
-            ? `${formattedValue}${suffix}`
-            : formattedValue;
-        if (absFloatValue && absFloatValue !== floatValue) {
+        const absFormattedValue = `${formattedValue}${suffix}`;
+
+        if (absFloatValue !== floatValue) {
             return formatNegativeValue(
                 absFormattedValue,
                 configDetails.negativeValueFormat,
@@ -128,6 +137,7 @@ export const getFormattedValue = (
         }
         return absFormattedValue;
     }
+
     if (formatConfig.category === CategoryType.Percentage) {
         const configDetails = formatConfig.percentageFormatConfig;
         const decimalDetails = configDetails?.decimals || 0;
@@ -152,18 +162,23 @@ export const getFormattedValue = (
         const compactValue =
             floatValue /
             UNITS_TO_DIVIDING_FACTOR[formatterConfigMap.unitDetails];
+
+        let locale = configDetails.locale || getDefaultCurrencyCode();
+        if (locale === CurrencyFormatType.USER_LOCALE) {
+            locale = getLocaleName({
+                type: locale,
+            } as CurrencyFormat);
+        }
         try {
-            const formatter = Globalize.currencyFormatter(
-                configDetails.locale || getDefaultCurrencyCode(),
-                {
-                    style: 'symbol',
-                    maximumFractionDigits: formatterConfigMap.decimalDetails,
-                    minimumFractionDigits: formatterConfigMap.shouldRemoveTrailingZeros
-                        ? 0
-                        : formatterConfigMap.decimalDetails,
-                    useGrouping: configDetails.toSeparateThousands || false,
-                },
-            );
+            const formatter = globalizeCurrencyFormatter(locale, {
+                style: 'symbol',
+                maximumFractionDigits: formatterConfigMap.decimalDetails,
+                minimumFractionDigits: formatterConfigMap.shouldRemoveTrailingZeros
+                    ? 0
+                    : formatterConfigMap.decimalDetails,
+                useGrouping: configDetails.toSeparateThousands || false,
+            });
+
             const formattedValue = formatter(compactValue);
             const currencyCode = formattedValue.replace(
                 CURRENCY_CODE_EXTRACTOR_REGEX,
@@ -193,54 +208,40 @@ export const getFormattedValue = (
             );
         }
     }
-    /**
-     * Empty check of the formatPAttern is done to avoid the mis-formatting
-    * of the value in the case of CURRENCY_FROM_COLUMN as in that case it
-    does not have * formatPattern
-     */
+
     if (formatConfig.category === CategoryType.Custom) {
         const formatPattern = formatConfig.customFormatConfig?.format;
         const currencyCode = columnFormatConfig.currencyFormat?.isoCode;
-        if (!_.isNil(formatPattern)) {
+        if (
+            !_.isNil(formatPattern) &&
+            validateNumberFormat(sanitizeFormat(formatPattern))
+        ) {
             const sanitizedPattern = sanitizeFormat(formatPattern);
             if (!_.isNil(currencyCode)) {
-                if (validateNumberFormat(sanitizedPattern)) {
-                    /**
-                     * Globalize does not consider format pattern while formatting the currency,
-                     * only the currency specific rules are considered, so need to combine. That's
-                     * what we do in this formatCurrency method
-                     */
-                    const formattedValueWithLocaleAndPattern = formatCurrencyWithCustomPattern(
-                        floatValue,
-                        currencyCode,
-                        formatPattern,
-                    );
-                    return `${formattedValueWithLocaleAndPattern}`;
-                }
-                console.debug(
-                    'Corrupted format config passed, formatting using default config',
-                    formatConfig,
+                /**
+                 * Globalize does not consider format pattern while formatting the currency,
+                 * only the currency specific rules are considered, so need to combine. That's
+                 * what we do in this formatCurrency method
+                 */
+                const formattedValueWithLocaleAndPattern = formatCurrencyWithCustomPattern(
+                    floatValue,
+                    currencyCode,
+                    formatPattern,
                 );
-
-                return formatNumberSafely(
-                    {
-                        style: 'decimal',
-                    },
-                    floatValue as any,
-                );
+                return `${formattedValueWithLocaleAndPattern}`;
             }
-            if (validateNumberFormat(sanitizedPattern)) {
-                return formatNumberSafely(
-                    {
-                        style: 'decimal',
-                        raw: sanitizedPattern,
-                    },
-                    floatValue as any,
-                );
-            }
+            return formatNumberSafely(
+                {
+                    style: 'decimal',
+                    raw: sanitizedPattern,
+                },
+                floatValue as any,
+            );
         }
+        console.error('Invalid custom format config passed:', formatConfig);
     }
 
+    // Default fallback: Decimal formatting
     return formatNumberSafely(
         {
             style: 'decimal',

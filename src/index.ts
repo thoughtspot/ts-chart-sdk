@@ -11,3 +11,4 @@ export * from './types/number-formatting.types';
 export * from './utils/date-formatting';
 export * from './utils/conditional-formatting/conditional-formatting';
 export * from './utils/number-formatting/number-formatting';
+export * from './utils/globalize-setup';
