@@ -1,6 +1,20 @@
+/**
+ * @file: Formatting Utils
+ *
+ * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
+ *
+ * Copyright: ThoughtSpot Inc. 2023
+ */
+
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/no-extraneous-dependencies */
 import Globalize from 'globalize';
+import _ from 'lodash';
+import {
+    ColumnFormat,
+    CurrencyFormat,
+    CurrencyFormatType,
+} from '../../types/answer-column.types';
 import { Maybe } from '../../types/common.types';
 import {
     CategoryType,
@@ -10,6 +24,7 @@ import {
     NumberFormatConfig,
     Unit,
 } from '../../types/number-formatting.types';
+import { getDefaultCurrencyCode } from '../globalize-setup';
 
 interface FormatterConfig {
     unitDetails: Unit;
@@ -58,7 +73,7 @@ export const UNITS_TO_SUFFIX: Record<Unit, string> = {
 const DEFAULT_DECIMAL_PRECISION = 2;
 
 export function formatNumberSafely<
-    FormatOptions extends Globalize.NumberFormatterOptions,
+    FormatOptions extends Globalize.NumberFormatterOptions
 >(format: FormatOptions, num: number): string {
     try {
         const formattedNumber = Globalize.numberFormatter(format)(num);
@@ -105,8 +120,48 @@ export const getAutoUnit = (value: number): Unit => {
     }
     return Unit.None;
 };
+export const getLocaleName = (currencyFormat: CurrencyFormat): string => {
+    let locale = null;
+    if (currencyFormat.type === CurrencyFormatType.ISO_CODE) {
+        locale = currencyFormat.isoCode;
+    } else if (currencyFormat.type === CurrencyFormatType.USER_LOCALE) {
+        locale = getDefaultCurrencyCode();
+    }
+    return locale;
+};
 
-export const defaultFormatConfig = (): FormatConfig => {
+export const defaultFormatConfig = (
+    columnFormatConfig: ColumnFormat,
+): FormatConfig => {
+    if (columnFormatConfig?.pattern) {
+        return {
+            __typename: 'FormatConfig',
+            category: CategoryType.Custom,
+            isCategoryEditable: true,
+            customFormatConfig: {
+                __typename: 'CustomFormatConfig',
+                format: columnFormatConfig?.pattern,
+            },
+        };
+    }
+    if (columnFormatConfig?.currencyFormat) {
+        const locale = getLocaleName(columnFormatConfig?.currencyFormat);
+        const currencyFormatConfig: CurrencyFormatConfig = {
+            __typename: 'CurrencyFormatConfig',
+            decimals: 0,
+            locale,
+            removeTrailingZeroes: false,
+            toSeparateThousands: true,
+            unit: Unit.Auto,
+        };
+        const formatConfig: FormatConfig = {
+            __typename: 'FormatConfig',
+            category: CategoryType.Currency,
+            isCategoryEditable: true,
+            currencyFormatConfig,
+        };
+        return formatConfig;
+    }
     const numberFormatConfig: NumberFormatConfig = {
         __typename: 'NumberFormatConfig',
         decimals: 0,

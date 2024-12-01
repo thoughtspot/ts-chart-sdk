@@ -1,12 +1,21 @@
+/**
+ * @file: Number Formatting Utils
+ *
+ * @author Yashvardhan Nehra <yashvardhan.nehra@thoughtspot.com>
+ *
+ * Copyright: ThoughtSpot Inc. 2023
+ */
+
 /* eslint-disable import/no-extraneous-dependencies */
 import Globalize from 'globalize';
 import _ from 'lodash';
+import { ColumnFormat } from '../../types/answer-column.types';
 import {
     CategoryType,
     FormatConfig,
     Unit,
 } from '../../types/number-formatting.types';
-import { initializeGlobalize } from '../globalize-setup';
+import { getDefaultCurrencyCode } from '../globalize-setup';
 import {
     defaultFormatConfig,
     formatNegativeValue,
@@ -19,15 +28,63 @@ import {
 
 const CURRENCY_CODE_EXTRACTOR_REGEX = /[\d.,]+/g;
 
-initializeGlobalize();
+const sanitizeFormat = (format: string) => {
+    // Globalize needs to have a zero before the decimal point
+    // or at the end of format if no decimal point
+    let sanitizedFormat = format.replace(/#\./, '0.');
+    if (!sanitizedFormat.includes('.')) {
+        sanitizedFormat = sanitizedFormat.replace(/#(%?)$/, '0$1');
+    }
+    return sanitizedFormat;
+};
+
+const validateNumberFormat = (format: string) => {
+    try {
+        Globalize.numberFormatter({
+            ...({ raw: sanitizeFormat(format) } as any),
+        })(123);
+    } catch (e) {
+        console.log('Format pattern validator error', format, e);
+        return false;
+    }
+    return true;
+};
+
+const formatCurrencyWithCustomPattern = (
+    value: number,
+    currencyCode: string,
+    formatPattern: string,
+): string => {
+    // Format the value with the custom pattern
+    const sanitizedPattern = sanitizeFormat(formatPattern);
+    const customFormatter = Globalize.numberFormatter({
+        ...({ raw: sanitizedPattern } as any),
+    });
+
+    const formattedValue = customFormatter(value);
+
+    // Format the currency symbol
+    const currencyFormatter = Globalize.currencyFormatter(currencyCode, {
+        style: 'symbol',
+    });
+
+    const currencySymbol = currencyFormatter(0).replace(
+        CURRENCY_CODE_EXTRACTOR_REGEX,
+        '',
+    ); // Extract the currency symbol
+
+    // Combine the custom formatted value with the currency symbol
+    return `${currencySymbol}${formattedValue}`;
+};
 
 export const getFormattedValue = (
     value: string | number,
     formatConfigProp: FormatConfig,
+    columnFormatConfig: ColumnFormat,
 ): string => {
     let formatConfig = _.cloneDeep(formatConfigProp);
     if (_.isNil(formatConfig)) {
-        formatConfig = defaultFormatConfig();
+        formatConfig = defaultFormatConfig(columnFormatConfig);
     }
 
     if (typeof formatConfig.category === 'number') {
@@ -53,10 +110,9 @@ export const getFormattedValue = (
             {
                 style: 'decimal',
                 maximumFractionDigits: formatterConfigMap.decimalDetails,
-                minimumFractionDigits:
-                    formatterConfigMap.shouldRemoveTrailingZeros
-                        ? 0
-                        : formatterConfigMap.decimalDetails,
+                minimumFractionDigits: formatterConfigMap.shouldRemoveTrailingZeros
+                    ? 0
+                    : formatterConfigMap.decimalDetails,
                 useGrouping: configDetails.toSeparateThousands || false,
             },
             compactValue,
@@ -98,14 +154,13 @@ export const getFormattedValue = (
             UNITS_TO_DIVIDING_FACTOR[formatterConfigMap.unitDetails];
         try {
             const formatter = Globalize.currencyFormatter(
-                configDetails.locale || 'USD',
+                configDetails.locale || getDefaultCurrencyCode(),
                 {
                     style: 'symbol',
                     maximumFractionDigits: formatterConfigMap.decimalDetails,
-                    minimumFractionDigits:
-                        formatterConfigMap.shouldRemoveTrailingZeros
-                            ? 0
-                            : formatterConfigMap.decimalDetails,
+                    minimumFractionDigits: formatterConfigMap.shouldRemoveTrailingZeros
+                        ? 0
+                        : formatterConfigMap.decimalDetails,
                     useGrouping: configDetails.toSeparateThousands || false,
                 },
             );
@@ -131,12 +186,58 @@ export const getFormattedValue = (
             }
             return `${formattedValue}${suffix}`;
         } catch (e) {
-            // console.log(e);
-            //         _logger.error(
-            // 'Corrupted format config passed, formatting using default config',
-            // formatConfig,
-            //             e,
-            //         );
+            console.error(
+                'Corrupted format config passed, formatting using default config',
+                formatConfig,
+                e,
+            );
+        }
+    }
+    /**
+     * Empty check of the formatPAttern is done to avoid the mis-formatting
+    * of the value in the case of CURRENCY_FROM_COLUMN as in that case it
+    does not have * formatPattern
+     */
+    if (formatConfig.category === CategoryType.Custom) {
+        const formatPattern = formatConfig.customFormatConfig?.format;
+        const currencyCode = columnFormatConfig.currencyFormat?.isoCode;
+        if (!_.isNil(formatPattern)) {
+            const sanitizedPattern = sanitizeFormat(formatPattern);
+            if (!_.isNil(currencyCode)) {
+                if (validateNumberFormat(sanitizedPattern)) {
+                    /**
+                     * Globalize does not consider format pattern while formatting the currency,
+                     * only the currency specific rules are considered, so need to combine. That's
+                     * what we do in this formatCurrency method
+                     */
+                    const formattedValueWithLocaleAndPattern = formatCurrencyWithCustomPattern(
+                        floatValue,
+                        currencyCode,
+                        formatPattern,
+                    );
+                    return `${formattedValueWithLocaleAndPattern}`;
+                }
+                console.debug(
+                    'Corrupted format config passed, formatting using default config',
+                    formatConfig,
+                );
+
+                return formatNumberSafely(
+                    {
+                        style: 'decimal',
+                    },
+                    floatValue as any,
+                );
+            }
+            if (validateNumberFormat(sanitizedPattern)) {
+                return formatNumberSafely(
+                    {
+                        style: 'decimal',
+                        raw: sanitizedPattern,
+                    },
+                    floatValue as any,
+                );
+            }
         }
     }
 

@@ -34,7 +34,8 @@ import {
 } from '@thoughtspot/ts-chart-sdk/src';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import _, { values } from 'lodash';
+import _ from 'lodash';
+import { initializeGlobalize } from '../../src/utils/globalize-setup';
 import {
     availableColor,
     getBackgroundColor,
@@ -57,8 +58,8 @@ const exampleClientState = {
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
-    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    return _.map(dataArr.dataValue, (row) => {
+    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
+    return _.map(dataArr.dataValue, row => {
         const colValue = row[idx];
         if (isDateColumn(column) || isDateNumColumn(column)) {
             return dateFormatter(colValue, column);
@@ -96,11 +97,13 @@ function getColumnDataModel(
                         col.id,
                     ),
                 );
-                const { plotlines, plotbands } =
-                    getPlotLinesAndBandsFromConditionalFormatting(
-                        CFforColumn,
-                        axisId,
-                    );
+                const {
+                    plotlines,
+                    plotbands,
+                } = getPlotLinesAndBandsFromConditionalFormatting(
+                    CFforColumn,
+                    axisId,
+                );
 
                 return {
                     label: col.name,
@@ -112,10 +115,11 @@ function getColumnDataModel(
                     datalabels: {
                         anchor: 'end',
                         align: 'end',
-                        formatter: (value) => {
+                        formatter: value => {
                             return getFormattedValue(
                                 value,
                                 col.columnProperties.numberFormatting,
+                                col.format,
                             );
                         },
                     },
@@ -200,7 +204,7 @@ function insertCustomFont(customFontFaces) {
 function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const appConfig = ctx.getAppConfig();
-
+    initializeGlobalize(appConfig.localeOptions?.locale);
     ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
         visualProps: JSON.parse(
             JSON.stringify({
@@ -253,16 +257,20 @@ function render(ctx: CustomChartContext) {
                 plugins: {
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
-                        display: allowLabels,
-                        color: labelColor,
+                        display(context) {
+                            // Show labels for the first dataset, hide for the
+                            // second
+                            return true; // true for first dataset (index 0), false for second
+                        },
+                        color: 'black',
                         labels: {
-                            title: {
-                                font: {
-                                    weight: 'bold',
-                                    size: 12,
-                                    family: 'Custom font',
-                                },
-                            },
+                            // title: {
+                            //     font: {
+                            //         weight: 'bold',
+                            //         size: 12,
+                            //         family: 'Custom font',
+                            //     },
+                            // },
 
                             value: {
                                 color: appColor,
@@ -351,12 +359,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                (col) => col.type === ColumnType.MEASURE,
+                col => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                (col) => col.type === ColumnType.ATTRIBUTE,
+                col => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -394,7 +402,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: (ctx) => renderChart(ctx),
+        renderChart: ctx => renderChart(ctx),
         validateConfig: (
             updatedConfig: any[],
             chartModel: any,
@@ -421,7 +429,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             const { config, visualProps } = currentChartConfig;
 
             const yColumns = config?.chartConfig?.[0]?.dimensions.find(
-                (dimension) => dimension.key === 'y' && dimension.columns,
+                dimension => dimension.key === 'y' && dimension.columns,
             );
 
             const configDefinition = [
