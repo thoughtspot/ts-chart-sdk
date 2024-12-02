@@ -115,6 +115,7 @@ describe('CustomChartContext', () => {
                 allowedConfigurations: {
                     allowColumnNumberFormatting: false,
                     allowColumnConditionalFormatting: false,
+                    allowGradientColoring: false,
                     allowMeasureNamesAndValues: false,
                 },
                 chartConfigParameters: {
