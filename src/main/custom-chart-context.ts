@@ -86,6 +86,14 @@ export type AllowedConfigurations = {
     allowColumnConditionalFormatting?: boolean;
 
     /**
+     * Allows Gradient coloring at the column level.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowGradientColoring?: boolean;
+
+    /**
      * Enables measure_name and measure_values in the chart configuration.
      *
      * @default false
@@ -269,6 +277,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     allowedConfigurations: {
         allowColumnNumberFormatting: false,
         allowColumnConditionalFormatting: false,
+        allowGradientColoring: false,
         allowMeasureNamesAndValues: false,
     },
     chartConfigParameters: {
