@@ -421,7 +421,13 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 isValid: true,
             };
         },
-        validateVisualProps: (visualProps, chartModel) => {
+        validateVisualProps: (visualProps: any, chartModel: any) => {
+            if (visualProps?.tooltipconfig1?.columnIds?.length > 2) {
+                return {
+                    isValid: false,
+                    validationErrorMessage: ['Invalid visual props'],
+                };
+            }
             return {
                 isValid: true,
             };
@@ -482,7 +488,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             const { visualProps } = currentVisualProps;
             const elements = [
                 {
-                    key: 'coloraaa',
+                    key: 'color',
                     type: 'radio',
                     defaultValue: 'red',
                     values: ['red', 'green', 'yellow'],
