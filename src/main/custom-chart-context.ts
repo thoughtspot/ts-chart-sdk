@@ -52,12 +52,14 @@ import {
     VisualEditorDefinitionSetter,
     VisualPropEditorDefinition,
 } from '../types/visual-prop.types';
+import { create } from './logger';
 import {
     globalThis,
     initMessageListener,
     postMessageToHostApp,
 } from './post-message-event-bridge';
 
+const logger = create('TsChartSDKContext');
 /**
  * Configuration for allowing or disallowing specific TS UI features.
  *
@@ -410,7 +412,7 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     public initialize = (): Promise<void> => {
-        console.log('Chart Context: initialization start');
+        logger.log('Chart Context: initialization start');
         return this.hasInitializedPromise;
     };
 
@@ -442,7 +444,7 @@ export class CustomChartContext {
      */
     public off<T extends keyof TSToChartEventsPayloadMap>(eventType: T): void {
         if (_.isNil(this.eventListeners[eventType])) {
-            console.log('No event listener found to remove');
+            logger.log('No event listener found to remove');
             this.eventListeners[eventType] = [];
             return;
         }
@@ -663,7 +665,7 @@ export class CustomChartContext {
         ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
         if (!globalThis.isInitialized) {
-            console.log(
+            logger.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
             return Promise.reject(new Error('Context not initialized'));
@@ -686,7 +688,7 @@ export class CustomChartContext {
      */
     private registerEventProcessor = () => {
         if (globalThis.isInitialized) {
-            console.error(
+            logger.error(
                 'The context is already initialized. you cannot have multiple contexts',
             );
             throw new Error(ErrorType.MultipleContextsNotSupported);
@@ -702,7 +704,7 @@ export class CustomChartContext {
      * @param event : Message Event Object
      */
     private eventProcessor = (data: any) => {
-        console.log('Chart Context: message received:', data.eventType, data);
+        logger.log('Chart Context: message received:', data.eventType, data);
 
         const messageResponse = this.executeEventListenerCBs(data);
 
@@ -887,7 +889,7 @@ export class CustomChartContext {
                         isValid: true,
                     };
                 } catch (error: unknown) {
-                    console.log(
+                    logger.log(
                         'ContextMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
@@ -930,7 +932,7 @@ export class CustomChartContext {
                         isValid: true,
                     };
                 } catch (error: unknown) {
-                    console.log(
+                    logger.log(
                         'AxisMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
@@ -1089,7 +1091,7 @@ export class CustomChartContext {
             };
         }
 
-        console.log(
+        logger.log(
             'ChartContext: Response:',
             data.eventType,
             response,
@@ -1112,6 +1114,6 @@ export const getChartContext = async (
     // wait for initialization here as the host app
     // needs to first handshake with the client app.
     await ctx.initialize();
-
+    // return null;
     return ctx;
 };
