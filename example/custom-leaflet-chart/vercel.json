@@ -1,0 +1,18 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "missing": [
+        {
+          "type": "query",
+          "key": "isPrintMode",
+          "value": "true"
+        }
+      ],
+      "headers": [{
+          "key": "Origin-Agent-Cluster",
+          "value": "?1"
+        }]
+    }
+  ]
+}
