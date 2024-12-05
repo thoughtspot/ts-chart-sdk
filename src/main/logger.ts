@@ -35,13 +35,14 @@ class Logger {
     }
 
     public async logMessages(args: any, logLevel: LogLevel) {
+        const newArgs = args;
         if (getQueryParam(url, 'debug') !== 'true') {
             return;
         }
         const logFn = logMethods[logLevel];
-        args[0] = this.getFormattedMessage(args[0], logLevel);
+        newArgs[0] = this.getFormattedMessage(newArgs[0], logLevel);
         if (logFn) {
-            logFn(...args);
+            logFn(...newArgs);
         }
     }
 
