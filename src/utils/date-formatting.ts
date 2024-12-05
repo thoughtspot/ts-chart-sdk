@@ -8,12 +8,15 @@
 
 import _ from 'lodash';
 import { DateTime } from 'luxon';
+import { create } from '../main/logger';
 import {
     ChartColumn,
     ColumnTimeBucket,
     ColumnType,
     DataType,
 } from '../types/answer-column.types';
+
+const logger = create('DateFormattingUtilsSdk');
 
 export interface CustomCalendarDate {
     v: {
@@ -615,7 +618,7 @@ export function formatDateNum(
         case dateNumTypes.DATE_NUM_HOUR_IN_DAY:
             return `${value}`;
         default:
-            console.log(
+            logger.log(
                 'unknown effectiveDataType for date num',
                 effectiveDataType,
             );
@@ -664,7 +667,7 @@ export function formatDate(
         epochMillis = newInputDate.getTime();
     }
     if (!_.isNumber(epochMillis)) {
-        console.log(
+        logger.log(
             'formatDate could not convert input date to a timestamp',
             inputDate,
         );

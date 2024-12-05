@@ -12,6 +12,7 @@ import {
     CustomChartContext,
     CustomChartContextProps,
 } from '../main/custom-chart-context';
+import { create } from '../main/logger';
 import { ChartModel } from '../types/common.types';
 import {
     ChartModelUpdateEventPayload,
@@ -27,6 +28,8 @@ import {
     ChartContextProps,
     TSChartContextProps,
 } from './use-custom-chart-types';
+
+const logger = create('CustomChartContextHookSdk');
 
 /**
  * A custom hook to manage the Chart Context state and provide necessary
@@ -143,7 +146,7 @@ export const useChartContext = (
                 return true;
             })
             .catch((e) => {
-                console.log('Error in context initialization', e);
+                logger.log('Error in context initialization', e);
             });
     };
 
