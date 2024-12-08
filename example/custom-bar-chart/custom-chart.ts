@@ -490,7 +490,9 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 {
                     key: 'tooltipconfig1',
                     type: 'tooltipconfig',
-                    defaultValue: 'true',
+                    defaultValue: {
+                        columnIds: [],
+                    },
                     label: 'ToolTip',
                 },
                 {
