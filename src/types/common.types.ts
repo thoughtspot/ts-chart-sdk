@@ -188,10 +188,17 @@ export type SuccessValidationResponse = {
     visualPropEditorDefinition: VisualPropEditorDefinition;
 };
 
+export type VisualPropError = {
+    propElementKey: string;
+    propElementType: string;
+    value: unknown;
+};
+
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
     validationErrorMessage?: string[];
+    visualPropError?: VisualPropError;
 };
 
 /**

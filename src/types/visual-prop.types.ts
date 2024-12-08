@@ -11,6 +11,11 @@
 import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
+
+export type TSTooltipConfig = {
+    columnIds: Array<string>;
+};
+
 /**
  * Configuration for input validation rules
  */
@@ -386,11 +391,46 @@ export interface Section {
      */
     disabled?: boolean;
     /* Optional property to make the accordian expanded by default. If
-     * not passed the accordian will remain closed by default. Only works with layout type 'accordian'
+     * not passed the accordian will remain closed by default. Only works with layout type
+     * 'accordian'
      *
      * @version SDK: 0.0.2-alpha.19 | ThoughtSpot:
      */
     isAccordianExpanded?: boolean;
+}
+
+/**
+ * Native charts edit tool tip component defined for regular charts in TS Advance Chart Settings
+ *
+ * @group Visual Properties Editor
+ */
+export interface NativeEditToolTip {
+    type: 'tooltipconfig';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    key: string;
+
+    /*
+     List of column ids that are present in ToolTipConfig by default 
+    */
+
+    defaultValue?: TSTooltipConfig;
+
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
 }
 
 /**
@@ -406,7 +446,8 @@ export type PropElement =
     | ToggleFormDetail
     | CheckboxFormDetail
     | RadioButtonFormDetail
-    | DropDownFormDetail;
+    | DropDownFormDetail
+    | NativeEditToolTip;
 
 /**
  * Define Column settings, based on column type, settings needs to be defined in
