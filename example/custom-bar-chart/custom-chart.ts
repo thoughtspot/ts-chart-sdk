@@ -209,11 +209,18 @@ function render(ctx: CustomChartContext) {
     ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
         visualProps: JSON.parse(
             JSON.stringify({
-                ...chartModel.visualProps,
-                // used to store any local state specific to chart, can only be
-                // of type string. This will be preserved when you save answer
-                clientState: exampleClientState,
-            }),
+                ...chartModel.visualProps!,
+                // Assign updated client state values as string.
+                clientState: JSON.stringify({
+                    // JSON parse previous client state values from a string (if any, if not parse null object).
+                    ...JSON.parse((chartModel.visualProps as {clientState: string}).clientState || "{}"),
+                    // Used to store any local state specific to chart, only string allowed. 
+                    // This will be preserved when you update visual props with an event.
+                    // Assign new values to a client state using object rest destruct. 
+                    ...exampleClientState,
+                    // To assign, and update new value.
+                    // id: 'new-chart-id',
+                }),
         ),
     });
     if (
