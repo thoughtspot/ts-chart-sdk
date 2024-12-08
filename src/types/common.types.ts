@@ -188,23 +188,17 @@ export type SuccessValidationResponse = {
     visualPropEditorDefinition: VisualPropEditorDefinition;
 };
 
-export type ToolTipConfigError = {
-    propElementKey: string;
-    propElementType: string;
-};
-
 export type VisualPropError = {
     propElementKey: string;
     propElementType: string;
     value: unknown;
-    constraint?: string;
 };
 
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
     validationErrorMessage?: string[];
-    visualPropError?: VisualPropError | ToolTipConfigError;
+    visualPropError?: VisualPropError;
 };
 
 /**
