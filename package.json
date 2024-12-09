@@ -74,7 +74,6 @@
         "vite": "4.2.1"
     },
     "dependencies": {
-        "@thoughtspot/chart-lib": "link:/Users/harshmeet.singh/Desktop/thoughtspot/thoughtspot/js/ts-packages/chart-lib",
         "lodash": "^4.17.21",
         "luxon": "^3.4.4",
         "promise-postmessage": "^3.5.0",
