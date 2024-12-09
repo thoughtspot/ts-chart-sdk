@@ -21,6 +21,8 @@ import {
     getCfForColumn,
     getChartContext,
     getCustomCalendarGuidFromColumn,
+    getFormattedValue,
+    initGlobalize,
     isDateColumn,
     isDateNumColumn,
     PointVal,
@@ -62,13 +64,13 @@ const exampleClientState = {
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const formatter = getDataFormatter(column, { isMillisIncluded: false });
-    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
-    const dataForCol = _.map(dataArr.dataValue, (row) => {
+    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
+    const dataForCol = _.map(dataArr.dataValue, row => {
         const colValue = row[idx];
         return colValue;
     });
     const options = generateMapOptions(appConfigGlobal, column, dataForCol);
-    const formattedValuesForData = _.map(dataArr.dataValue, (row) => {
+    const formattedValuesForData = _.map(dataArr.dataValue, row => {
         const colValue = row[idx];
         if (getCustomCalendarGuidFromColumn(column))
             return formatter(colValue.v.s, options);
@@ -107,11 +109,13 @@ function getColumnDataModel(
                         col.id,
                     ),
                 );
-                const { plotlines, plotbands } =
-                    getPlotLinesAndBandsFromConditionalFormatting(
-                        CFforColumn,
-                        axisId,
-                    );
+                const {
+                    plotlines,
+                    plotbands,
+                } = getPlotLinesAndBandsFromConditionalFormatting(
+                    CFforColumn,
+                    axisId,
+                );
 
                 return {
                     label: col.name,
@@ -122,6 +126,14 @@ function getColumnDataModel(
                     borderColor: color,
                     datalabels: {
                         anchor: 'end',
+                        align: 'end',
+                        formatter: value => {
+                            return getFormattedValue(
+                                value,
+                                col.columnProperties.numberFormatting,
+                                col.format,
+                            );
+                        },
                     },
                     plotlines,
                     plotbands,
@@ -205,7 +217,7 @@ function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const appConfig = ctx.getAppConfig();
     appConfigGlobal = appConfig;
-
+    initGlobalize(appConfig.localeOptions?.locale);
     ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
         visualProps: JSON.parse(
             JSON.stringify({
@@ -363,12 +375,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                (col) => col.type === ColumnType.MEASURE,
+                col => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                (col) => col.type === ColumnType.ATTRIBUTE,
+                col => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -406,7 +418,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: (ctx) => renderChart(ctx),
+        renderChart: ctx => renderChart(ctx),
         validateConfig: (
             updatedConfig: any[],
             chartModel: any,
@@ -439,7 +451,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             const { config, visualProps } = currentChartConfig;
 
             const yColumns = config?.chartConfig?.[0]?.dimensions.find(
-                (dimension) => dimension.key === 'y' && dimension.columns,
+                dimension => dimension.key === 'y' && dimension.columns,
             );
 
             const configDefinition = [
@@ -531,6 +543,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
         },
         allowedConfigurations: {
             allowColumnConditionalFormatting: true,
+            allowColumnNumberFormatting: true,
             allowMeasureNamesAndValues: true,
         },
         chartConfigParameters: {
