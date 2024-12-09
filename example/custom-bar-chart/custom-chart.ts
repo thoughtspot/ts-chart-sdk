@@ -277,16 +277,16 @@ function render(ctx: CustomChartContext) {
                 plugins: {
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
-                        display: true,
+                        display: allowLabels,
                         color: labelColor,
                         labels: {
-                            // title: {
-                            //     font: {
-                            //         weight: 'bold',
-                            //         size: 12,
-                            //         family: 'Custom font',
-                            //     },
-                            // },
+                            title: {
+                                font: {
+                                    weight: 'bold',
+                                    size: 12,
+                                    family: 'Custom font',
+                                },
+                            },
 
                             value: {
                                 color: appColor,
