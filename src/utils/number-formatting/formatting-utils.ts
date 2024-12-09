@@ -21,7 +21,7 @@ import {
     NumberFormatConfig,
     Unit,
 } from '../../types/number-formatting.types';
-import { getDefaultCurrencyCode } from './globalize-setup';
+import { getDefaultCurrencyCode } from '../globalize-Initializer/globalize-utils';
 
 interface FormatterConfig {
     unitDetails: Unit;
@@ -84,11 +84,14 @@ const DEFAULT_DECIMAL_PRECISION = 2;
  */
 export const formatNegativeValue = (
     formattedValue: string,
-    negativeFormat?: Maybe<NegativeValueFormat>,
+    negativeFormat?: Maybe<NegativeValueFormat> | number,
 ): string => {
     if (typeof negativeFormat === 'number') {
         // eslint-disable-next-line no-param-reassign
-        negativeFormat = PROTO_TO_NEGATIVE_VALUE_FORMAT[negativeFormat];
+        negativeFormat =
+            PROTO_TO_NEGATIVE_VALUE_FORMAT[
+                negativeFormat as keyof typeof PROTO_TO_NEGATIVE_VALUE_FORMAT
+            ];
     }
     switch (negativeFormat) {
         case NegativeValueFormat.PrefixDash:
@@ -131,10 +134,11 @@ export const getAutoUnit = (value: number): Unit => {
  * @returns The locale name as a string.
  */
 export const getLocaleName = (currencyFormat: CurrencyFormat): string => {
-    let locale = getDefaultCurrencyCode();
     if (currencyFormat.type === CurrencyFormatType.ISO_CODE) {
-        locale = currencyFormat.isoCode;
+        return currencyFormat.isoCode;
     }
+
+    const locale = getDefaultCurrencyCode();
     return locale;
 };
 
@@ -145,7 +149,7 @@ export const getLocaleName = (currencyFormat: CurrencyFormat): string => {
  * @returns The default format configuration.
  */
 export const defaultFormatConfig = (
-    columnFormatConfig: ColumnFormat,
+    columnFormatConfig?: ColumnFormat,
 ): FormatConfig => {
     if (columnFormatConfig?.pattern) {
         return {
@@ -207,7 +211,8 @@ export const mapFormatterConfig = (
 ): FormatterConfig => {
     if (typeof configDetails.unit === 'number') {
         // eslint-disable-next-line no-param-reassign
-        configDetails.unit = PROTO_TO_UNITS[configDetails.unit];
+        configDetails.unit =
+            PROTO_TO_UNITS[configDetails.unit as keyof typeof PROTO_TO_UNITS];
     }
     const isAutoFormatted = configDetails.unit === Unit.Auto;
     let unitDetails = configDetails.unit || Unit.Auto;
@@ -244,6 +249,10 @@ export function formatSpecialDataValue(value: any) {
 
     if (value === null || value === undefined) {
         return strings.NULL_VALUE_PLACEHOLDER_LABEL;
+    }
+
+    if (value === Infinity || value === -Infinity || _.isNaN(value)) {
+        return value.toString();
     }
     // {Empty} placeholder is set for empty string or no characters
     // other than spaces.

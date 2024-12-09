@@ -29,11 +29,11 @@ let supplementalCurrencyDataJson: any;
 export const getCountryCode = (locale: string): string => {
     let parts = locale.split('_'); //  // Split by '_'
     if (parts.length === 2) {
-        return parts[1];
+        return parts[1].toUpperCase();
     }
     parts = locale.split('-'); //  // Split by '-'
     if (parts.length === 2) {
-        return parts[1];
+        return parts[1].toUpperCase();
     }
     return locale;
 };
@@ -114,9 +114,9 @@ export const loadGlobalizeData = (data: any) => {
 /**
  * Initializes Globalize with CLDR data and sets the default locale.
  *
- * @param locale - The locale to initialize Globalize with (default: 'en-gb').
+ * @param locale - The locale to initialize Globalize with (default: 'en-GB').
  */
-export const initializeGlobalize = (locale = 'en-gb') => {
+export const initializeGlobalize = (locale = 'en-GB') => {
     loadGlobalizeData(enNumbers);
     loadGlobalizeData(enCaGregorian);
     loadGlobalizeData(supplemental);
@@ -163,7 +163,7 @@ export function globalizeCurrencyFormatter(
  * @returns The formatted number as a string.
  */
 export function formatNumberSafely<
-    FormatOptions extends Globalize.NumberFormatterOptions
+    FormatOptions extends Globalize.NumberFormatterOptions,
 >(format: FormatOptions, num: number): string {
     try {
         const formatter = globalizeNumberFormatter(format);

@@ -82,9 +82,9 @@ export enum FormatType {
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export enum CurrencyFormatType {
-    USER_LOCALE = 'USER_LOCALE' ,
+    USER_LOCALE = 'USER_LOCALE',
     COLUMN = 'COLUMN',
-    ISO_CODE= 'ISO_CODE',
+    ISO_CODE = 'ISO_CODE',
 }
 
 /**

@@ -17,6 +17,14 @@ import {
     Unit,
 } from '../../types/number-formatting.types';
 import {
+    formatNumberSafely,
+    getDefaultCurrencyCode,
+    globalizeCurrencyFormatter,
+    globalizeNumberFormatter,
+    sanitizeFormat,
+    validateNumberFormat,
+} from '../globalize-Initializer/globalize-utils';
+import {
     defaultFormatConfig,
     formatNegativeValue,
     formatSpecialDataValue,
@@ -25,14 +33,6 @@ import {
     UNITS_TO_DIVIDING_FACTOR,
     UNITS_TO_SUFFIX,
 } from './formatting-utils';
-import {
-    formatNumberSafely,
-    getDefaultCurrencyCode,
-    globalizeCurrencyFormatter,
-    globalizeNumberFormatter,
-    sanitizeFormat,
-    validateNumberFormat,
-} from './globalize-setup';
 
 const CURRENCY_CODE_EXTRACTOR_REGEX = /[\d.,]+/g;
 
@@ -44,7 +44,7 @@ const CURRENCY_CODE_EXTRACTOR_REGEX = /[\d.,]+/g;
  * @param formatPattern - The custom format pattern (e.g., '#,##0.00').
  * @returns The formatted value with the currency symbol.
  */
-const formatCurrencyWithCustomPattern = (
+export const formatCurrencyWithCustomPattern = (
     value: number,
     currencyCode: string,
     formatPattern: string,
@@ -88,7 +88,7 @@ export const getFormattedValue = (
     let formatConfig = _.cloneDeep(formatConfigProp);
 
     // Use default configuration if none is provided
-    if (_.isNil(formatConfig)) {
+    if (_.isNil(formatConfig) || _.isEmpty(formatConfig)) {
         formatConfig = defaultFormatConfig(columnFormatConfig);
     }
     // Normalize category to a proper type
@@ -120,9 +120,10 @@ export const getFormattedValue = (
             {
                 style: 'decimal',
                 maximumFractionDigits: formatterConfigMap.decimalDetails,
-                minimumFractionDigits: formatterConfigMap.shouldRemoveTrailingZeros
-                    ? 0
-                    : formatterConfigMap.decimalDetails,
+                minimumFractionDigits:
+                    formatterConfigMap.shouldRemoveTrailingZeros
+                        ? 0
+                        : formatterConfigMap.decimalDetails,
                 useGrouping: configDetails.toSeparateThousands || false,
             },
             compactValue,
@@ -173,9 +174,10 @@ export const getFormattedValue = (
             const formatter = globalizeCurrencyFormatter(locale, {
                 style: 'symbol',
                 maximumFractionDigits: formatterConfigMap.decimalDetails,
-                minimumFractionDigits: formatterConfigMap.shouldRemoveTrailingZeros
-                    ? 0
-                    : formatterConfigMap.decimalDetails,
+                minimumFractionDigits:
+                    formatterConfigMap.shouldRemoveTrailingZeros
+                        ? 0
+                        : formatterConfigMap.decimalDetails,
                 useGrouping: configDetails.toSeparateThousands || false,
             });
 
@@ -223,11 +225,12 @@ export const getFormattedValue = (
                  * only the currency specific rules are considered, so need to combine. That's
                  * what we do in this formatCurrency method
                  */
-                const formattedValueWithLocaleAndPattern = formatCurrencyWithCustomPattern(
-                    floatValue,
-                    currencyCode,
-                    formatPattern,
-                );
+                const formattedValueWithLocaleAndPattern =
+                    formatCurrencyWithCustomPattern(
+                        floatValue,
+                        currencyCode,
+                        formatPattern,
+                    );
                 return `${formattedValueWithLocaleAndPattern}`;
             }
             return formatNumberSafely(
