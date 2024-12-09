@@ -12,18 +12,15 @@ export function timeout(promise: Promise<any>, ms: number, message?: string) {
 
 export function handleMissingValue(
     paramKey: string,
-    paramValue: string | null | undefined,
+    paramValue?: string | null,
 ): string {
     if (paramKey === 'debug') {
-        if (paramValue === undefined || paramValue === null) {
-            return 'false';
-        }
+        return paramValue ?? 'false';
     }
-    if (paramValue === undefined || paramValue === null) {
-        return '';
-    }
-    return paramValue;
+
+    return paramValue ?? '';
 }
+
 export function getQueryParam(url: string, paramName: string): string {
     const urlObj = new URL(url);
     const paramValue = handleMissingValue(

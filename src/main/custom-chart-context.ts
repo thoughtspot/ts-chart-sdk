@@ -1114,6 +1114,5 @@ export const getChartContext = async (
     // wait for initialization here as the host app
     // needs to first handshake with the client app.
     await ctx.initialize();
-    // return null;
     return ctx;
 };
