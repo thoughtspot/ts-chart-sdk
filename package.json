@@ -75,7 +75,6 @@
         "vite": "4.2.1"
     },
     "dependencies": {
-        "@thoughtspot/chart-lib": "link:/Users/harshmeet.singh/Desktop/thoughtspot/thoughtspot/js/ts-packages/chart-lib",
         "cldr-data": "^36.0.2",
         "globalize": "^1.7.0",
         "lodash": "^4.17.21",
