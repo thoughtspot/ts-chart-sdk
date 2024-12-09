@@ -1,4 +1,3 @@
-import { initial } from 'lodash';
 import {
     ColumnFormat,
     CurrencyFormatType,
@@ -10,13 +9,7 @@ import {
     NegativeValueFormat,
     Unit,
 } from '../../types/number-formatting.types';
-import {
-    formatNumberSafely,
-    globalizeCurrencyFormatter,
-    globalizeNumberFormatter,
-    initializeGlobalize,
-    sanitizeFormat,
-} from '../globalize-Initializer/globalize-utils';
+import { initGlobalize } from '../globalize-Initializer/globalize-utils';
 import * as globalizeUtils from '../globalize-Initializer/globalize-utils';
 import {
     formatCurrencyWithCustomPattern,
@@ -25,7 +18,7 @@ import {
 
 describe('formatCurrencyWithCustomPattern', () => {
     beforeAll(() => {
-        initializeGlobalize('en-US');
+        initGlobalize('en-US');
     });
     test('formats value with a custom pattern and currency symbol', () => {
         const value = 12345.678;
@@ -43,7 +36,7 @@ describe('formatCurrencyWithCustomPattern', () => {
 
 describe('getFormattedValue', () => {
     beforeAll(() => {
-        initializeGlobalize('en-US');
+        initGlobalize('en-US');
     });
     const columnFormatConfig: ColumnFormat = {
         type: FormatType.CURRENCY,

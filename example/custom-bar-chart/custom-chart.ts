@@ -22,7 +22,7 @@ import {
     getChartContext,
     getCustomCalendarGuidFromColumn,
     getFormattedValue,
-    initializeGlobalize,
+    initGlobalize,
     isDateColumn,
     isDateNumColumn,
     PointVal,
@@ -217,7 +217,7 @@ function render(ctx: CustomChartContext) {
     const chartModel = ctx.getChartModel();
     const appConfig = ctx.getAppConfig();
     appConfigGlobal = appConfig;
-    initializeGlobalize(appConfig.localeOptions?.locale);
+    initGlobalize(appConfig.localeOptions?.locale);
     ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
         visualProps: JSON.parse(
             JSON.stringify({

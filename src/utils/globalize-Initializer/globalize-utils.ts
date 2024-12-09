@@ -116,7 +116,7 @@ export const loadGlobalizeData = (data: any) => {
  *
  * @param locale - The locale to initialize Globalize with (default: 'en-GB').
  */
-export const initializeGlobalize = (locale = 'en-GB') => {
+export const initGlobalize = (locale = 'en-GB') => {
     loadGlobalizeData(enNumbers);
     loadGlobalizeData(enCaGregorian);
     loadGlobalizeData(supplemental);

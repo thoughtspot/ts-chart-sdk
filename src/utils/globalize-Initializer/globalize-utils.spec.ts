@@ -7,7 +7,7 @@ import {
     getGlobalizeLocale,
     globalizeCurrencyFormatter,
     globalizeNumberFormatter,
-    initializeGlobalize,
+    initGlobalize,
     loadCurrencyData,
     loadGlobalizeData,
     sanitizeFormat,
@@ -19,7 +19,7 @@ import {
 describe('Initialize Globalize', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        initializeGlobalize('en-US');
+        initGlobalize('en-US');
     });
 
     describe('getCountryCode', () => {
