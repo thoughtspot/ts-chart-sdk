@@ -73,7 +73,6 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     AxisMenuActionClick = 'AxisMenuActionClick',
-
     /**
      * @version SDK: 0.2 | ThoughtSpot:
      */
