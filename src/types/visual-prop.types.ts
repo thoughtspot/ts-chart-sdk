@@ -16,6 +16,38 @@ export type TSTooltipConfig = {
     columnIds: Array<string>;
 };
 
+export enum VisualPropComponentTranslationKeys {
+    SHOW_ALL_LABELS = 'SHOW_ALL_LABELS',
+    TOO_MANY_LABELS = 'TOO_MANY_LABELS',
+    MAP_TILE_LABEL = 'MAP_TILE_LABEL',
+    ENABLE_MARKERS = 'ENABLE_MARKERS',
+    SHOW_REGRESSION_LINE = 'SHOW_REGRESSION_LINE',
+    X_AXIS_GRID_LINE = 'X_AXIS_GRID_LINE',
+    Y_AXIS_GRID_LINE = 'Y_AXIS_GRID_LINE',
+    MAX_DATA_POINTS = 'MAX_DATA_POINTS',
+    HIGH_CARDINALITY_BATCH_SIZE_DISABLED = 'highCardinalityBatchSizeDisabled',
+    HIGH_CARDINALITY_BATCH_SIZE_LIMIT = 'highCardinalityBatchSizeLimit',
+    CHART_CUSTOMIZE = 'CHART_CUSTOMIZE',
+    SELECT_AN_AREA = 'chartConfigurator.SELECT_AN_AREA',
+    RESET_ZOOM = 'chartConfigurator.RESET_ZOOM',
+    EDIT_TOOLTIP = 'EDIT_TOOLTIP',
+    DONT_SHOW = 'DONT_SHOW',
+    SHOW_GAP = 'SHOW_GAP',
+    SHOW_AS_ZERO = 'SHOW_AS_ZERO',
+    HANDLE_MISSING_VALUES = 'HANDLE_MISSING_VALUES',
+    SHOW_NULL_AS_ZERO = 'SHOW_NULL_AS_ZERO',
+    EXCLUDE_NULL_VALUES = 'EXCLUDE_NULL_VALUES',
+    COLUMN_CUSTOMIZE = 'COLUMN_CUSTOMIZE',
+    SHOW_TOTAL_LABELS = 'SHOW_TOTAL_LABELS',
+    SHOW_DETAILED_LABELS = 'SHOW_DETAILED_LABELS',
+    SHOW_DATA_LABELS = 'SHOW_DATA_LABELS',
+    SHOW_AXIS_AS_PERCENT = 'SHOW_AXIS_AS_PERCENT',
+    RIGHT_LEGEND = 'RIGHT_LEGEND',
+    LEFT_LEGEND = 'LEFT_LEGEND',
+    TOP_LEGEND = 'TOP_LEGEND',
+    BOTTOM_LEGEND = 'BOTTOM_LEGEND',
+}
+
 /**
  * Configuration for input validation rules
  */
@@ -127,6 +159,12 @@ export interface TextInputFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -166,6 +204,12 @@ export interface NumberInputFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -200,6 +244,12 @@ export interface ColorPickerFormDetail {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     defaultValue?: string;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -233,6 +283,12 @@ export interface ToggleFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -266,6 +322,12 @@ export interface CheckboxFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -305,6 +367,12 @@ export interface RadioButtonFormDetail {
      * @version SDK: 0.0.2-3 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -344,6 +412,12 @@ export interface DropDownFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -397,6 +471,12 @@ export interface Section {
      * @version SDK: 0.0.2-alpha.19 | ThoughtSpot:
      */
     isAccordianExpanded?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -431,6 +511,12 @@ export interface NativeEditToolTip {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
