@@ -58,7 +58,7 @@ export type NumberFormatConfig = {
     /** default to true */
     toSeparateThousands?: Maybe<Scalars['Boolean']>;
     /** default is Auto */
-    unit?: Maybe<Unit>;
+    unit?: Maybe<Unit> | number;
 };
 
 export type PercentageFormatConfig = {
@@ -71,7 +71,7 @@ export type PercentageFormatConfig = {
 
 export type FormatConfig = {
     __typename?: 'FormatConfig';
-    category?: Maybe<CategoryType>;
+    category?: Maybe<CategoryType> | number;
     currencyFormatConfig?: Maybe<CurrencyFormatConfig>;
     customFormatConfig?: Maybe<CustomFormatConfig>;
     isCategoryEditable?: Maybe<Scalars['Boolean']>;

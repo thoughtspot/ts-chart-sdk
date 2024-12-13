@@ -52,6 +52,7 @@ import {
     VisualEditorDefinitionSetter,
     VisualPropEditorDefinition,
 } from '../types/visual-prop.types';
+import { setLocaleBasedStringFormats } from '../utils/number-formatting/number-formatting-utils';
 import { create } from './logger';
 import {
     globalThis,
@@ -1020,7 +1021,9 @@ export class CustomChartContext {
         this.containerEl = payload.containerElSelector
             ? document.querySelector(payload.containerElSelector)
             : null;
-
+        setLocaleBasedStringFormats(
+            this.appConfig.dateFormatsConfig?.tsLocaleBasedStringsFormats,
+        );
         return this.publishChartContextPropsToHost();
     };
 
