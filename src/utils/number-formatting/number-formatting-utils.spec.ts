@@ -17,11 +17,13 @@ import {
     formatNegativeValue,
     formatSpecialDataValue,
     getAutoUnit,
+    getLocaleBasedStringFormats,
     getLocaleName,
     mapFormatterConfig,
     PROTO_TO_UNITS,
+    setLocaleBasedStringFormats,
     UNITS_TO_DIVIDING_FACTOR,
-} from './formatting-utils';
+} from './number-formatting-utils';
 
 describe('formatNegativeValue', () => {
     it('should format with prefix dash', () => {
@@ -259,6 +261,11 @@ describe('formatSpecialDataValue', () => {
         const result = formatSpecialDataValue('Test');
         expect(result).toBeNull();
     });
+
+    it('should return Infinity for Infinity', () => {
+        const result = formatSpecialDataValue(Infinity);
+        expect(result).toBe('Infinity');
+    });
 });
 
 describe('Unit constants', () => {
@@ -272,5 +279,43 @@ describe('Unit constants', () => {
         expect(PROTO_TO_UNITS[1]).toBe(Unit.None);
         expect(PROTO_TO_UNITS[2]).toBe(Unit.Thousands);
         expect(PROTO_TO_UNITS[3]).toBe(Unit.Million);
+    });
+});
+
+describe('Locale String Formats', () => {
+    const strings: Record<string, string> = {
+        NULL_VALUE_PLACEHOLDER_LABEL: '{Null}',
+        EMPTY_VALUE_PLACEHOLDER_LABEL: '{Empty}',
+    };
+
+    it('should return an default object if setLocaleBasedStringFormats is not called', () => {
+        const result = getLocaleBasedStringFormats();
+        expect(result).toEqual(strings);
+    });
+
+    it('should set and get locale-based string formats correctly', () => {
+        const testLocaleStrings = {
+            greeting: 'Hello',
+            farewell: 'Goodbye',
+        };
+
+        setLocaleBasedStringFormats(testLocaleStrings);
+
+        const result = getLocaleBasedStringFormats();
+
+        expect(result).toEqual(testLocaleStrings);
+    });
+
+    it('should update the string formats when setLocaleBasedStringFormats is called multiple times', () => {
+        const firstSet = { greeting: 'Hola' };
+        const secondSet = { greeting: 'Bonjour' };
+
+        // Set first locale-based string formats
+        setLocaleBasedStringFormats(firstSet);
+        expect(getLocaleBasedStringFormats()).toEqual(firstSet);
+
+        // Set second locale-based string formats
+        setLocaleBasedStringFormats(secondSet);
+        expect(getLocaleBasedStringFormats()).toEqual(secondSet);
     });
 });

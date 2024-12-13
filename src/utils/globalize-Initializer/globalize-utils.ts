@@ -15,6 +15,9 @@ import supplemental from 'cldr-data/supplemental/likelySubtags.json';
 import enpluralJson from 'cldr-data/supplemental/plurals.json';
 import Globalize from 'globalize';
 import _ from 'lodash';
+import { create } from '../../main/logger';
+
+const logger = create('globalize-initializer');
 
 let currentLocale: string;
 let currentCurrencyFormat: any;
@@ -54,7 +57,7 @@ export const getDefaultCurrencyCode = (): string => {
             countryCode.toUpperCase()
         ];
     if (!regionData || regionData.length === 0) {
-        console.warn('No currency data found for country:', countryCode);
+        logger.warn('No currency data found for country:', countryCode);
         return 'GBP';
     }
     return Object.keys(regionData[regionData.length - 1])[0];
@@ -170,7 +173,7 @@ export function formatNumberSafely<
         const formattedNumber = formatter(num);
         return formattedNumber;
     } catch (e) {
-        console.error('Error formatting pattern: ', format, num, e);
+        logger.error('Error formatting pattern: ', format, num, e);
         if (Math.abs(num) < 1e-7) {
             return '0';
         }
@@ -206,7 +209,7 @@ export const validateNumberFormat = (format: string): boolean => {
             ...({ raw: sanitizeFormat(format) } as any),
         })(123); // Test the formatter with a dummy value
     } catch (e) {
-        console.error('Invalid number format:', format, e);
+        logger.error('Invalid number format:', format, e);
         return false;
     }
     return true;

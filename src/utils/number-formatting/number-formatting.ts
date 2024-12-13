@@ -6,6 +6,7 @@
  * Copyright: ThoughtSpot Inc. 2024
  */
 import _ from 'lodash';
+import { create } from '../../main/logger';
 import {
     ColumnFormat,
     CurrencyFormat,
@@ -32,7 +33,9 @@ import {
     mapFormatterConfig,
     UNITS_TO_DIVIDING_FACTOR,
     UNITS_TO_SUFFIX,
-} from './formatting-utils';
+} from './number-formatting-utils';
+
+const logger = create('number-formatting');
 
 const CURRENCY_CODE_EXTRACTOR_REGEX = /[\d.,]+/g;
 
@@ -106,142 +109,153 @@ export const getFormattedValue = (
     const floatValue = parseFloat(value.toString());
     const absFloatValue = Math.abs(floatValue);
 
-    if (formatConfig.category === CategoryType.Number) {
-        const configDetails = formatConfig.numberFormatConfig || {};
-        const formatterConfigMap = mapFormatterConfig(
-            absFloatValue,
-            configDetails,
-        );
-        const compactValue =
-            absFloatValue /
-            UNITS_TO_DIVIDING_FACTOR[formatterConfigMap.unitDetails as Unit];
-        const suffix = UNITS_TO_SUFFIX[formatterConfigMap.unitDetails];
-        const formattedValue = formatNumberSafely(
-            {
-                style: 'decimal',
-                maximumFractionDigits: formatterConfigMap.decimalDetails,
-                minimumFractionDigits:
-                    formatterConfigMap.shouldRemoveTrailingZeros
-                        ? 0
-                        : formatterConfigMap.decimalDetails,
-                useGrouping: configDetails.toSeparateThousands || false,
-            },
-            compactValue,
-        );
-        const absFormattedValue = `${formattedValue}${suffix}`;
+    switch (formatConfig.category) {
+        case CategoryType.Number: {
+            const configDetails = formatConfig.numberFormatConfig || {};
+            const formatterConfigMap = mapFormatterConfig(
+                absFloatValue,
+                configDetails,
+            );
+            const compactValue =
+                absFloatValue /
+                UNITS_TO_DIVIDING_FACTOR[
+                    formatterConfigMap.unitDetails as Unit
+                ];
+            const suffix = UNITS_TO_SUFFIX[formatterConfigMap.unitDetails];
+            const formattedValue = formatNumberSafely(
+                {
+                    style: 'decimal',
+                    maximumFractionDigits: formatterConfigMap.decimalDetails,
+                    minimumFractionDigits:
+                        formatterConfigMap.shouldRemoveTrailingZeros
+                            ? 0
+                            : formatterConfigMap.decimalDetails,
+                    useGrouping: configDetails.toSeparateThousands || false,
+                },
+                compactValue,
+            );
+            const absFormattedValue = `${formattedValue}${suffix}`;
 
-        if (absFloatValue !== floatValue) {
-            return formatNegativeValue(
-                absFormattedValue,
-                configDetails.negativeValueFormat,
+            if (absFloatValue !== floatValue) {
+                return formatNegativeValue(
+                    absFormattedValue,
+                    configDetails.negativeValueFormat,
+                );
+            }
+            return absFormattedValue;
+        }
+        case CategoryType.Percentage: {
+            const configDetails = formatConfig.percentageFormatConfig;
+            const decimalDetails = configDetails?.decimals || 0;
+            return formatNumberSafely(
+                {
+                    style: 'percent',
+                    maximumFractionDigits: decimalDetails,
+                    minimumFractionDigits: configDetails?.removeTrailingZeroes
+                        ? 0
+                        : decimalDetails,
+                },
+                floatValue,
             );
         }
-        return absFormattedValue;
-    }
-
-    if (formatConfig.category === CategoryType.Percentage) {
-        const configDetails = formatConfig.percentageFormatConfig;
-        const decimalDetails = configDetails?.decimals || 0;
-        return formatNumberSafely(
-            {
-                style: 'percent',
-                maximumFractionDigits: decimalDetails,
-                minimumFractionDigits: configDetails?.removeTrailingZeroes
-                    ? 0
-                    : decimalDetails,
-            },
-            floatValue,
-        );
-    }
-
-    if (formatConfig.category === CategoryType.Currency) {
-        const configDetails = formatConfig.currencyFormatConfig || {};
-        const formatterConfigMap = mapFormatterConfig(
-            absFloatValue,
-            configDetails,
-        );
-        const compactValue =
-            floatValue /
-            UNITS_TO_DIVIDING_FACTOR[formatterConfigMap.unitDetails];
-
-        let locale = configDetails.locale || getDefaultCurrencyCode();
-        if (locale === CurrencyFormatType.USER_LOCALE) {
-            locale = getLocaleName({
-                type: locale,
-            } as CurrencyFormat);
-        }
-        try {
-            const formatter = globalizeCurrencyFormatter(locale, {
-                style: 'symbol',
-                maximumFractionDigits: formatterConfigMap.decimalDetails,
-                minimumFractionDigits:
-                    formatterConfigMap.shouldRemoveTrailingZeros
-                        ? 0
-                        : formatterConfigMap.decimalDetails,
-                useGrouping: configDetails.toSeparateThousands || false,
-            });
-
-            const formattedValue = formatter(compactValue);
-            const currencyCode = formattedValue.replace(
-                CURRENCY_CODE_EXTRACTOR_REGEX,
-                '',
+        case CategoryType.Currency: {
+            const configDetails = formatConfig.currencyFormatConfig || {};
+            const formatterConfigMap = mapFormatterConfig(
+                absFloatValue,
+                configDetails,
             );
-            /**
-             * When we format the value in Millions, Billions etc,
-             * we have to handle the scenario of the unit suffix, currencycode and the formatted
-             * value We test the presence of numeric character with the help of regex and then
-             * we append the apt suffix and currencyCode to the formatted value
-             */
-            const suffix = !_.isNil(floatValue)
-                ? UNITS_TO_SUFFIX[formatterConfigMap.unitDetails]
-                : '';
-            if (/[0-9]$/.test(formattedValue.charAt(0))) {
-                return `${formattedValue.replace(
-                    currencyCode,
+            const compactValue =
+                floatValue /
+                UNITS_TO_DIVIDING_FACTOR[formatterConfigMap.unitDetails];
+
+            let locale = configDetails.locale || getDefaultCurrencyCode();
+            if (locale === CurrencyFormatType.USER_LOCALE) {
+                locale = getLocaleName({
+                    type: locale,
+                } as CurrencyFormat);
+            }
+            try {
+                const formatter = globalizeCurrencyFormatter(locale, {
+                    style: 'symbol',
+                    maximumFractionDigits: formatterConfigMap.decimalDetails,
+                    minimumFractionDigits:
+                        formatterConfigMap.shouldRemoveTrailingZeros
+                            ? 0
+                            : formatterConfigMap.decimalDetails,
+                    useGrouping: configDetails.toSeparateThousands || false,
+                });
+
+                const formattedValue = formatter(compactValue);
+                const currencyCode = formattedValue.replace(
+                    CURRENCY_CODE_EXTRACTOR_REGEX,
                     '',
-                )}${suffix}${currencyCode}`;
-            }
-            return `${formattedValue}${suffix}`;
-        } catch (e) {
-            console.error(
-                'Corrupted format config passed, formatting using default config',
-                formatConfig,
-                e,
-            );
-        }
-    }
-
-    if (formatConfig.category === CategoryType.Custom) {
-        const formatPattern = formatConfig.customFormatConfig?.format;
-        const currencyCode = columnFormatConfig.currencyFormat?.isoCode;
-        if (
-            !_.isNil(formatPattern) &&
-            validateNumberFormat(sanitizeFormat(formatPattern))
-        ) {
-            const sanitizedPattern = sanitizeFormat(formatPattern);
-            if (!_.isNil(currencyCode)) {
+                );
                 /**
-                 * Globalize does not consider format pattern while formatting the currency,
-                 * only the currency specific rules are considered, so need to combine. That's
-                 * what we do in this formatCurrency method
+                 * When we format the value in Millions, Billions etc,
+                 * we have to handle the scenario of the unit suffix, currencycode and the formatted
+                 * value We test the presence of numeric character with the help of regex and then
+                 * we append the apt suffix and currencyCode to the formatted value
                  */
-                const formattedValueWithLocaleAndPattern =
-                    formatCurrencyWithCustomPattern(
-                        floatValue,
+                const suffix = !_.isNil(floatValue)
+                    ? UNITS_TO_SUFFIX[formatterConfigMap.unitDetails]
+                    : '';
+                if (/[0-9]$/.test(formattedValue.charAt(0))) {
+                    return `${formattedValue.replace(
                         currencyCode,
-                        formatPattern,
-                    );
-                return `${formattedValueWithLocaleAndPattern}`;
+                        '',
+                    )}${suffix}${currencyCode}`;
+                }
+                return `${formattedValue}${suffix}`;
+            } catch (e) {
+                logger.error(
+                    'Corrupted format config passed, formatting using default config',
+                    formatConfig,
+                    e,
+                );
             }
+            break;
+        }
+        case CategoryType.Custom: {
+            const formatPattern = formatConfig.customFormatConfig?.format;
+            const currencyCode = columnFormatConfig.currencyFormat?.isoCode;
+            if (
+                !_.isNil(formatPattern) &&
+                validateNumberFormat(sanitizeFormat(formatPattern))
+            ) {
+                const sanitizedPattern = sanitizeFormat(formatPattern);
+                if (!_.isNil(currencyCode)) {
+                    /**
+                     * Globalize does not consider format pattern while formatting the currency,
+                     * only the currency specific rules are considered, so need to combine. That's
+                     * what we do in this formatCurrency method
+                     */
+                    const formattedValueWithLocaleAndPattern =
+                        formatCurrencyWithCustomPattern(
+                            floatValue,
+                            currencyCode,
+                            formatPattern,
+                        );
+                    return `${formattedValueWithLocaleAndPattern}`;
+                }
+                return formatNumberSafely(
+                    {
+                        style: 'decimal',
+                        raw: sanitizedPattern,
+                    },
+                    floatValue as any,
+                );
+            }
+            logger.error('Invalid custom format config passed:', formatConfig);
+            break;
+        }
+        default: {
             return formatNumberSafely(
                 {
                     style: 'decimal',
-                    raw: sanitizedPattern,
                 },
                 floatValue as any,
             );
         }
-        console.error('Invalid custom format config passed:', formatConfig);
     }
 
     // Default fallback: Decimal formatting

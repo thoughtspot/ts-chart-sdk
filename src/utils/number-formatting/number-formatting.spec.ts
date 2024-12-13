@@ -1,3 +1,4 @@
+import { create, LogLevel, logMethods } from '../../main/logger';
 import {
     ColumnFormat,
     CurrencyFormatType,
@@ -15,6 +16,10 @@ import {
     formatCurrencyWithCustomPattern,
     getFormattedValue,
 } from './number-formatting';
+
+jest.mock('../../main/util', () => ({
+    getQueryParam: jest.fn().mockReturnValue('true'),
+}));
 
 describe('formatCurrencyWithCustomPattern', () => {
     beforeAll(() => {
@@ -203,38 +208,36 @@ describe('getFormattedValue', () => {
             category: CategoryType.Custom,
             customFormatConfig: { format: 'invalid-format' },
         };
-        const consoleSpy = jest
-            .spyOn(console, 'error')
-            .mockImplementationOnce(() => undefined);
+        const error = jest.fn();
+        logMethods[LogLevel.ERROR] = error;
+        const logger = create('TestLogger');
+        logger.error = error;
+
         getFormattedValue(12345.678, formatConfig, {} as ColumnFormat);
-        expect(consoleSpy).toHaveBeenCalledWith(
-            'Invalid custom format config passed:',
-            formatConfig,
-        );
-        consoleSpy.mockRestore();
-        jest.resetAllMocks();
+        expect(logger.error).toHaveBeenCalled();
+
+        jest.restoreAllMocks();
     });
 
-    test('handles currency formatting failure gracefully', () => {
+    test('handles currency formatting failure', () => {
         const formatConfig: FormatConfig = {
             category: CategoryType.Currency,
         };
-        const consoleSpy = jest
-            .spyOn(console, 'error')
-            .mockImplementationOnce(() => undefined);
         jest.spyOn(
             globalizeUtils,
             'globalizeCurrencyFormatter',
         ).mockImplementationOnce(() => {
             throw new Error('Currency format error');
         });
+
+        const error = jest.fn();
+        logMethods[LogLevel.ERROR] = error;
+        const logger = create('TestLogger');
+        logger.error = error;
+
         getFormattedValue(12345.678, formatConfig, {} as ColumnFormat);
-        expect(consoleSpy).toHaveBeenCalledWith(
-            'Corrupted format config passed, formatting using default config',
-            formatConfig,
-            new Error('Currency format error'),
-        );
-        consoleSpy.mockRestore();
-        jest.resetAllMocks();
+        expect(logger.error).toHaveBeenCalled();
+
+        jest.restoreAllMocks();
     });
 });

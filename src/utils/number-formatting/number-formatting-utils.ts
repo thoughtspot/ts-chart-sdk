@@ -59,10 +59,20 @@ export const PROTO_TO_UNITS = {
 /**
  * Default strings for placeholders.
  */
-const strings = {
+let strings: Record<string, string> = {
     NULL_VALUE_PLACEHOLDER_LABEL: '{Null}',
     EMPTY_VALUE_PLACEHOLDER_LABEL: '{Empty}',
 };
+
+export const setLocaleBasedStringFormats = (
+    tsLocaleBasedStringsFormats?: Record<string, string>,
+) => {
+    if (tsLocaleBasedStringsFormats) {
+        strings = tsLocaleBasedStringsFormats;
+    }
+};
+
+export const getLocaleBasedStringFormats = () => strings;
 
 export const UNITS_TO_SUFFIX: Record<Unit, string> = {
     [Unit.None]: '',
@@ -260,7 +270,7 @@ export function formatSpecialDataValue(value: any) {
         return strings.EMPTY_VALUE_PLACEHOLDER_LABEL;
     }
     if (value instanceof Array) {
-        if (!value.length || value[0] === null || value[0] === undefined) {
+        if (_.isEmpty(value) || _.isNil(value[0])) {
             return strings.NULL_VALUE_PLACEHOLDER_LABEL;
         }
 
