@@ -28,13 +28,6 @@ interface FormatterConfig {
     decimalDetails: number;
     shouldRemoveTrailingZeros: boolean;
 }
-
-export const PROTO_TO_NEGATIVE_VALUE_FORMAT = {
-    1: NegativeValueFormat.PrefixDash,
-    2: NegativeValueFormat.SuffixDash,
-    3: NegativeValueFormat.BracesNodash,
-};
-
 /**
  * Constants for unit conversions and suffixes.
  */
@@ -45,15 +38,6 @@ export const UNITS_TO_DIVIDING_FACTOR: Record<Unit, number> = {
     [Unit.Billion]: 1000 * 1000 * 1000,
     [Unit.Trillion]: 1000 * 1000 * 1000 * 1000,
     [Unit.Auto]: 1,
-};
-
-export const PROTO_TO_UNITS = {
-    1: Unit.None,
-    2: Unit.Thousands,
-    3: Unit.Million,
-    4: Unit.Billion,
-    5: Unit.Trillion,
-    6: Unit.Auto,
 };
 
 /**
@@ -96,13 +80,6 @@ export const formatNegativeValue = (
     formattedValue: string,
     negativeFormat?: Maybe<NegativeValueFormat> | number,
 ): string => {
-    if (typeof negativeFormat === 'number') {
-        // eslint-disable-next-line no-param-reassign
-        negativeFormat =
-            PROTO_TO_NEGATIVE_VALUE_FORMAT[
-                negativeFormat as keyof typeof PROTO_TO_NEGATIVE_VALUE_FORMAT
-            ];
-    }
     switch (negativeFormat) {
         case NegativeValueFormat.PrefixDash:
             return `-${formattedValue}`;
@@ -219,11 +196,6 @@ export const mapFormatterConfig = (
     absFloatValue: number,
     configDetails: NumberFormatConfig | CurrencyFormatConfig,
 ): FormatterConfig => {
-    if (typeof configDetails.unit === 'number') {
-        // eslint-disable-next-line no-param-reassign
-        configDetails.unit =
-            PROTO_TO_UNITS[configDetails.unit as keyof typeof PROTO_TO_UNITS];
-    }
     const isAutoFormatted = configDetails.unit === Unit.Auto;
     let unitDetails = configDetails.unit || Unit.Auto;
     let decimalDetails = configDetails.decimals || 0;

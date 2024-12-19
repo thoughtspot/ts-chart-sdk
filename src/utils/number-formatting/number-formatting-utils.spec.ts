@@ -20,7 +20,6 @@ import {
     getLocaleBasedStringFormats,
     getLocaleName,
     mapFormatterConfig,
-    PROTO_TO_UNITS,
     setLocaleBasedStringFormats,
     UNITS_TO_DIVIDING_FACTOR,
 } from './number-formatting-utils';
@@ -53,24 +52,6 @@ describe('formatNegativeValue', () => {
     it('should default to prefix dash if no format is provided', () => {
         const result = formatNegativeValue('100');
         expect(result).toBe('-100');
-    });
-
-    it('should convert a numeric negative format to a string format', () => {
-        // Case where negativeFormat is a number
-        const negativeFormatNumber = 1; // For example, PrefixDash
-        const formattedValue = '100.25'; // some sample value to format
-
-        // Before mapping, negativeFormat should be a number
-        let result = formatNegativeValue(
-            formattedValue,
-            negativeFormatNumber as number,
-        );
-        expect(result).toBe('-100.25'); // PrefixDash adds a '-' before the value
-
-        // Case with a different number for negative format
-        const negativeFormatNumber2 = 2; // For example, SuffixDash
-        result = formatNegativeValue(formattedValue, negativeFormatNumber2);
-        expect(result).toBe('100.25-'); // SuffixDash adds a '-' after the value
     });
 });
 
@@ -207,12 +188,12 @@ describe('mapFormatterConfig', () => {
     });
 
     it('should correctly map valid unit numbers to the corresponding unit', () => {
-        const input = { unit: 1 };
+        const input = { unit: Unit.None };
         const result = mapFormatterConfig(1000, input);
 
         // Assert that the unit has been correctly mapped to the corresponding
         // value in PROTO_TO_UNITS
-        expect(result.unitDetails).toBe(PROTO_TO_UNITS[1]);
+        expect(result.unitDetails).toBe(Unit.None);
     });
 });
 
@@ -273,12 +254,6 @@ describe('Unit constants', () => {
         expect(UNITS_TO_DIVIDING_FACTOR[Unit.Thousands]).toBe(1000);
         expect(UNITS_TO_DIVIDING_FACTOR[Unit.Million]).toBe(1000000);
         expect(UNITS_TO_DIVIDING_FACTOR[Unit.Billion]).toBe(1000000000);
-    });
-
-    it('should map proto to correct unit', () => {
-        expect(PROTO_TO_UNITS[1]).toBe(Unit.None);
-        expect(PROTO_TO_UNITS[2]).toBe(Unit.Thousands);
-        expect(PROTO_TO_UNITS[3]).toBe(Unit.Million);
     });
 });
 

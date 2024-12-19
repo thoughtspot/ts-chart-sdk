@@ -94,10 +94,6 @@ export const getFormattedValue = (
     if (_.isNil(formatConfig) || _.isEmpty(formatConfig)) {
         formatConfig = defaultFormatConfig(columnFormatConfig);
     }
-    // Normalize category to a proper type
-    if (typeof formatConfig.category === 'number') {
-        formatConfig.category = CategoryType.Number;
-    }
 
     // Handle special data values (e.g., NaN, Infinity)
     const specialVal = formatSpecialDataValue(value);

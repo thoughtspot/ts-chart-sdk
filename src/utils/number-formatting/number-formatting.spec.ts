@@ -149,7 +149,7 @@ describe('getFormattedValue', () => {
     test('should normalize category to CategoryType.Number when it is a number', () => {
         // Mock formatConfig with category as a number
         const formatConfig: FormatConfig = {
-            category: 12345 as any,
+            category: CategoryType.Number,
             numberFormatConfig: {
                 unit: Unit.Thousands,
                 decimals: 2,
