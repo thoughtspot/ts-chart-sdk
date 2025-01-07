@@ -18,7 +18,7 @@
         "lint": "eslint 'src/**'",
         "lint:fix": "eslint 'src/**' --fix",
         "ci": "npm-run-all lint test",
-        "docgen": "typedoc --tsconfig tsconfig.json",
+        "docgen": "typedoc --tsconfig tsconfig.json --json ./docs/typedoc.json",
         "dev": "npm run dev:bar",
         "dev:bar": "vite serve example/custom-bar-chart --port 3000",
         "about:bundle-dts": "echo '===== add ts types bundle in dist ====='",
