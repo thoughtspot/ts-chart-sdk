@@ -37,7 +37,7 @@ jobs:
 
             # Runs tests
             - name: Run tests
-              run: npm test
+              run: npm run test
 
             # Collect coverage report
             - uses: 5monkeys/cobertura-action@master

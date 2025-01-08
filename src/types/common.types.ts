@@ -188,10 +188,17 @@ export type SuccessValidationResponse = {
     visualPropEditorDefinition: VisualPropEditorDefinition;
 };
 
+export type VisualPropError = {
+    propElementKey: string;
+    propElementType: string;
+    value: unknown;
+};
+
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
     validationErrorMessage?: string[];
+    visualPropError?: VisualPropError;
 };
 
 /**
@@ -210,12 +217,14 @@ export type ValidationResponse = {
 export type VisualProps = unknown;
 
 /**
- * Custom Font Faces type from TS.
- *
+ *  Font Faces type from TS.
+ *  guid will be null in case of default Font types
+ *  If a custom Font is added in Dev section on TS this guid can be used to Match
+ *  the Font Face That needs to be applied to @link CustomizableChartFeature
  */
 
-export type CustomFontFaces = {
-    guid: string;
+export type TSFontFace = {
+    guid: string | null;
     family?: string;
     format?: string;
     url?: string;
@@ -242,14 +251,76 @@ export type ChartSdkCustomStylingConfig = {
         color?: string;
     };
     chartColorPalettes?: Array<{ colors: Array<string> }>;
+    numColorPalettes?: number;
     disableColorRotation?: boolean;
     chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
-    customFontFaces?: Array<CustomFontFaces>;
+    fontFaces?: Array<TSFontFace>;
+};
+
+/**
+ * Defines a set of standardized date and datetime format strings used for
+ * displaying dates and times in various formats. Each format string represents
+ * a specific date or time pattern that can be used for localized display purposes.
+ */
+
+export interface DateFormats {
+    DATE_SHORT: string;
+    DATE_SHORT_2_DIGIT_YEAR: string;
+    DATE_SHORT_WITH_HOUR: string;
+    DATE_SHORT_WITH_HOUR_WITHOUT_YEAR: string;
+    DATE_SHORT_WITH_HOUR_24: string;
+    DATE_SHORT_WITH_HOUR_24_WITHOUT_YEAR: string;
+    DATETIME_SHORT: string;
+    DATETIME_SHORT_WITHOUT_YEAR: string;
+    DATETIME_24_SHORT: string;
+    DATETIME_24_SHORT_WITH_MILLIS: string;
+    DATETIME_24_SHORT_WITH_MILLIS_WITHOUT_YEAR: string;
+    DATETIME_SHORT_WITH_SECONDS: string;
+    DATETIME_SHORT_WITH_SECONDS_WITHOUT_YEAR: string;
+    DATETIME_SHORT_WITH_MILLIS: string;
+    DATETIME_SHORT_WITH_MILLIS_WITHOUT_YEAR: string;
+    QUARTER_WITH_YEAR: string;
+    QUARTER_WITH_2_DIGIT_YEAR: string;
+    DEFAULT_TIME_FORMAT: string;
+    MONTH_WITH_YEAR: string;
+    MONTH_WITH_DAY_AND_YEAR: string;
+    MONTH_WITH_2_DIGIT_YEAR: string;
+    DAY_WITH_MONTH: string;
+    DAY_WITH_MONTH_NUM: string;
+    QUARTER: string;
+    MONTH_ONLY: string;
+    DATETIME_WITH_SHORT_OFFSET: string;
+}
+
+/**
+ * Configuration object for date formats and settings in the Chart SDK.
+ * Provides locale-specific date and string formats, constants, and custom calendars.
+ *
+ * @type ChartSdkDateFormatsConfig
+ *
+ * @property tsLocaleBasedDateFormats - Optional. A record mapping locale identifiers to date format settings,
+ *   each represented by a `DateFormats` object.
+ * @property tsLocaleBasedStringsFormats - Optional. A record mapping locale identifiers to localized string
+ *   formats, where each format is represented by a string.
+ * @property tsDateConstants - Optional. A record mapping string keys to date-related constants, often used
+ *   for standard date patterns or other fixed date-related values(mostly used to identify the case
+ *   for backend proccessed date in case of MONTH_OF_YEAR,DAY_OF_WEEK).
+ * @property tsDefinedCustomCalenders - Optional. Custom calendar configurations, which have GUID of TS defined Custom calenders.
+ * @property defaultDataSourceId - Optional. The data source identifier for the date formats, used
+ *   to specify the primary data source for TS defined custom calenders.
+ */
+
+export type ChartSdkDateFormatsConfig = {
+    tsLocaleBasedDateFormats?: Record<string, DateFormats>;
+    tsLocaleBasedStringsFormats?: Record<string, string>;
+    tsDateConstants?: Record<string, string>;
+    tsDefinedCustomCalenders?: any;
+    defaultDataSourceId?: string;
 };
 
 export interface AppConfig {
     styleConfig?: ChartSdkCustomStylingConfig;
-
+    dateFormatsConfig?: ChartSdkDateFormatsConfig;
     appOptions?: {
         isMobile?: boolean;
         isPrintMode?: boolean; // export mode on/off
@@ -282,7 +353,8 @@ export interface AppConfig {
     customCalendarConfig?: any; // this is to initialize custom calendar service
 
     /**
-     * Unique identifier for the customer. This can be used as a way to maintain licensing by the third party developer
+     * Unique identifier for the customer. This can be used as a way to maintain licensing by the
+     * third party developer
      */
     chartAppAccessToken?: string;
 }

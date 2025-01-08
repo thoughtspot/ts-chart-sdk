@@ -8,8 +8,46 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-import { CustomChartContext } from '../main/custom-chart-context';
+import type { CustomChartContext } from '../main/custom-chart-context';
+import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
+
+export type TSTooltipConfig = {
+    columnIds: Array<string>;
+};
+
+export enum VisualPropComponentTranslationKeys {
+    SHOW_ALL_LABELS = 'SHOW_ALL_LABELS',
+    TOO_MANY_LABELS = 'TOO_MANY_LABELS',
+    MAP_TILE_LABEL = 'MAP_TILE_LABEL',
+    ENABLE_MARKERS = 'ENABLE_MARKERS',
+    SHOW_REGRESSION_LINE = 'SHOW_REGRESSION_LINE',
+    X_AXIS_GRID_LINE = 'X_AXIS_GRID_LINE',
+    Y_AXIS_GRID_LINE = 'Y_AXIS_GRID_LINE',
+    MAX_DATA_POINTS = 'MAX_DATA_POINTS',
+    HIGH_CARDINALITY_BATCH_SIZE_DISABLED = 'highCardinalityBatchSizeDisabled',
+    HIGH_CARDINALITY_BATCH_SIZE_LIMIT = 'highCardinalityBatchSizeLimit',
+    CHART_CUSTOMIZE = 'CHART_CUSTOMIZE',
+    SELECT_AN_AREA = 'chartConfigurator.SELECT_AN_AREA',
+    RESET_ZOOM = 'chartConfigurator.RESET_ZOOM',
+    EDIT_TOOLTIP = 'EDIT_TOOLTIP',
+    DONT_SHOW = 'DONT_SHOW',
+    SHOW_GAP = 'SHOW_GAP',
+    SHOW_AS_ZERO = 'SHOW_AS_ZERO',
+    HANDLE_MISSING_VALUES = 'HANDLE_MISSING_VALUES',
+    SHOW_NULL_AS_ZERO = 'SHOW_NULL_AS_ZERO',
+    EXCLUDE_NULL_VALUES = 'EXCLUDE_NULL_VALUES',
+    COLUMN_CUSTOMIZE = 'COLUMN_CUSTOMIZE',
+    SHOW_TOTAL_LABELS = 'SHOW_TOTAL_LABELS',
+    SHOW_DETAILED_LABELS = 'SHOW_DETAILED_LABELS',
+    SHOW_DATA_LABELS = 'SHOW_DATA_LABELS',
+    SHOW_AXIS_AS_PERCENT = 'SHOW_AXIS_AS_PERCENT',
+    RIGHT_LEGEND = 'RIGHT_LEGEND',
+    LEFT_LEGEND = 'LEFT_LEGEND',
+    TOP_LEGEND = 'TOP_LEGEND',
+    BOTTOM_LEGEND = 'BOTTOM_LEGEND',
+}
+
 /**
  * Configuration for input validation rules
  */
@@ -121,6 +159,12 @@ export interface TextInputFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -160,6 +204,12 @@ export interface NumberInputFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -194,6 +244,12 @@ export interface ColorPickerFormDetail {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     defaultValue?: string;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -227,6 +283,12 @@ export interface ToggleFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -260,6 +322,12 @@ export interface CheckboxFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -299,6 +367,12 @@ export interface RadioButtonFormDetail {
      * @version SDK: 0.0.2-3 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -338,6 +412,12 @@ export interface DropDownFormDetail {
      * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
      */
     disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -367,7 +447,6 @@ export interface Section {
     children?: PropElement[];
     /**
      * Defines form alignment in the view for the section
-     *
      * @version SDK: 0.1 | ThoughtSpot:
      */
     alignment?: 'row' | 'column';
@@ -379,6 +458,65 @@ export interface Section {
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
     layoutType?: 'accordion' | 'tab' | 'none';
+    /**
+     * Determines whether section should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.18 | ThoughtSpot:
+     */
+    disabled?: boolean;
+    /* Optional property to make the accordian expanded by default. If
+     * not passed the accordian will remain closed by default. Only works with layout type
+     * 'accordian'
+     *
+     * @version SDK: 0.0.2-alpha.19 | ThoughtSpot:
+     */
+    isAccordianExpanded?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
+}
+
+/**
+ * Native charts edit tool tip component defined for regular charts in TS Advance Chart Settings
+ *
+ * @group Visual Properties Editor
+ */
+export interface NativeEditToolTip {
+    type: 'tooltipconfig';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    key: string;
+
+    /*
+     List of column ids that are present in ToolTipConfig by default 
+    */
+
+    defaultValue?: TSTooltipConfig;
+
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Determines whether it should be disabled or not
+     *
+     * @version SDK: 0.0.2-alpha.13 | ThoughtSpot:
+     */
+    disabled?: boolean;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
 /**
@@ -394,7 +532,20 @@ export type PropElement =
     | ToggleFormDetail
     | CheckboxFormDetail
     | RadioButtonFormDetail
-    | DropDownFormDetail;
+    | DropDownFormDetail
+    | NativeEditToolTip;
+
+/**
+ * Define Column settings, based on column type, settings needs to be defined in
+ * visualPropEditorDefinition using the current config columns,
+ * @version SDK: 0.2 | ThoughtSpot:
+ */
+export interface ColumnProp {
+    type: ColumnType;
+    columnSettingsDefinition: {
+        [columnId: string]: { elements: PropElement[] };
+    };
+}
 
 /**
  * Visual property editor definition object
@@ -409,11 +560,18 @@ export interface VisualPropEditorDefinition {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     elements: PropElement[];
+    /**
+     *To Define column level settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    columnsVizPropDefinition?: ColumnProp[];
 }
 
 export type VisualEditorDefinitionSetter = (
     currentState: ChartModel,
     ctx: CustomChartContext,
+    activeColumnId?: string,
 ) => VisualPropEditorDefinition;
 
 /**

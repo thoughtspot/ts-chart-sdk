@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { CustomChartContext } from '../main/custom-chart-context';
+import { create } from '../main/logger';
 import {
     ChartToTSEvent,
     ChartToTSEventsPayloadMap,
@@ -13,6 +14,8 @@ import {
     TSToChartEventListener,
     TSToChartEventOffListener,
 } from './use-custom-chart-types';
+
+const logger = create('CustomChartContextUtilSdk');
 
 /**
  *
@@ -31,7 +34,7 @@ export const emitter = (ctx: CustomChartContext): ChartToTSEventEmitters => {
             ...args: ChartToTSEventsPayloadMap[keyof ChartToTSEventsPayloadMap]
         ): Promise<void> => {
             if (!ctx || _.isEmpty(ctx)) {
-                console.log('Context is not initialized');
+                logger.log('Context is not initialized');
                 return Promise.reject(new Error('Context not initialized'));
             }
             return ctx.emitEvent(eventName, ...args);
@@ -60,7 +63,7 @@ export const eventListener = (
             callbackFn: TSToChartEventsPayloadMap[keyof TSToChartEventsPayloadMap],
         ): Promise<void> => {
             if (!ctx || _.isEmpty(ctx)) {
-                console.log('Context is not initialized');
+                logger.log('Context is not initialized');
                 return Promise.reject(new Error('Context not initialized'));
             }
             ctx.on(eventName, callbackFn);
@@ -89,7 +92,7 @@ export const eventOffListener = (
 
         acc[emitterKey] = (): Promise<void> => {
             if (!ctx || _.isEmpty(ctx)) {
-                console.log('Context is not initialized');
+                logger.log('Context is not initialized');
                 return Promise.reject(new Error('Context not initialized'));
             }
             ctx.off(eventName);

@@ -35,6 +35,8 @@ import {
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
+    GetColumnDataPayload,
+    GetColumnDataResponsePayload,
     GetDataQueryPayload,
     GetDataQueryResponsePayload,
     InitializeEventPayload,
@@ -50,16 +52,120 @@ import {
     VisualEditorDefinitionSetter,
     VisualPropEditorDefinition,
 } from '../types/visual-prop.types';
+import { setLocaleBasedStringFormats } from '../utils/number-formatting/number-formatting-utils';
+import { create } from './logger';
 import {
     globalThis,
     initMessageListener,
     postMessageToHostApp,
 } from './post-message-event-bridge';
 
+const logger = create('TsChartSDKContext');
+/**
+ * Configuration for allowing or disallowing specific TS UI features.
+ *
+ * @fileoverview
+ * This configuration defines the ability to toggle specific features such as
+ * column number formatting, conditional formatting, and measure names/values.
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
 export type AllowedConfigurations = {
+    /**
+     * Allows column-level number formatting.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowColumnNumberFormatting?: boolean;
+
+    /**
+     * Allows conditional formatting at the column level.
+     * This allows users to apply rules that visually highlight or differentiate data.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowColumnConditionalFormatting?: boolean;
+
+    /**
+     * Allows Gradient coloring at the column level.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    allowGradientColoring?: boolean;
+
+    /**
+     * Enables measure_name and measure_values in the chart configuration.
+     *
+     * @default false
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowMeasureNamesAndValues?: boolean;
+};
+
+/**
+ * Configuration parameters for setting chart-specific options.
+ *
+ * @fileoverview
+ * This configuration includes settings for controlling measure name/value columns
+ * and batch size limits for data processing.
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export type ChartConfigParameters = {
+    /**
+     * Configurations related to measure name and value columns.
+     * These parameters allow for enabling/disabling and aliasing the columns
+     * used to represent measure names and values.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    measureNameValueColumns?: {
+        /**
+         * Enables or disables the measure_name column.
+         *
+         * @default false
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        enableMeasureNameColumn?: boolean;
+
+        /**
+         * Enables or disables the measure_value column.
+         *
+         * @default false
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        enableMeasureValueColumn?: boolean;
+
+        /**
+         * Alias for the measure_name column.
+         * This allows users to define a custom name for the measure_name column.
+         *
+         * @default 'Measure Name'
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        measureNameColumnAlias?: string;
+
+        /**
+         * Alias for the measure_value column.
+         * This allows users to define a custom name for the measure_value column.
+         *
+         * @default 'Measure Value'
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        measureValueColumnAlias?: string;
+    };
+
+    /**
+     * Limit on the batch size for data processing.
+     * This sets an upper limit on how much data can be processed in a single batch.
+     *
+     * @default 20000
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    batchSizeLimit?: number;
 };
 
 export type CustomChartContextProps = {
@@ -116,6 +222,7 @@ export type CustomChartContextProps = {
     validateVisualProps?: (
         updatedVisualProps: VisualProps,
         chartModel: ChartModel,
+        activeColumnId?: string,
     ) => ValidationResponse;
 
     /**
@@ -141,10 +248,22 @@ export type CustomChartContextProps = {
         | VisualEditorDefinitionSetter
         | VisualPropEditorDefinition;
 
-    // Whether user wants thoughtspot default number and conditional formatting
+    /**
+     * Optional configuration to toggle native TS UI configurations, such as column number
+     * formatting and conditional formatting.
+     *
+     * @type {AllowedConfigurations}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
     allowedConfigurations?: AllowedConfigurations;
-    // TODO: needs to implement this on TS side
-    batchSizeLimit?: number;
+    /**
+     * Optional parameters for configuring specific chart-related features, such as measure name
+     * and value columns.
+     *
+     * @type {ChartConfigParameters}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    chartConfigParameters?: ChartConfigParameters;
 };
 
 export type ValidationFunctions =
@@ -161,7 +280,17 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
     allowedConfigurations: {
         allowColumnNumberFormatting: false,
         allowColumnConditionalFormatting: false,
+        allowGradientColoring: false,
         allowMeasureNamesAndValues: false,
+    },
+    chartConfigParameters: {
+        measureNameValueColumns: {
+            enableMeasureNameColumn: false,
+            enableMeasureValueColumn: false,
+            measureNameColumnAlias: 'Measure Name',
+            measureValueColumnAlias: 'Measure Values',
+        },
+        batchSizeLimit: 20000,
     },
 };
 
@@ -284,7 +413,7 @@ export class CustomChartContext {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     public initialize = (): Promise<void> => {
-        console.log('Chart Context: initialization start');
+        logger.log('Chart Context: initialization start');
         return this.hasInitializedPromise;
     };
 
@@ -316,7 +445,7 @@ export class CustomChartContext {
      */
     public off<T extends keyof TSToChartEventsPayloadMap>(eventType: T): void {
         if (_.isNil(this.eventListeners[eventType])) {
-            console.log('No event listener found to remove');
+            logger.log('No event listener found to remove');
             this.eventListeners[eventType] = [];
             return;
         }
@@ -429,6 +558,7 @@ export class CustomChartContext {
      * @returns {VisualPropEditorDefinition}
      */
     private getVisualPropEditorDefinition = (
+        activeColumnId?: string,
         currentState: Partial<ChartModel> = {},
     ) => {
         if (_.isFunction(this.chartContextProps.visualPropEditorDefinition)) {
@@ -438,6 +568,7 @@ export class CustomChartContext {
                     ...currentState,
                 },
                 this,
+                activeColumnId,
             );
         }
         return this.chartContextProps.visualPropEditorDefinition;
@@ -505,8 +636,10 @@ export class CustomChartContext {
     private validationsResponseProcessor(
         currentValidationState: Partial<ChartModel>,
         validationResponse: ValidationResponse,
+        activeColumnId?: string,
     ) {
         const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
+            activeColumnId,
             currentValidationState,
         );
         const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
@@ -533,7 +666,7 @@ export class CustomChartContext {
         ...eventPayload: ChartToTSEventsPayloadMap[T]
     ): Promise<any> {
         if (!globalThis.isInitialized) {
-            console.log(
+            logger.log(
                 'Chart Context: not initialized the context, something went wrong',
             );
             return Promise.reject(new Error('Context not initialized'));
@@ -556,7 +689,7 @@ export class CustomChartContext {
      */
     private registerEventProcessor = () => {
         if (globalThis.isInitialized) {
-            console.error(
+            logger.error(
                 'The context is already initialized. you cannot have multiple contexts',
             );
             throw new Error(ErrorType.MultipleContextsNotSupported);
@@ -572,7 +705,7 @@ export class CustomChartContext {
      * @param event : Message Event Object
      */
     private eventProcessor = (data: any) => {
-        console.log('Chart Context: message received:', data.eventType, data);
+        logger.log('Chart Context: message received:', data.eventType, data);
 
         const messageResponse = this.executeEventListenerCBs(data);
 
@@ -622,15 +755,17 @@ export class CustomChartContext {
                         this.chartContextProps.validateVisualProps(
                             payload.visualProps,
                             this.chartModel,
+                            payload?.activeColumnId,
                         );
                     if (validationResponse.isValid) {
                         const currentVisualState = {
                             visualProps: payload.visualProps,
                         };
-
+                        const activeColumnId = payload?.activeColumnId;
                         return this.validationsResponseProcessor(
                             currentVisualState,
                             validationResponse,
+                            activeColumnId,
                         );
                     }
                     return validationResponse;
@@ -696,6 +831,28 @@ export class CustomChartContext {
         );
 
         /**
+         * This event is triggered when the TS app asks for data in a specific columns
+         * for certain validations for settings and drop down options related to Conditional
+         * formatting and other advanced settings
+         */
+        this.onInternal(
+            TSToChartEvent.GetColumnData,
+            (payload: GetColumnDataPayload): GetColumnDataResponsePayload => {
+                const parsedData = this.chartModel.data?.[0].data;
+                const dataIdx = parsedData?.columns.findIndex(
+                    (columnId) => columnId === payload.columnId,
+                );
+                const dataArray =
+                    !_.isNil(dataIdx) && dataIdx > -1
+                        ? parsedData?.dataValue.map((it) => it[dataIdx])
+                        : [];
+                return {
+                    data: dataArray,
+                };
+            },
+        );
+
+        /**
          * This event is triggered when the TS app re-renders the chart
          */
         this.onInternal(TSToChartEvent.TriggerRenderChart, () => {
@@ -733,7 +890,7 @@ export class CustomChartContext {
                         isValid: true,
                     };
                 } catch (error: unknown) {
-                    console.log(
+                    logger.log(
                         'ContextMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
@@ -776,7 +933,7 @@ export class CustomChartContext {
                         isValid: true,
                     };
                 } catch (error: unknown) {
-                    console.log(
+                    logger.log(
                         'AxisMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
@@ -864,7 +1021,9 @@ export class CustomChartContext {
         this.containerEl = payload.containerElSelector
             ? document.querySelector(payload.containerElSelector)
             : null;
-
+        setLocaleBasedStringFormats(
+            this.appConfig.dateFormatsConfig?.tsLocaleBasedStringsFormats,
+        );
         return this.publishChartContextPropsToHost();
     };
 
@@ -906,6 +1065,8 @@ export class CustomChartContext {
                     this.getVisualPropEditorDefinition(),
                 allowedConfigurations:
                     this.chartContextProps.allowedConfigurations,
+                chartConfigParameters:
+                    this.chartContextProps.chartConfigParameters,
             };
         };
 
@@ -933,7 +1094,7 @@ export class CustomChartContext {
             };
         }
 
-        console.log(
+        logger.log(
             'ChartContext: Response:',
             data.eventType,
             response,
@@ -956,6 +1117,5 @@ export const getChartContext = async (
     // wait for initialization here as the host app
     // needs to first handshake with the client app.
     await ctx.initialize();
-
     return ctx;
 };

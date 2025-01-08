@@ -1,16 +1,20 @@
-import { AllowedConfigurations } from '../main/custom-chart-context';
+import type {
+    AllowedConfigurations,
+    ChartConfigParameters,
+} from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
-import { Point } from './chart-to-ts-event.types';
+import type { Point } from './chart-to-ts-event.types';
 import {
     AppConfig,
     ChartConfig,
     ChartModel,
+    DataPointsArray,
     QueryData,
     ValidationResponse,
     VisualProps,
 } from './common.types';
-import { ChartConfigEditorDefinition } from './configurator.types';
-import { VisualPropEditorDefinition } from './visual-prop.types';
+import type { ChartConfigEditorDefinition } from './configurator.types';
+import type { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
  * All the events sent from the ThoughtSpot application to Custom Chart App
@@ -69,6 +73,10 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     AxisMenuActionClick = 'AxisMenuActionClick',
+    /**
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    GetColumnData = 'GetColumnData',
 }
 
 /**
@@ -106,6 +114,10 @@ export interface TSToChartInternalEventsPayloadMap {
     [TSToChartEvent.GetDataQuery]: (
         payload: GetDataQueryPayload,
     ) => GetDataQueryResponsePayload;
+
+    [TSToChartEvent.GetColumnData]: (
+        payload: GetColumnDataPayload,
+    ) => GetColumnDataResponsePayload;
 
     [TSToChartEvent.ChartConfigValidate]: (
         payload: ChartConfigValidateEventPayload,
@@ -206,6 +218,13 @@ export interface InitializeEventResponsePayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     allowedConfigurations?: AllowedConfigurations;
+    /**
+     * Additional chart configuration parameters supported by TS UI. Ex: show/hide Measure Name/
+     * Value columns.
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    chartConfigParameters?: ChartConfigParameters;
 }
 
 /**
@@ -214,6 +233,10 @@ export interface InitializeEventResponsePayload {
  */
 export interface GetDataQueryPayload {
     config: ChartConfig[];
+}
+
+export interface GetColumnDataPayload {
+    columnId: string;
 }
 
 /**
@@ -248,6 +271,11 @@ export interface Query {
  */
 export interface GetDataQueryResponsePayload {
     queries: Query[];
+}
+
+export interface GetColumnDataResponsePayload {
+    // Marked as any as the data from columns can be of any type
+    data?: any[];
 }
 
 /**
@@ -295,6 +323,13 @@ export interface VisualPropsValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualProps: VisualProps;
+    /**
+     * used to identify active column for column level settings, empty string in case of overall
+     * chart settings
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    activeColumnId?: string;
 }
 
 /**

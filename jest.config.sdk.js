@@ -11,13 +11,19 @@ module.exports = {
         '/src/index.ts',
     ],
     coverageThreshold: {
-        './src/main': {
-            branches: 75, // make this above 80
-            functions: 90,
-            lines: 92,
+        './src': {
+            branches: 80, // make this above 80
+            functions: 95,
+            lines: 95,
         },
     },
-    coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
+    coverageReporters: [
+        'json-summary',
+        'html',
+        'text',
+        'text-summary',
+        'cobertura',
+    ],
     testPathIgnorePatterns: ['/lib/', '/docs/', '/cjs/'],
     testMatch: ['<rootDir>/src/**/*.spec.(ts|tsx)'],
     setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
