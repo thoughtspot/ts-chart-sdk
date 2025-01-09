@@ -107,6 +107,7 @@ export type AllowedConfigurations = {
 /**
  * Key stored in persistedVisualPropKeys array will be preserved on changing the
  * visualPropeditorDefinition, any other key (expect clientState) would not be preserved for visual props.
+ * ### NOTE: like clientState this variable should be a string, preferrably a result of JSON.stringify(<yourlocalClientState>)
  * ### USE CASE: This is to maintain different clientSate for different custom charts developed by same TS custom chart developer.
  * @version SDK: 0.1 | ThoughtSpot:
  */
@@ -267,6 +268,8 @@ export type CustomChartContextProps = {
      * Key stored in persistedVisualPropKeys array will be preserved on changing the
      * visualPropeditorDefinition, any other key (expect clientState) 
      * would not be preserved for visual props.
+     * ### NOTE: like clientState this variable should be a string, 
+     * preferrably a result of JSON.stringify(<yourlocalClientState>)
      * ### USE CASE: This is to maintain different clientSate for different custom charts 
      * developed by same TS custom chart developer.
      * 
