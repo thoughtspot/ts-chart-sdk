@@ -64,13 +64,13 @@ const exampleClientState = {
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const formatter = getDataFormatter(column, { isMillisIncluded: false });
-    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
-    const dataForCol = _.map(dataArr.dataValue, row => {
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    const dataForCol = _.map(dataArr.dataValue, (row) => {
         const colValue = row[idx];
         return colValue;
     });
     const options = generateMapOptions(appConfigGlobal, column, dataForCol);
-    const formattedValuesForData = _.map(dataArr.dataValue, row => {
+    const formattedValuesForData = _.map(dataArr.dataValue, (row) => {
         const colValue = row[idx];
         if (getCustomCalendarGuidFromColumn(column))
             return formatter(colValue.v.s, options);
@@ -109,13 +109,11 @@ function getColumnDataModel(
                         col.id,
                     ),
                 );
-                const {
-                    plotlines,
-                    plotbands,
-                } = getPlotLinesAndBandsFromConditionalFormatting(
-                    CFforColumn,
-                    axisId,
-                );
+                const { plotlines, plotbands } =
+                    getPlotLinesAndBandsFromConditionalFormatting(
+                        CFforColumn,
+                        axisId,
+                    );
 
                 return {
                     label: col.name,
@@ -127,7 +125,7 @@ function getColumnDataModel(
                     datalabels: {
                         anchor: 'end',
                         align: 'end',
-                        formatter: value => {
+                        formatter: (value) => {
                             return getFormattedValue(
                                 value,
                                 col.columnProperties.numberFormatting,
@@ -225,14 +223,18 @@ function render(ctx: CustomChartContext) {
                 // Assign updated client state values as string.
                 clientState: JSON.stringify({
                     // JSON parse previous client state values from a string (if any, if not parse null object).
-                    ...JSON.parse((chartModel.visualProps as {clientState: string}).clientState || "{}"),
-                    // Used to store any local state specific to chart, only string allowed. 
+                    ...JSON.parse(
+                        (chartModel.visualProps as { clientState: string })
+                            .clientState || '{}',
+                    ),
+                    // Used to store any local state specific to chart, only string allowed.
                     // This will be preserved when you update visual props with an event.
-                    // Assign new values to a client state using object rest destruct. 
+                    // Assign new values to a client state using object rest destruct.
                     ...exampleClientState,
                     // To assign, and update new value.
                     // id: 'new-chart-id',
                 }),
+            }),
         ),
     });
     if (
@@ -375,12 +377,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.MEASURE,
+                (col) => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.ATTRIBUTE,
+                (col) => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -418,7 +420,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: ctx => renderChart(ctx),
+        renderChart: (ctx) => renderChart(ctx),
         validateConfig: (
             updatedConfig: any[],
             chartModel: any,
@@ -451,7 +453,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             const { config, visualProps } = currentChartConfig;
 
             const yColumns = config?.chartConfig?.[0]?.dimensions.find(
-                dimension => dimension.key === 'y' && dimension.columns,
+                (dimension) => dimension.key === 'y' && dimension.columns,
             );
 
             const configDefinition = [
@@ -546,6 +548,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             allowColumnNumberFormatting: true,
             allowMeasureNamesAndValues: true,
         },
+        persistedVisualPropKeys: ['color', 'tooltipconfig1', 'accordion'],
         chartConfigParameters: {
             measureNameValueColumns: {
                 enableMeasureNameColumn: true,

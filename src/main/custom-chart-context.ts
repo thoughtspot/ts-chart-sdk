@@ -104,7 +104,13 @@ export type AllowedConfigurations = {
      */
     allowMeasureNamesAndValues?: boolean;
 };
-
+/**
+ * Key stored in persistedVisualPropKeys array will be preserved on changing the
+ * visualPropeditorDefinition, any other key (expect clientState) would not be preserved for visual props.
+ * ### USE CASE: This is to maintain different clientSate for different custom charts developed by same TS custom chart developer.
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export type PersistedVisualPropKeys = string[];
 /**
  * Configuration parameters for setting chart-specific options.
  *
@@ -257,6 +263,18 @@ export type CustomChartContextProps = {
      */
     allowedConfigurations?: AllowedConfigurations;
     /**
+    /**
+     * Key stored in persistedVisualPropKeys array will be preserved on changing the
+     * visualPropeditorDefinition, any other key (expect clientState) 
+     * would not be preserved for visual props.
+     * ### USE CASE: This is to maintain different clientSate for different custom charts 
+     * developed by same TS custom chart developer.
+     * 
+     * @type {PersistedVisualPropKeys}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    persistedVisualPropKeys?: PersistedVisualPropKeys;
+    /**
      * Optional parameters for configuring specific chart-related features, such as measure name
      * and value columns.
      *
@@ -283,6 +301,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
         allowGradientColoring: false,
         allowMeasureNamesAndValues: false,
     },
+    persistedVisualPropKeys: undefined,
     chartConfigParameters: {
         measureNameValueColumns: {
             enableMeasureNameColumn: false,
@@ -1067,6 +1086,8 @@ export class CustomChartContext {
                     this.chartContextProps.allowedConfigurations,
                 chartConfigParameters:
                     this.chartContextProps.chartConfigParameters,
+                persistedVisualPropKeys:
+                    this.chartContextProps.persistedVisualPropKeys,
             };
         };
 
