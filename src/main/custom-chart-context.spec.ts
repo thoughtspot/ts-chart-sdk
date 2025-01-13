@@ -118,7 +118,7 @@ describe('CustomChartContext', () => {
                     allowGradientColoring: false,
                     allowMeasureNamesAndValues: false,
                 },
-                persistedVisualPropsKey: undefined,
+                persistedVisualPropKeys: undefined,
                 chartConfigParameters: {
                     measureNameValueColumns: {
                         enableMeasureNameColumn: false,
