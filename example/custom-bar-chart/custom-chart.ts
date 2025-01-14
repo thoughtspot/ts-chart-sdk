@@ -56,15 +56,19 @@ let globalChartReference: Chart;
 
 let appConfigGlobal: AppConfig;
 
-const exampleClientState = {
+let localCounterState = 1;
+
+let exampleClientState = {
     id: 'chart-id',
     name: 'custom-bar-chart',
     library: 'chartJs',
+    localCounterState,
 };
-const exampleClientStateChart2 = {
+let exampleClientStateChart2 = {
     id: 'chart-id2',
     name: 'custom-second-chart',
     libarary: 'highCharts',
+    localCounterState,
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
@@ -221,42 +225,6 @@ function render(ctx: CustomChartContext) {
     const appConfig = ctx.getAppConfig();
     appConfigGlobal = appConfig;
     initGlobalize(appConfig.localeOptions?.locale);
-    const currentVisualProps = JSON.parse(
-        JSON.stringify({
-            ...chartModel.visualProps!,
-            // Assign updated client state values as string.
-            clientState: JSON.stringify({
-                // JSON parse previous client state values from a string (if any, if not parse null object).
-                ...JSON.parse(
-                    (chartModel.visualProps as { clientState: string })
-                        .clientState || '{}',
-                ),
-                // Used to store any local state specific to chart, only string allowed.
-                // This will be preserved when you update visual props with an event.
-                // Assign new values to a client state using object rest destruct.
-                ...exampleClientState,
-                // To assign, and update new value.
-                // id: 'new-chart-id',
-            }),
-            // this will throw warning in console, as this must
-            // be stringified.
-            // clientStateChart2: {
-            //     ...chartModel.visualProps?.clientStateChart2,
-            //     ...exampleClientStatChart2,
-            // },
-            clientStateChart2: JSON.stringify({
-                ...JSON.parse(
-                    (chartModel.visualProps as { clientStateChart2: string })
-                        .clientStateChart2 || '{}',
-                ),
-                ...exampleClientStateChart2,
-            }),
-        }),
-    );
-    console.log('currentVisualProps', currentVisualProps);
-    ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
-        visualProps: currentVisualProps,
-    });
     if (
         appConfig?.styleConfig?.customFontFaces?.length &&
         appConfig?.styleConfig?.customFontFaces?.length > 0
@@ -344,6 +312,79 @@ function render(ctx: CustomChartContext) {
                                 label: 'Custom user action 1',
                                 icon: '',
                                 onClick: (...arg) => {
+                                    console.log(chartModel.visualProps);
+                                    if (
+                                        chartModel.visualProps.clientStateChart2
+                                    ) {
+                                        const parsedVisualProp = JSON.parse(
+                                            (
+                                                chartModel.visualProps as {
+                                                    clientStateChart2: string;
+                                                }
+                                            ).clientStateChart2 || '{}',
+                                        );
+                                        console.log(parsedVisualProp);
+                                        localCounterState =
+                                            parsedVisualProp.localCounterState;
+                                    }
+                                    localCounterState++;
+                                    console.log(localCounterState);
+                                    exampleClientState = {
+                                        ...exampleClientState,
+                                        localCounterState,
+                                    };
+                                    exampleClientStateChart2 = {
+                                        ...exampleClientStateChart2,
+                                        localCounterState,
+                                    };
+                                    const currentVisualProps = JSON.parse(
+                                        JSON.stringify({
+                                            ...chartModel.visualProps!,
+                                            // Assign updated client state values as string.
+                                            clientState: JSON.stringify({
+                                                // JSON parse previous client state values from a string (if any, if not parse null object).
+                                                ...JSON.parse(
+                                                    (
+                                                        chartModel.visualProps as {
+                                                            clientState: string;
+                                                        }
+                                                    ).clientState || '{}',
+                                                ),
+                                                // Used to store any local state specific to chart, only string allowed.
+                                                // This will be preserved when you update visual props with an event.
+                                                // Assign new values to a client state using object rest destruct.
+                                                ...exampleClientState,
+                                                // To assign, and update new value.
+                                                // id: 'new-chart-id',
+                                            }),
+                                            // this will throw warning in console, as this must
+                                            // be stringified.
+                                            // clientStateChart2: {
+                                            //     ...chartModel.visualProps?.clientStateChart2,
+                                            //     ...exampleClientStatChart2,
+                                            // },
+                                            clientStateChart2: JSON.stringify({
+                                                ...JSON.parse(
+                                                    (
+                                                        chartModel.visualProps as {
+                                                            clientStateChart2: string;
+                                                        }
+                                                    ).clientStateChart2 || '{}',
+                                                ),
+                                                ...exampleClientStateChart2,
+                                            }),
+                                        }),
+                                    );
+                                    console.log(
+                                        'currentVisualProps',
+                                        currentVisualProps,
+                                    );
+                                    ctx.emitEvent(
+                                        ChartToTSEvent.UpdateVisualProps,
+                                        {
+                                            visualProps: currentVisualProps,
+                                        },
+                                    );
                                     console.log(
                                         'custom action 1 triggered',
                                         arg,
