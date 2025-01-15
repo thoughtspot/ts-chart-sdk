@@ -8,7 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 coverage
-docs
+docs/*
 lib
 cjs
 node_modules
@@ -27,3 +27,7 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Except the typedoc.json file
+!docs/typedoc.json
+
