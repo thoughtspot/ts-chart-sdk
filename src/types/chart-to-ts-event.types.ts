@@ -285,19 +285,29 @@ export enum AxisMenuActions {
     SORT = 'SORT',
 
     /**
-     * These 2 methods are disabled currently as they are not supported by the backend.
+     * This  method is disabled currently as it is not supported by the backend.
      * Following are the reasons for the same:
-     * 1. Remove is ambiguous as it can mean remove from the answer scope or remove from the chart.
-     * 2. Rename columns is not supported by the menu for now. If need be, this can be implemented.
+     * 1. Rename columns is not supported by the menu for now. If need be, this can be implemented.
      */
     // /**
     //  * Rename the column.
     //  * */
     // RENAME = 'RENAME',
-    // /**
-    //  * Remove the column from the answer scope.
-    //  * */
-    // REMOVE = 'REMOVE',
+
+    /**
+     * Remove the column from the answer scope.
+     * */
+    REMOVE = 'REMOVE',
+
+    /**
+     * Open configure settings.
+     */
+    EDIT = 'EDIT',
+
+    /**
+     * Open Conditional Formatting editor of the column.
+     */
+    CONDITIONAL_FORMATTING = 'CONDITIONAL_FORMATTING',
     /**
      * Defines a separator element between the actions.
      * Can be added multiple times.
