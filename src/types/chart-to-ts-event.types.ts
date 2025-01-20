@@ -307,7 +307,7 @@ export enum AxisMenuActions {
     /**
      * Open Conditional Formatting editor of the column.
      */
-    CONDITIONAL_FORMATTING = 'CONDITIONAL_FORMATTING',
+    CONDITIONAL_FORMAT = 'CONDITIONAL_FORMAT',
     /**
      * Defines a separator element between the actions.
      * Can be added multiple times.
