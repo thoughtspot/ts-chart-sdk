@@ -3,7 +3,7 @@
  * Defines enum for All action types supported in TS, includes context menu actions,
  * answer actions liveboard actions and axis menu actions
  * @author Harshmeet Singh <harshmeet.singh@thoughtspot.com>
- * SDK @version 0.0.2-alpha.21
+ * SDK @version 0.0.2-alpha.26
  */
 
 export enum Action {
