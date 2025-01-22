@@ -31,6 +31,7 @@ import {
     VisualPropEditorDefinition,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
+import { Action } from '@thoughtspot/ts-chart-sdk/lib/types/actions.types';
 import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import {
     generateMapOptions,
@@ -340,9 +341,13 @@ function render(ctx: CustomChartContext) {
                                     const currentVisualProps = JSON.parse(
                                         JSON.stringify({
                                             ...chartModel.visualProps!,
-                                            // Assign updated client state values as string.
+                                            // Assign updated client state
+                                            // values as string.
                                             clientState: JSON.stringify({
-                                                // JSON parse previous client state values from a string (if any, if not parse null object).
+                                                // JSON parse previous client
+                                                // state values from a string
+                                                // (if any, if not parse null
+                                                // object).
                                                 ...JSON.parse(
                                                     (
                                                         chartModel.visualProps as {
@@ -350,17 +355,22 @@ function render(ctx: CustomChartContext) {
                                                         }
                                                     ).clientState || '{}',
                                                 ),
-                                                // Used to store any local state specific to chart, only string allowed.
-                                                // This will be preserved when you update visual props with an event.
-                                                // Assign new values to a client state using object rest destruct.
+                                                // Used to store any local state
+                                                // specific to chart, only
+                                                // string allowed. This will be
+                                                // preserved when you update
+                                                // visual props with an event.
+                                                // Assign new values to a client
+                                                // state using object rest
+                                                // destruct.
                                                 ...exampleClientState,
-                                                // To assign, and update new value.
-                                                // id: 'new-chart-id',
+                                                // To assign, and update new
+                                                // value. id: 'new-chart-id',
                                             }),
-                                            // this will throw warning in console, as this must
-                                            // be stringified.
-                                            // clientStateChart2: {
-                                            //     ...chartModel.visualProps?.clientStateChart2,
+                                            // this will throw warning in
+                                            // console, as this must be
+                                            // stringified. clientStateChart2: {
+                                            // ...chartModel.visualProps?.clientStateChart2,
                                             //     ...exampleClientStatChart2,
                                             // },
                                             clientStateChart2: JSON.stringify({
@@ -618,6 +628,10 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 measureValueColumnAlias: 'Value',
             },
             batchSizeLimit: 20000,
+            customChartVisualConfig: {
+                customChartDisabledActions: [],
+                customChartHiddenActions: [Action.Download],
+            },
         },
     });
 
