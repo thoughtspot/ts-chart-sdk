@@ -1099,8 +1099,6 @@ export class CustomChartContext {
                     this.chartContextProps.chartConfigParameters,
                 persistedVisualPropKeys:
                     this.chartContextProps.persistedVisualPropKeys,
-                customChartVisualConfig:
-                    this.chartContextProps.customChartVisualConfig,
             };
         };
 
