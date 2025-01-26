@@ -36,6 +36,7 @@ import {
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
+    DownloadExcelTriggerPayload,
     GetColumnDataPayload,
     GetColumnDataResponsePayload,
     GetDataQueryPayload,
@@ -1027,6 +1028,22 @@ export class CustomChartContext {
                 payload: VisualPropsUpdateEventPayload,
             ): { triggerRenderChart: boolean } => {
                 this.chartModel.visualProps = payload.visualProps;
+                return {
+                    triggerRenderChart: true,
+                };
+            },
+        );
+        /**
+         * This event is triggered when the TS app sends the download excel trigger.
+         */
+        this.on(
+            TSToChartEvent.DownloadExcelTrigger,
+            (payload: DownloadExcelTriggerPayload) => {
+                // TODO: [Harshmeet] implement the download excel logic
+                logger.log(
+                    'DownloadExcelTrigger event triggered from TS with payload:',
+                    payload,
+                );
                 return {
                     triggerRenderChart: true,
                 };

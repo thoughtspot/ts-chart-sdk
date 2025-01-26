@@ -17,6 +17,7 @@ import { ChartModel } from '../types/common.types';
 import {
     ChartModelUpdateEventPayload,
     DataUpdateEventPayload,
+    DownloadExcelTriggerPayload,
     VisualPropsUpdateEventPayload,
 } from '../types/ts-to-chart-event.types';
 import {
@@ -99,7 +100,8 @@ export const useChartContext = (
             payload:
                 | ChartModelUpdateEventPayload
                 | VisualPropsUpdateEventPayload
-                | DataUpdateEventPayload,
+                | DataUpdateEventPayload
+                | DownloadExcelTriggerPayload,
         ) => {
             setChartModel(context.getChartModel());
             return {
@@ -115,6 +117,9 @@ export const useChartContext = (
             commonUpdateHandler,
         );
         getChartContextValues(context).setOnDataUpdate(commonUpdateHandler);
+        getChartContextValues(context).setOnDownloadExcelTrigger(
+            commonUpdateHandler,
+        );
     }, []);
 
     /**
