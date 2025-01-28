@@ -86,7 +86,12 @@ export enum TSToChartEvent {
 }
 
 export interface DownloadExcelTriggerPayload {
-    downloadExcel: any;
+    answerTitle: string;
+}
+export interface DownloadExcelTriggerResponse {
+    fileName: string;
+    error: string;
+    message: string;
 }
 
 /**
@@ -105,7 +110,7 @@ export interface TSToChartEventsPayloadMap {
     ) => void;
     [TSToChartEvent.DownloadExcelTrigger]: (
         payload: DownloadExcelTriggerPayload,
-    ) => void;
+    ) => DownloadExcelTriggerResponse;
 }
 
 /**

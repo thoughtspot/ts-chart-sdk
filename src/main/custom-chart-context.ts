@@ -1039,13 +1039,14 @@ export class CustomChartContext {
         this.on(
             TSToChartEvent.DownloadExcelTrigger,
             (payload: DownloadExcelTriggerPayload) => {
-                // TODO: [Harshmeet] implement the download excel logic
                 logger.log(
                     'DownloadExcelTrigger event triggered from TS with payload:',
                     payload,
                 );
                 return {
-                    triggerRenderChart: true,
+                    fileName: '',
+                    error: '',
+                    message: 'Download Excel not implemented.',
                 };
             },
         );

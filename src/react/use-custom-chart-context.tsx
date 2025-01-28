@@ -6,6 +6,7 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+import { error } from 'console';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -100,15 +101,23 @@ export const useChartContext = (
             payload:
                 | ChartModelUpdateEventPayload
                 | VisualPropsUpdateEventPayload
-                | DataUpdateEventPayload
-                | DownloadExcelTriggerPayload,
+                | DataUpdateEventPayload,
         ) => {
             setChartModel(context.getChartModel());
             return {
                 triggerRenderChart: true,
             };
         };
-
+        const defaultDownloadUpdateHandler = (
+            payload: DownloadExcelTriggerPayload,
+        ) => {
+            setChartModel(context.getChartModel());
+            return {
+                fileName: '',
+                error: '',
+                message: 'Download Excel not implemented.',
+            };
+        };
         // Register all external event listeners here
         getChartContextValues(context).setOnChartModelUpdate(
             commonUpdateHandler,
@@ -118,7 +127,7 @@ export const useChartContext = (
         );
         getChartContextValues(context).setOnDataUpdate(commonUpdateHandler);
         getChartContextValues(context).setOnDownloadExcelTrigger(
-            commonUpdateHandler,
+            defaultDownloadUpdateHandler,
         );
     }, []);
 
