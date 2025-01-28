@@ -118,6 +118,7 @@ describe('CustomChartContext', () => {
                     allowGradientColoring: false,
                     allowMeasureNamesAndValues: false,
                 },
+                persistedVisualPropKeys: undefined,
                 chartConfigParameters: {
                     measureNameValueColumns: {
                         enableMeasureNameColumn: false,
@@ -1288,6 +1289,142 @@ describe('CustomChartContext', () => {
                 {},
                 TEST_EVENT_TYPE,
             );
+        });
+    });
+    describe('DownloadExcelTrigger', () => {
+        let customChartContext: CustomChartContext;
+
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+        });
+
+        afterEach(() => {
+            customChartContext.destroy();
+            eventProcessor = null;
+            jest.resetAllMocks();
+        });
+
+        test('should return default response when no custom handler is provided', async () => {
+            const response = await eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.DownloadExcelTrigger,
+            });
+
+            expect(response).toEqual({
+                fileName: '',
+                error: '',
+                message: 'Download Excel not implemented.',
+            });
+        });
+
+        test('should use custom handler when provided', async () => {
+            const mockDownloadHandler = jest.fn().mockReturnValue({
+                fileName: 'custom-report.xlsx',
+                error: '',
+                message: 'Success',
+            });
+
+            // Create new context with custom handler
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+
+            // Register custom handler
+            customChartContext.on(
+                TSToChartEvent.DownloadExcelTrigger,
+                mockDownloadHandler,
+            );
+
+            const testPayload = {
+                customData: 'test',
+            };
+
+            const response = await eventProcessor({
+                payload: testPayload,
+                eventType: TSToChartEvent.DownloadExcelTrigger,
+            });
+
+            expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
+            expect(response).toEqual({
+                fileName: 'custom-report.xlsx',
+                error: '',
+                message: 'Success',
+            });
+        });
+
+        test('should handle errors in custom handler', async () => {
+            const mockDownloadHandler = jest.fn().mockReturnValue({
+                fileName: '',
+                error: 'Failed to generate excel',
+                message: 'Error occurred',
+            });
+
+            // Create new context with custom handler
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+
+            // Register custom handler
+            customChartContext.on(
+                TSToChartEvent.DownloadExcelTrigger,
+                mockDownloadHandler,
+            );
+
+            const response = await eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.DownloadExcelTrigger,
+            });
+
+            expect(mockDownloadHandler).toHaveBeenCalled();
+            expect(response).toEqual({
+                fileName: '',
+                error: 'Failed to generate excel',
+                message: 'Error occurred',
+            });
+        });
+
+        test('should pass through payload to custom handler', async () => {
+            const mockDownloadHandler = jest.fn().mockReturnValue({
+                fileName: 'test.xlsx',
+                error: '',
+                message: 'Success',
+            });
+
+            // Create new context with custom handler
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+
+            // Register custom handler
+            customChartContext.on(
+                TSToChartEvent.DownloadExcelTrigger,
+                mockDownloadHandler,
+            );
+
+            const testPayload = {
+                format: 'xlsx',
+                filters: ['test1', 'test2'],
+                customOptions: {
+                    includeHeaders: true,
+                },
+            };
+
+            await eventProcessor({
+                payload: testPayload,
+                eventType: TSToChartEvent.DownloadExcelTrigger,
+            });
+
+            expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
         });
     });
 });

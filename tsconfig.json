@@ -27,6 +27,7 @@
   "typedocOptions": {
     "entryPoints": ["./src/index.ts"],
     "out": "./docs",
+    "json": "./docs/typedoc.json",
     "excludePrivate": true,
     "excludeProtected": true,
     "excludeInternal": true,

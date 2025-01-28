@@ -27,10 +27,12 @@ import {
     isDateNumColumn,
     PointVal,
     Query,
+    TSToChartEvent,
     ValidationResponse,
     VisualPropEditorDefinition,
     VisualProps,
 } from '@thoughtspot/ts-chart-sdk';
+import { Action } from '@thoughtspot/ts-chart-sdk/lib/types/actions.types';
 import { ChartConfigEditorDefinition } from '@thoughtspot/ts-chart-sdk/src';
 import {
     generateMapOptions,
@@ -56,21 +58,30 @@ let globalChartReference: Chart;
 
 let appConfigGlobal: AppConfig;
 
-const exampleClientState = {
+let localCounterState = 1;
+
+let exampleClientState = {
     id: 'chart-id',
     name: 'custom-bar-chart',
     library: 'chartJs',
+    localCounterState,
+};
+let exampleClientStateChart2 = {
+    id: 'chart-id2',
+    name: 'custom-second-chart',
+    libarary: 'highCharts',
+    localCounterState,
 };
 
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const formatter = getDataFormatter(column, { isMillisIncluded: false });
-    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
-    const dataForCol = _.map(dataArr.dataValue, row => {
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    const dataForCol = _.map(dataArr.dataValue, (row) => {
         const colValue = row[idx];
         return colValue;
     });
     const options = generateMapOptions(appConfigGlobal, column, dataForCol);
-    const formattedValuesForData = _.map(dataArr.dataValue, row => {
+    const formattedValuesForData = _.map(dataArr.dataValue, (row) => {
         const colValue = row[idx];
         if (getCustomCalendarGuidFromColumn(column))
             return formatter(colValue.v.s, options);
@@ -109,13 +120,11 @@ function getColumnDataModel(
                         col.id,
                     ),
                 );
-                const {
-                    plotlines,
-                    plotbands,
-                } = getPlotLinesAndBandsFromConditionalFormatting(
-                    CFforColumn,
-                    axisId,
-                );
+                const { plotlines, plotbands } =
+                    getPlotLinesAndBandsFromConditionalFormatting(
+                        CFforColumn,
+                        axisId,
+                    );
 
                 return {
                     label: col.name,
@@ -127,7 +136,7 @@ function getColumnDataModel(
                     datalabels: {
                         anchor: 'end',
                         align: 'end',
-                        formatter: value => {
+                        formatter: (value) => {
                             return getFormattedValue(
                                 value,
                                 col.columnProperties.numberFormatting,
@@ -218,23 +227,6 @@ function render(ctx: CustomChartContext) {
     const appConfig = ctx.getAppConfig();
     appConfigGlobal = appConfig;
     initGlobalize(appConfig.localeOptions?.locale);
-    ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
-        visualProps: JSON.parse(
-            JSON.stringify({
-                ...chartModel.visualProps!,
-                // Assign updated client state values as string.
-                clientState: JSON.stringify({
-                    // JSON parse previous client state values from a string (if any, if not parse null object).
-                    ...JSON.parse((chartModel.visualProps as {clientState: string}).clientState || "{}"),
-                    // Used to store any local state specific to chart, only string allowed. 
-                    // This will be preserved when you update visual props with an event.
-                    // Assign new values to a client state using object rest destruct. 
-                    ...exampleClientState,
-                    // To assign, and update new value.
-                    // id: 'new-chart-id',
-                }),
-        ),
-    });
     if (
         appConfig?.styleConfig?.customFontFaces?.length &&
         appConfig?.styleConfig?.customFontFaces?.length > 0
@@ -322,6 +314,88 @@ function render(ctx: CustomChartContext) {
                                 label: 'Custom user action 1',
                                 icon: '',
                                 onClick: (...arg) => {
+                                    console.log(chartModel.visualProps);
+                                    if (
+                                        chartModel.visualProps.clientStateChart2
+                                    ) {
+                                        const parsedVisualProp = JSON.parse(
+                                            (
+                                                chartModel.visualProps as {
+                                                    clientStateChart2: string;
+                                                }
+                                            ).clientStateChart2 || '{}',
+                                        );
+                                        console.log(parsedVisualProp);
+                                        localCounterState =
+                                            parsedVisualProp.localCounterState;
+                                    }
+                                    localCounterState++;
+                                    console.log(localCounterState);
+                                    exampleClientState = {
+                                        ...exampleClientState,
+                                        localCounterState,
+                                    };
+                                    exampleClientStateChart2 = {
+                                        ...exampleClientStateChart2,
+                                        localCounterState,
+                                    };
+                                    const currentVisualProps = JSON.parse(
+                                        JSON.stringify({
+                                            ...chartModel.visualProps!,
+                                            // Assign updated client state
+                                            // values as string.
+                                            clientState: JSON.stringify({
+                                                // JSON parse previous client
+                                                // state values from a string
+                                                // (if any, if not parse null
+                                                // object).
+                                                ...JSON.parse(
+                                                    (
+                                                        chartModel.visualProps as {
+                                                            clientState: string;
+                                                        }
+                                                    ).clientState || '{}',
+                                                ),
+                                                // Used to store any local state
+                                                // specific to chart, only
+                                                // string allowed. This will be
+                                                // preserved when you update
+                                                // visual props with an event.
+                                                // Assign new values to a client
+                                                // state using object rest
+                                                // destruct.
+                                                ...exampleClientState,
+                                                // To assign, and update new
+                                                // value. id: 'new-chart-id',
+                                            }),
+                                            // this will throw warning in
+                                            // console, as this must be
+                                            // stringified. clientStateChart2: {
+                                            // ...chartModel.visualProps?.clientStateChart2,
+                                            //     ...exampleClientStatChart2,
+                                            // },
+                                            clientStateChart2: JSON.stringify({
+                                                ...JSON.parse(
+                                                    (
+                                                        chartModel.visualProps as {
+                                                            clientStateChart2: string;
+                                                        }
+                                                    ).clientStateChart2 || '{}',
+                                                ),
+                                                ...exampleClientStateChart2,
+                                            }),
+                                        }),
+                                    );
+                                    console.log(
+                                        'currentVisualProps',
+                                        currentVisualProps,
+                                    );
+                                    ctx.emitEvent(
+                                        ChartToTSEvent.UpdateVisualProps,
+                                        {
+                                            visualProps: currentVisualProps,
+                                        },
+                                    );
                                     console.log(
                                         'custom action 1 triggered',
                                         arg,
@@ -375,12 +449,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
 
             const measureColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.MEASURE,
+                (col) => col.type === ColumnType.MEASURE,
             );
 
             const attributeColumns = _.filter(
                 cols,
-                col => col.type === ColumnType.ATTRIBUTE,
+                (col) => col.type === ColumnType.ATTRIBUTE,
             );
 
             const axisConfig: ChartConfig = {
@@ -418,7 +492,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             );
             return queries;
         },
-        renderChart: ctx => renderChart(ctx),
+        renderChart: (ctx) => renderChart(ctx),
         validateConfig: (
             updatedConfig: any[],
             chartModel: any,
@@ -451,7 +525,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             const { config, visualProps } = currentChartConfig;
 
             const yColumns = config?.chartConfig?.[0]?.dimensions.find(
-                dimension => dimension.key === 'y' && dimension.columns,
+                (dimension) => dimension.key === 'y' && dimension.columns,
             );
 
             const configDefinition = [
@@ -546,6 +620,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             allowColumnNumberFormatting: true,
             allowMeasureNamesAndValues: true,
         },
+        persistedVisualPropKeys: ['clientStateChart2'],
         chartConfigParameters: {
             measureNameValueColumns: {
                 enableMeasureNameColumn: true,
@@ -554,6 +629,10 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                 measureValueColumnAlias: 'Value',
             },
             batchSizeLimit: 20000,
+            customChartVisualConfig: {
+                customChartDisabledActions: [],
+                customChartHiddenActions: [Action.Download],
+            },
         },
     });
 

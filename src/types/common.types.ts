@@ -6,6 +6,7 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+import { Action } from './actions.types';
 import { ChartColumn } from './answer-column.types';
 import type { ChartConfigEditorDefinition } from './configurator.types';
 import type { VisualPropEditorDefinition } from './visual-prop.types';
@@ -357,4 +358,39 @@ export interface AppConfig {
      * third party developer
      */
     chartAppAccessToken?: string;
+}
+
+/**
+ * @description Configuration interface for controlling the visibility and behavior of actions in a custom chart.
+ * This interface allows control over which actions are disabled, hidden, or visible
+ * in the Answer Actions(3dot menu)/ context menu actions.
+ *
+ * @export
+ * @interface VisualConfig
+ */
+export interface VisualConfig {
+    /**
+     * Array of actions that should be disabled (grayed out) in the custom chart.
+     * These actions will be visible but not interactive.
+     */
+    customChartDisabledActions?: Action[];
+
+    /**
+     * Tooltip message for why certain actions are disabled.
+     *
+     */
+    customChartDisabledActionReason?: string;
+
+    /**
+     * Array of actions that should be completely hidden from the custom chart's UI.
+     * These actions will not be visible to users. Define either this or visibleActions.
+     */
+    customChartHiddenActions?: Action[];
+
+    /**
+     * Array of actions that should be explicitly visible in the custom chart.
+     * Use this to specify which actions should be shown in the UI. Define either this or Hidden
+     * Actions
+     */
+    customChartVisibleActions?: Action[];
 }

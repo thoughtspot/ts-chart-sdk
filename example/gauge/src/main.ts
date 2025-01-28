@@ -21,6 +21,21 @@ let globalChartReference: Chart;
 
 const DEFAULT_COLOR = '#2E75F0';
 
+const localCounterState = 1;
+
+const exampleClientState = {
+    id: 'chart-id',
+    name: 'custom-bar-chart',
+    library: 'chartJs',
+    localCounterState,
+};
+const exampleClientStateChart1 = {
+    id: 'chart-id2',
+    name: 'custom-second-chart',
+    libarary: 'highCharts',
+    localCounterState,
+};
+
 interface VizPropModel {
     bands?: Array<{
         start?: number;
@@ -147,7 +162,42 @@ const render = (ctx: CustomChartContext) => {
     const isPrintMode = appConfig.appOptions?.isPrintMode;
     const vizProps = chartModel.visualProps as VizPropModel;
     const dataModel = getDataModel(chartModel);
-
+    const currentVisualProps = JSON.parse(
+        JSON.stringify({
+            ...chartModel.visualProps!,
+            // Assign updated client state values as string.
+            clientState: JSON.stringify({
+                // JSON parse previous client state values from a string (if any, if not parse null object).
+                ...JSON.parse(
+                    (chartModel.visualProps as { clientState: string })
+                        .clientState || '{}',
+                ),
+                // Used to store any local state specific to chart, only string allowed.
+                // This will be preserved when you update visual props with an event.
+                // Assign new values to a client state using object rest destruct.
+                ...exampleClientState,
+                // To assign, and update new value.
+                // id: 'new-chart-id',
+            }),
+            // this will throw warning in console, as this must
+            // be stringified.
+            // clientStateChart2: {
+            //     ...chartModel.visualProps?.clientStateChart2,
+            //     ...exampleClientStatChart2,
+            // },
+            clientStateChart1: JSON.stringify({
+                ...JSON.parse(
+                    (chartModel.visualProps as { clientStateChart1: string })
+                        .clientStateChart1 || '{}',
+                ),
+                ...exampleClientStateChart1,
+            }),
+        }),
+    );
+    console.log('currentVisualProps', currentVisualProps);
+    ctx.emitEvent(ChartToTSEvent.UpdateVisualProps, {
+        visualProps: currentVisualProps,
+    });
     let minValue = getMinValue(dataModel, chartModel);
     let maxValue = getMaxValue(dataModel, chartModel);
     const targetValue = getTargetValue(dataModel, chartModel);
@@ -511,6 +561,7 @@ const init = async () => {
                 },
             ],
         },
+        persistedVisualPropKeys: ['clientStateChart1'],
         validateConfig: (
             updatedConfig: ChartConfig[],
             _chartModel: ChartModel,
