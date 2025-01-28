@@ -27,6 +27,7 @@ import {
     isDateNumColumn,
     PointVal,
     Query,
+    TSToChartEvent,
     ValidationResponse,
     VisualPropEditorDefinition,
     VisualProps,

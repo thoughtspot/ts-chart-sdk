@@ -488,3 +488,71 @@ describe('useChartContext on React Wrapper component', () => {
         });
     });
 });
+// ... existing code ...
+
+describe('useChartContext DownloadExcelTrigger event handler', () => {
+    let eventProcessor: any;
+    let mockInitMessage;
+    let mockPostMessageToHost;
+    const mockedChartModel = { columns: [], config: {} };
+
+    beforeEach(() => {
+        mockInitMessage = jest.spyOn(
+            PostMessageEventBridge,
+            'initMessageListener',
+        );
+        mockPostMessageToHost = jest.spyOn(
+            PostMessageEventBridge,
+            'postMessageToHostApp',
+        );
+        mockInitMessage.mockImplementation((fn: any) => {
+            eventProcessor = fn;
+            return () => null;
+        });
+
+        mockPostMessageToHost.mockImplementation(() => {
+            return global.Promise.resolve();
+        });
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+        PostMessageEventBridge.globalThis.isInitialized = false;
+    });
+
+    test('should handle download Excel trigger correctly', async () => {
+        const { result, waitFor } = renderHook(() =>
+            useChartContext(contextChartProps),
+        );
+
+        // Initialize context
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
+            },
+            eventType: TSToChartEvent.Initialize,
+        });
+
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.InitializeComplete,
+            source: 'ts-host-app',
+        });
+
+        const response = await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.DownloadExcelTrigger,
+            source: 'ts-host-app',
+        });
+
+        await waitFor(() => {
+            expect(response).toEqual({
+                fileName: '',
+                error: '',
+                message: 'Download Excel not implemented.',
+            });
+        });
+    });
+});

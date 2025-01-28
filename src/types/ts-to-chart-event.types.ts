@@ -79,6 +79,19 @@ export enum TSToChartEvent {
      * @version SDK: 0.2 | ThoughtSpot:
      */
     GetColumnData = 'GetColumnData',
+    /**
+     * @version SDK: 1.2.1 | ThoughtSpot:
+     */
+    DownloadExcelTrigger = 'DownloadExcelTrigger',
+}
+
+export interface DownloadExcelTriggerPayload {
+    answerTitle: string;
+}
+export interface DownloadExcelTriggerResponse {
+    fileName: string;
+    error: string;
+    message: string;
 }
 
 /**
@@ -95,6 +108,9 @@ export interface TSToChartEventsPayloadMap {
     [TSToChartEvent.VisualPropsUpdate]: (
         payload: VisualPropsUpdateEventPayload,
     ) => void;
+    [TSToChartEvent.DownloadExcelTrigger]: (
+        payload: DownloadExcelTriggerPayload,
+    ) => DownloadExcelTriggerResponse;
 }
 
 /**

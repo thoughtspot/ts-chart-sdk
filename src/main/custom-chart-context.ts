@@ -36,6 +36,7 @@ import {
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
+    DownloadExcelTriggerPayload,
     GetColumnDataPayload,
     GetColumnDataResponsePayload,
     GetDataQueryPayload,
@@ -1029,6 +1030,23 @@ export class CustomChartContext {
                 this.chartModel.visualProps = payload.visualProps;
                 return {
                     triggerRenderChart: true,
+                };
+            },
+        );
+        /**
+         * This event is triggered when the TS app sends the download excel trigger.
+         */
+        this.on(
+            TSToChartEvent.DownloadExcelTrigger,
+            (payload: DownloadExcelTriggerPayload) => {
+                logger.log(
+                    'DownloadExcelTrigger event triggered from TS with payload:',
+                    payload,
+                );
+                return {
+                    fileName: '',
+                    error: '',
+                    message: 'Download Excel not implemented.',
                 };
             },
         );
