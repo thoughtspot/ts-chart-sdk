@@ -23,6 +23,7 @@ import {
     ChartModel,
     SuccessValidationResponse,
     ValidationResponse,
+    VisualConfig,
     VisualProps,
 } from '../types/common.types';
 import {
@@ -104,7 +105,14 @@ export type AllowedConfigurations = {
      */
     allowMeasureNamesAndValues?: boolean;
 };
-
+/**
+ * Key stored in persistedVisualPropKeys array will be preserved on changing the
+ * visualPropeditorDefinition, any other key (expect clientState) would not be preserved for visual props.
+ * ### NOTE: like clientState this variable should be a string, preferrably a result of JSON.stringify(<yourlocalClientState>)
+ * ### USE CASE: This is to maintain different clientSate for different custom charts developed by same TS custom chart developer.
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export type PersistedVisualPropKeys = string[];
 /**
  * Configuration parameters for setting chart-specific options.
  *
@@ -166,6 +174,13 @@ export type ChartConfigParameters = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     batchSizeLimit?: number;
+    /**
+     * @description
+     * Optional parameter to control certain visual elements on the chart For example visibleAction
+     * array if Passed will only show those actions in context menu/Action menu of the chart on answer page
+     * @type {VisualConfig}
+     */
+    customChartVisualConfig?: VisualConfig;
 };
 
 export type CustomChartContextProps = {
@@ -257,6 +272,20 @@ export type CustomChartContextProps = {
      */
     allowedConfigurations?: AllowedConfigurations;
     /**
+    /**
+     * Key stored in persistedVisualPropKeys array will be preserved on changing the
+     * visualPropeditorDefinition, any other key (expect clientState) 
+     * would not be preserved for visual props.
+     * ### NOTE: like clientState this variable should be a string, 
+     * preferrably a result of JSON.stringify(<yourlocalClientState>)
+     * ### USE CASE: This is to maintain different clientSate for different custom charts 
+     * developed by same TS custom chart developer.
+     * 
+     * @type {PersistedVisualPropKeys}
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    persistedVisualPropKeys?: PersistedVisualPropKeys;
+    /**
      * Optional parameters for configuring specific chart-related features, such as measure name
      * and value columns.
      *
@@ -283,6 +312,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
         allowGradientColoring: false,
         allowMeasureNamesAndValues: false,
     },
+    persistedVisualPropKeys: undefined,
     chartConfigParameters: {
         measureNameValueColumns: {
             enableMeasureNameColumn: false,
@@ -1067,6 +1097,8 @@ export class CustomChartContext {
                     this.chartContextProps.allowedConfigurations,
                 chartConfigParameters:
                     this.chartContextProps.chartConfigParameters,
+                persistedVisualPropKeys:
+                    this.chartContextProps.persistedVisualPropKeys,
             };
         };
 
