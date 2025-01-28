@@ -80,7 +80,7 @@ export enum TSToChartEvent {
      */
     GetColumnData = 'GetColumnData',
     /**
-     * @version SDK: 0.2 | ThoughtSpot:
+     * @version SDK: 1.2.1 | ThoughtSpot:
      */
     DownloadExcelTrigger = 'DownloadExcelTrigger',
 }
