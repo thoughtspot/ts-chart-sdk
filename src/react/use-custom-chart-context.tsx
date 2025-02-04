@@ -112,11 +112,11 @@ export const useChartContext = (
             payload: DownloadExcelTriggerPayload,
         ) => {
             setChartModel(context.getChartModel());
-            return {
+            return Promise.resolve({
                 fileName: '',
                 error: '',
                 message: 'Download Excel not implemented.',
-            };
+            });
         };
         // Register all external event listeners here
         getChartContextValues(context).setOnChartModelUpdate(

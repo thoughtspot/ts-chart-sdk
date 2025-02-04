@@ -1038,16 +1038,16 @@ export class CustomChartContext {
          */
         this.on(
             TSToChartEvent.DownloadExcelTrigger,
-            (payload: DownloadExcelTriggerPayload) => {
+            async (payload: DownloadExcelTriggerPayload) => {
                 logger.log(
                     'DownloadExcelTrigger event triggered from TS with payload:',
                     payload,
                 );
-                return {
+                return Promise.resolve({
                     fileName: '',
                     error: '',
                     message: 'Download Excel not implemented.',
-                };
+                });
             },
         );
     };

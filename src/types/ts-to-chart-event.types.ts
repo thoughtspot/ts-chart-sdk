@@ -110,7 +110,7 @@ export interface TSToChartEventsPayloadMap {
     ) => void;
     [TSToChartEvent.DownloadExcelTrigger]: (
         payload: DownloadExcelTriggerPayload,
-    ) => DownloadExcelTriggerResponse;
+    ) => Promise<DownloadExcelTriggerResponse>;
 }
 
 /**
