@@ -322,6 +322,33 @@ export type ChartSdkDateFormatsConfig = {
 export interface AppConfig {
     styleConfig?: ChartSdkCustomStylingConfig;
     dateFormatsConfig?: ChartSdkDateFormatsConfig;
+    /**
+     * these represent the custom css styles passed in the ts-embed-sdk (customization.style) in init event call. This mainly includes the customCssUrl, customCssVariables and rules_UNSTABLE.
+     * @type {Record<string, string | number>}
+     * @example
+     * {
+        customCSSUrl: "https://cdn.jsdelivr.net/gh/thoughtspot/custom-css-demo/css-variables.css",
+        // direct overrides declared within the Visual Embed SDK code
+        customCSS: {
+            // ThoughtSpot variables declared inline
+            variables: {
+            "--ts-var-button--secondary-background": "#F0EBFF",
+            "--ts-var-button--secondary--hover-background": "#E3D9FC",
+            "--ts-var-root-background": "#F7F5FF",
+            },
+            // CSS selectors declared inline, with syntax for declaring multiple CSS properties
+            rules_UNSTABLE: {
+            '{selector1}' : {
+                "{css-property-name}" : "{value}!important",
+                "{css-property-name2}" : "{value}!important"
+            },
+            '{selector2}'...
+            }
+        },
+        },
+     * }
+     */
+    embedCssStyles?: Record<string, string | number>;
     appOptions?: {
         isMobile?: boolean;
         isPrintMode?: boolean; // export mode on/off
