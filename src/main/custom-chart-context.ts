@@ -736,9 +736,17 @@ export class CustomChartContext {
      * @param event : Message Event Object
      */
     private eventProcessor = (data: any) => {
-        logger.log('Chart Context: message received:', data.eventType, data);
+        let eventData = data;
+        if (typeof data === 'string') {
+            eventData = JSON.parse(data);
+        }
+        logger.log(
+            'Chart Context: message received:',
+            eventData.eventType,
+            eventData,
+        );
 
-        const messageResponse = this.executeEventListenerCBs(data);
+        const messageResponse = this.executeEventListenerCBs(eventData);
 
         // respond back to parent to confirm/ack the receipt
         return messageResponse || {};
