@@ -37,14 +37,14 @@ const postMessageToHostApp = async (
     const resp = await timeout(
         sendMessage(
             target,
-            {
+            JSON.stringify({
                 componentId,
                 payload: {
                     ...eventPayload,
                 },
                 eventType,
                 source: 'ts-chart-sdk',
-            },
+            }),
             {
                 origin: hostUrl,
                 endpoint: 'child',
