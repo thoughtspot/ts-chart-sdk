@@ -346,7 +346,7 @@ export class CustomChartContext {
      * @internal
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    private hostUrl = '';
+    public hostUrl = '';
 
     /**
      * Chart Model object. This contains the complete metadata persisted with TS
