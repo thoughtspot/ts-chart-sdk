@@ -155,7 +155,7 @@ export interface ChartToTSEventsPayloadMap {
      *  Trigger to fetch blink flags from session service if exists
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
-    [ChartToTSEvent.GetBlinkFlags]: string[];
+    [ChartToTSEvent.GetBlinkFlags]: [GetBlinkFlagsPayload];
 }
 
 /**
@@ -164,6 +164,10 @@ export interface ChartToTSEventsPayloadMap {
  */
 export interface UpdateVisualPropsEventPayload {
     visualProps: VisualProps;
+}
+
+export interface GetBlinkFlagsPayload {
+    flags: string[];
 }
 
 /**
