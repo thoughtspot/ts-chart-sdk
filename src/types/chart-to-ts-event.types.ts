@@ -51,6 +51,12 @@ export enum ChartToTSEvent {
      */
     ShowToolTip = 'ShowToolTip',
     HideToolTip = 'HideToolTip',
+
+    /**
+     * Flag events
+     *
+     */
+    GetBlinkFlags = 'GetBlinkFlags',
 }
 
 /**
@@ -145,6 +151,11 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     [ChartToTSEvent.CloseAxisMenu]: [];
+    /**
+     *  Trigger to fetch blink flags from session service if exists
+     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
+     */
+    [ChartToTSEvent.GetBlinkFlags]: string[];
 }
 
 /**
