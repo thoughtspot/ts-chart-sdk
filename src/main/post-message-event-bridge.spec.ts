@@ -55,12 +55,12 @@ describe('postMessageToHostApp', () => {
         // Verify that the postMessage function was called with the correct
         // arguments
         expect(mockPostMessage).toHaveBeenCalledWith(
-            JSON.stringify({
+            {
                 componentId,
                 payload: eventPayload,
                 eventType,
                 source: 'ts-chart-sdk',
-            }),
+            },
             hostUrl,
             [channel.port2],
         );
@@ -110,12 +110,12 @@ describe('postMessageToHostApp', () => {
         // Verify that the postMessage function was called with the correct
         // arguments
         expect(mockPostMessage).toHaveBeenCalledWith(
-            JSON.stringify({
+            {
                 componentId,
                 payload: eventPayload,
                 eventType,
                 source: 'ts-chart-sdk',
-            }),
+            },
             hostUrl,
             [channel.port2],
         );
@@ -154,12 +154,12 @@ describe('postMessageToHostApp', () => {
             );
 
             expect(mockPostMessage).toHaveBeenCalledWith(
-                JSON.stringify({
+                {
                     componentId,
                     payload: eventPayload,
                     eventType,
                     source: 'ts-chart-sdk',
-                }),
+                },
                 hostUrl,
                 expect.any(Array),
             );
@@ -201,12 +201,12 @@ describe('postMessageToHostApp', () => {
         await expect(promise).rejects.toThrow('Some postMessage error');
 
         expect(mockPostMessage).toHaveBeenCalledWith(
-            JSON.stringify({
+            {
                 componentId,
                 payload: eventPayload,
                 eventType,
                 source: 'ts-chart-sdk',
-            }),
+            },
             hostUrl,
             expect.any(Array),
         );
