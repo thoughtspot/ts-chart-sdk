@@ -547,6 +547,88 @@ export interface ColumnProp {
     };
 }
 
+export enum AccordionVariant {
+    BASIC = 'basic',
+    MULTI_LEVEL = 'nested',
+    LONG_LIST = 'long',
+    SIDE_NAV = 'sideNav',
+    MINIMAL = 'minimal',
+}
+/**
+ * Please update component factory if you are adding a new element type here.
+ * @refer component-factory.tsx in blink-v2
+ */
+export enum ChartSettingsElementType {
+    TEXT_INPUT = 'InputText',
+    NUMBER_INPUT = 'InputNumber',
+    DATE_INPUT = 'InputText',
+    RADIO = 'Radio',
+    RADIO_GROUP = 'RadioGroup',
+    CHECKBOX = 'Checkbox',
+    CHECKBOX_GROUP = 'CheckboxGroup',
+    CHECKBOX_GROUP_ITEM = 'CheckboxGroupItem',
+    NUMBER_RANGE = 'NumberRange',
+    DROPDOWN = 'Dropdown',
+    COLOR_PICKER = 'ColorPicker',
+    TOGGLE = 'Toggle',
+    BUTTON = 'Button',
+    TYPOGRAPHY = 'Typography',
+    TAB = 'Tab',
+    TAB_ITEM = 'TabItem',
+    ACCORDION = 'Accordion',
+    ACCORDION_ITEM = 'AccordionItem',
+    FONT_FORMATTER = 'Formatter',
+    NUMBER_FORMATTER = 'NumberFormatter',
+    LINE_FORMATTER = 'LineFormatter',
+    TICK_FORMATTER = 'TickFormatter',
+    BACKGROUND_FORMATTER = 'BackgroundFormatter',
+    MARKER_FORMATTER = 'MarkerFormatter',
+    VIEW = 'View',
+    TOOLTIP_CONFIGURATOR = 'TooltipConfigurator',
+    CONDITIONAL_FORMATTER = 'ConditionalFormatter',
+    POSITION_CONTROL = 'PositionControl',
+    INHERITANCE_WIDGET = 'InheritanceWidget',
+    SECTION = 'Section',
+    LABELLED_VIEW = 'LabelledView',
+    MULTILEVEL_DROPDOWN = 'MultilevelDropdown',
+}
+type validatorReturnType = { isValid: boolean; errorMessage: string };
+type Value = string | boolean | number | object | any[];
+type ElementProperties = { [key: string]: Value };
+
+type ValidatorFunction = (value: Value) => validatorReturnType;
+
+export type ChartSettingsElement = {
+    key: any; // TODO - narrow down this type to a set of keys exposed by TS
+    clientStatePath: string; // vizProp.whatever.whatever
+    elementType: ChartSettingsElementType;
+    properties: ElementProperties;
+    value: Value;
+    className: string;
+    validatorFunction: ValidatorFunction;
+    label?: string;
+    children?: ChartSettingsElement[];
+    isDisable?: boolean;
+    isAdvanced?: boolean;
+    canHaveAutoValue?: boolean;
+    visibleWhen?: { elementKey: string; value: Value };
+    // controls visibility of this element based on the specified value of the
+    // element
+    helperText?: string;
+    onChange?: (oldValue: any, newValue: any) => void; // will be executed after validations. We can handle specific query calls and rerenders/reflows with this parameter.
+    // if element id is mentioned, then value from the specified element will be
+    // picked. e.g. axis values. If element id is not mentioned, then value will
+    // be reset on linking. e.g. axis name text formatting linked to column text
+    // formatting. here an axis can have more than one column and each of these
+    // column properties cannot be used to show it in a single element.
+    link?: { elementId: string; isLinked: boolean };
+};
+
+export type ColumnSettingsItem = {
+    type: ColumnType;
+    settings: ChartSettingsElement[];
+};
+
 /**
  * Visual property editor definition object
  *
@@ -566,6 +648,8 @@ export interface VisualPropEditorDefinition {
      * @version SDK: 0.2 | ThoughtSpot:
      */
     columnsVizPropDefinition?: ColumnProp[];
+
+    columnSettingsSchema?: ChartSettingsElement[];
 }
 
 export type VisualEditorDefinitionSetter = (
