@@ -853,6 +853,10 @@ Since in our previous implementation of `visualPropEditorDefintion` we provided 
 
 In `getQueriesFromChartConfig` along with `QueryColumn` you can provide additional optional key `queryParams`. In `queryParams` you can provide `size` to deal with the number of data points that need to fetched. Also there is hard limit of 100K data points to be fetched from the backend.
 
+#### Why is my chart is getting error corresponding to timeout even though I have imeplemented everything right?
+
+In the TS component that is reacting with your sdk code we have added certain timeouts for gracefully handling long time inactivity on postMessage and renderChart function that ones implements. We have added timeout for 30 sec `PostMessage` API so if the event from TSToChart or ChartToTS take more then 30 sec to get a response we automatically get into a error state through timeout. Also we have 60 sec timeout for `renderChart` functionality. This timeout start ones `InitilaizeComplete` event triggers from from the TS and expect to recieve `renderComplete` or `renderError` event within 60 sec of `InitializeComplete`.
+
 <br/>
 
 ThoughtSpot Chart SDK, © ThoughtSpot, Inc. 2023
