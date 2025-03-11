@@ -649,7 +649,7 @@ export interface VisualPropEditorDefinition {
      */
     columnsVizPropDefinition?: ColumnProp[];
 
-    columnSettingsSchema?: ChartSettingsElement[];
+    columnSettingsSchema?: ColumnSettingsItem[];
 }
 
 export type VisualEditorDefinitionSetter = (
