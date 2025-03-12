@@ -272,4 +272,19 @@ export interface ChartColumn {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartSpecificColumnType: ChartSpecificColumnType;
+    /**
+     * The display name for the column based on point mentioned below.
+     * This corresponds to the formatted name that we use in TS native charts to show column name.
+     * 1. Weather it is a Measure Name /Measure Value column(since measureNameColumnAlias and
+     * measureNameValueAlias are used to control name for
+     * MN/MV column and these are handled on sdk side
+     * will pass this as empty in that case unless its a userDefined through renaming).
+     * 2. Weather we are applying some Aggrigation to the column such as SUM,MIN,MAX etc
+     * that could be seen in {@link ColumnAggregationType}.
+     * 3. Based on the Date Bucketization that we apply to a colum such as Daily,Weekly,Monthly etc
+     * that can be seen in {@link ColumnTimeBucket}.
+     * 4. Based on the weather the column is derived from the custom calender.
+     *
+     */
+    displayName?: string;
 }
