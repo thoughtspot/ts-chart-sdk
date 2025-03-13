@@ -9,12 +9,16 @@
  */
 
 import {
+    AccordionVariant,
     AppConfig,
     ChartColumn,
     ChartConfig,
     ChartModel,
     ChartSdkCustomStylingConfig,
+    ChartSettingsElementType,
     ChartToTSEvent,
+    ColumnProp,
+    ColumnSettingsItem,
     ColumnType,
     CustomChartContext,
     DataPointsArray,
@@ -26,6 +30,7 @@ import {
     isDateColumn,
     isDateNumColumn,
     PointVal,
+    PropElement,
     Query,
     TSToChartEvent,
     ValidationResponse,
@@ -246,6 +251,11 @@ function render(ctx: CustomChartContext) {
         visualPropKeyMap[1],
         availableColor[0],
     );
+    const test = _.get(
+        chartModel?.visualProps?.columnVisualProps,
+        '95dc5f22-30a9-411f-9121-296dc6f9fa88.text',
+        'z',
+    );
     if (!dataModel) {
         return;
     }
@@ -258,7 +268,7 @@ function render(ctx: CustomChartContext) {
         globalChartReference = new Chart(canvas as any, {
             type: 'bar',
             data: {
-                labels: dataModel.getLabels(),
+                labels: [test, 'b', 'c'],
                 datasets: dataModel.getDatasets() as any,
             },
             options: {
@@ -508,12 +518,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             };
         },
         validateVisualProps: (visualProps: any, chartModel: any) => {
-            if (visualProps?.tooltipconfig1?.columnIds?.length > 2) {
-                return {
-                    isValid: false,
-                    validationErrorMessage: ['Invalid visual props'],
-                };
-            }
+            // if (visualProps?.tooltipconfig1?.columnIds?.length > 2) {
+            //     return {
+            //         isValid: false,
+            //         validationErrorMessage: ['Invalid visual props'],
+            //     };
+            // }
             return {
                 isValid: true,
             };
@@ -542,7 +552,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                             allowAttributeColumns: true,
                             allowMeasureColumns: false,
                             allowTimeSeriesColumns: true,
-                            maxColumnCount: 1,
+                            maxColumnCount: 10,
                         },
                         {
                             key: 'y',
@@ -581,6 +591,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     label: 'Colors',
                 },
                 {
+                    key: 'color2',
+                    type: 'colorpicker',
+                    defaultValue: '#000000',
+                    label: 'Color Picker',
+                },
+                {
                     key: 'tooltipconfig1',
                     type: 'tooltipconfig',
                     defaultValue: {
@@ -601,7 +617,7 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                         },
                     ],
                 },
-            ];
+            ] as PropElement[];
             if (visualProps?.length !== 0) {
                 if (visualProps?.accordion?.datalabels) {
                     elements[1].children?.push({
@@ -613,12 +629,459 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     });
                 }
             }
-            return { elements };
+
+            const cols = currentVisualProps.columns;
+
+            const attributeColumns = _.filter(
+                cols,
+                (col) => col.type === ColumnType.ATTRIBUTE,
+            );
+            const columnsVizPropDefinition = [
+                {
+                    type: ColumnType.ATTRIBUTE,
+                    columnSettingsDefinition: {
+                        [attributeColumns[0].id]: {
+                            elements: [
+                                {
+                                    key: 'text2',
+                                    type: 'text',
+                                    defaultValue: 'red',
+                                    label: 'Attribute Box',
+                                },
+                            ] as PropElement[],
+                        },
+                    },
+                },
+                // {
+                //     type: ColumnType.MEASURE,
+                //     columnSettingsDefinition: {
+                //         [measureColumns[0].id]: {
+                //             elements: [
+                //                 {
+                //                     key: 'textBox',
+                //                     type: 'text',
+                //                     defaultValue: 'red',
+                //                     label: 'Measure Box',
+                //                 },
+                //             ],
+                //         },
+                //     },
+                // },
+            ] as ColumnProp[];
+            const check = _.get(
+                visualProps.columnSettingsSchema,
+                '4bfacfa5-d3e2-4ad7-b7a9-535b6c8c1fd4.Section1.Accordion2.AccordionItem2.name2',
+                'random',
+            );
+            let child1 = [];
+            if (check === 'Test2') {
+                child1 = [
+                    {
+                        key: 'Accordion3',
+                        elementType:
+                            ChartSettingsElementType.ACCORDION,
+                        // addDividerBelow: true, // to be checked at render time for next children
+                        properties: {
+                            variant: AccordionVariant.MINIMAL,
+                            expandedItemsIndexes: [0],
+                            expandMultipleItems: true,
+                            useContainedHeight: false,
+                            noPadding: true,
+                            header: 'Custom Visual Props',
+                            value: 'customVisualProps',
+                            label: 'Custom Visual Props',
+                        },
+                        hideScenarios: {
+                            chartSpecificColumnType: [
+                                'MEASURE_VALUES',
+                                'MEASURE_NAMES',
+                            ],
+                        },
+                        children: [
+                            {
+                                key: 'AccordionItem3',
+                                elementType:
+                                    ChartSettingsElementType.ACCORDION_ITEM,
+                                // isAnswerProperty: true,
+                                // runTimeProperties: {
+                                //     header: 'name', // will be used to update these properties mentioned as key at runtime and piock the values using the path mentioned as value in this object
+                                // },
+                                properties: {
+                                    header: 'name3',
+                                    isExpanded: true,
+                                    alignToHeader: false,
+                                    noPadding: true,
+                                    variant: 'sideNav',
+                                },
+                                children: [
+                                    {
+                                        key: 'name3',
+                                        elementType:
+                                            ChartSettingsElementType.TEXT_INPUT,
+                                        properties: {
+                                            value: 'Test3',
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ];
+            }
+
+            const columnSettingsSchema = [
+                {
+                    type: ColumnType.ATTRIBUTE,
+                    settings: [
+                        {
+                            key: 'Section1',
+                            elementType: ChartSettingsElementType.SECTION,
+                            children: [
+                                // {
+                                //     key: 'Accordion1',
+                                //     elementType:
+                                //         ChartSettingsElementType.ACCORDION,
+                                //     // addDividerBelow: true, // to be checked at render time for next children
+                                //     properties: {
+                                //         variant: AccordionVariant.MINIMAL,
+                                //         expandedItemsIndexes: [0],
+                                //         expandMultipleItems: true,
+                                //         useContainedHeight: false,
+                                //         noPadding: true,
+                                //     },
+                                //     hideScenarios: {
+                                //         chartSpecificColumnType: [
+                                //             'MEASURE_VALUES',
+                                //             'MEASURE_NAMES',
+                                //         ],
+                                //     },
+                                //     children: [
+                                //         {
+                                //             key: 'AccordionItem1',
+                                //             elementType:
+                                //                 ChartSettingsElementType.ACCORDION_ITEM,
+                                //             isAnswerProperty: true,
+                                //             runTimeProperties: {
+                                //                 header: 'name', // will be used to update these properties mentioned as key at runtime and piock the values using the path mentioned as value in this object
+                                //             },
+                                //             properties: {
+                                //                 header: 'placeholder',
+                                //                 isExpanded: true,
+                                //                 alignToHeader: false,
+                                //                 noPadding: true,
+                                //                 variant: 'sideNav',
+                                //             },
+                                //             children: [
+                                //                 {
+                                //                     key: 'name',
+                                //                     isAnswerProperty: true,
+                                //                     elementType:
+                                //                         ChartSettingsElementType.TEXT_INPUT,
+                                //                     properties: {
+                                //                         value: 'Product column',
+                                //                     },
+                                //                 },
+                                //                 ...child1,
+                                //             ],
+                                //         },
+                                //     ],
+                                // },
+                                {
+                                    key: 'Accordion2',
+                                    elementType:
+                                        ChartSettingsElementType.ACCORDION,
+                                    // addDividerBelow: true, // to be checked at render time for next children
+                                    properties: {
+                                        variant: AccordionVariant.MINIMAL,
+                                        expandedItemsIndexes: [0],
+                                        expandMultipleItems: true,
+                                        useContainedHeight: false,
+                                        noPadding: true,
+                                        header: 'Custom Visual Props',
+                                        value: 'customVisualProps',
+                                        label: 'Custom Visual Props',
+                                    },
+                                    hideScenarios: {
+                                        chartSpecificColumnType: [
+                                            'MEASURE_VALUES',
+                                            'MEASURE_NAMES',
+                                        ],
+                                    },
+                                    children: [
+                                        {
+                                            key: 'AccordionItem2',
+                                            elementType:
+                                                ChartSettingsElementType.ACCORDION_ITEM,
+                                            // isAnswerProperty: true,
+                                            // runTimeProperties: {
+                                            //     header: 'name', // will be used to update these properties mentioned as key at runtime and piock the values using the path mentioned as value in this object
+                                            // },
+                                            properties: {
+                                                header: 'name1',
+                                                isExpanded: true,
+                                                alignToHeader: false,
+                                                noPadding: true,
+                                                variant: 'sideNav',
+                                            },
+                                            children: [
+                                                {
+                                                    key: 'name2',
+                                                    elementType:
+                                                        ChartSettingsElementType.TEXT_INPUT,
+                                                    properties: {
+                                                        value: 'Test',
+                                                    },
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                                ...child1,
+                            ],
+                        },
+                    ],
+                },
+                // {
+                //     type: ColumnType.MEASURE,
+                //     settings: [
+                //         {
+                //             key: 'Section1',
+                //             elementType: ChartSettingsElementType.SECTION,
+                //             children: [
+                //                 {
+                //                     key: 'Accordion1',
+                //                     elementType:
+                //                         ChartSettingsElementType.ACCORDION,
+                //                     // addDividerBelow: true, // to be checked at render time for next children
+                //                     properties: {
+                //                         variant: AccordionVariant.MINIMAL,
+                //                         expandedItemsIndexes: [0],
+                //                         expandMultipleItems: true,
+                //                         useContainedHeight: false,
+                //                         noPadding: true,
+                //                     },
+                //                     hideScenarios: {
+                //                         chartSpecificColumnType: [
+                //                             'MEASURE_VALUES',
+                //                             'MEASURE_NAMES',
+                //                         ],
+                //                     },
+                //                     children: [
+                //                         {
+                //                             key: 'AccordionItem1',
+                //                             elementType:
+                //                                 ChartSettingsElementType.ACCORDION_ITEM,
+                //                             isAnswerProperty: true,
+                //                             runTimeProperties: {
+                //                                 header: 'name', // will be used to update these properties mentioned as key at runtime and piock the values using the path mentioned as value in this object
+                //                             },
+                //                             properties: {
+                //                                 header: 'placeholder',
+                //                                 isExpanded: true,
+                //                                 alignToHeader: false,
+                //                                 noPadding: true,
+                //                                 variant: 'sideNav',
+                //                             },
+                //                             children: [
+                //                                 {
+                //                                     key: 'name',
+                //                                     isAnswerProperty: true,
+                //                                     elementType:
+                //                                         ChartSettingsElementType.TEXT_INPUT,
+                //                                     properties: {
+                //                                         value: 'Product column',
+                //                                     },
+                //                                 },
+                //                             ],
+                //                         },
+                //                     ],
+                //                 },
+                //                 {
+                //                     key: 'Accordion2',
+                //                     elementType:
+                //                         ChartSettingsElementType.ACCORDION,
+                //                     // addDividerBelow: true, // to be checked at render time for next children
+                //                     properties: {
+                //                         variant: AccordionVariant.MINIMAL,
+                //                         expandedItemsIndexes: [0],
+                //                         expandMultipleItems: true,
+                //                         useContainedHeight: false,
+                //                         noPadding: true,
+                //                         header: 'Custom Visual Props',
+                //                         value: 'customVisualProps',
+                //                         label: 'Custom Visual Props',
+                //                     },
+                //                     hideScenarios: {
+                //                         chartSpecificColumnType: [
+                //                             'MEASURE_VALUES',
+                //                             'MEASURE_NAMES',
+                //                         ],
+                //                     },
+                //                     children: [
+                //                         {
+                //                             key: 'AccordionItem2',
+                //                             elementType:
+                //                                 ChartSettingsElementType.ACCORDION_ITEM,
+                //                             // isAnswerProperty: true,
+                //                             // runTimeProperties: {
+                //                             //     header: 'name', // will be used to update these properties mentioned as key at runtime and piock the values using the path mentioned as value in this object
+                //                             // },
+                //                             properties: {
+                //                                 header: 'name1',
+                //                                 isExpanded: true,
+                //                                 alignToHeader: false,
+                //                                 noPadding: true,
+                //                                 variant: 'sideNav',
+                //                             },
+                //                             children: [
+                //                                 {
+                //                                     key: 'name2',
+                //                                     elementType:
+                //                                         ChartSettingsElementType.TEXT_INPUT,
+                //                                     properties: {
+                //                                         value: 'Test',
+                //                                     },
+                //                                 },
+                //                             ],
+                //                         },
+                //                     ],
+                //                 },
+                //             ],
+                //         },
+                //     ],
+                // },
+                // {
+                //     type: 'MEASURE',
+                //     settings: [
+                //         {
+                //             elementType: ChartSettingsElementType.SECTION,
+                //             children: [
+                //                 {
+                //                     key: 'columnGuid2',
+                // elementType: ChartSettingsElementType.ACCORDION,
+                // addDividerBelow: true,
+                //                     properties: {
+                //                         variant: AccordionVariant.MINIMAL,
+                //                         expandedItemsIndexes: [0],
+                //                         expandMultipleItems: true,
+                //                         useContainedHeight: false,
+                //                         noPadding: true,
+                //                     },
+                //                     // element to be hidden if the column property satisfies the below condition
+                //                     hideScenarios: {
+                //                         chartSpecificColumnType: [
+                //                             'MEASURE_VALUES',
+                //                             'MEASURE_NAMES',
+                //                         ],
+                //                     },
+                //                     children: [
+                //                         {
+                //                             elementType:
+                //                                 ChartSettingsElementType.ACCORDION_ITEM,
+                //                             isAnswerProperty: true,
+                //                             runTimeProperties: {
+                //                                 header: 'name', // will be used to update these properties mentioned as key at runtime and piock the values using the path mentioned as value in this object
+                //                             },
+                //                             properties: {
+                //                                 header: 'placeholder',
+                //                                 isExpanded: true,
+                //                                 alignToHeader: false,
+                //                                 noPadding: true,
+                //                             },
+                //                             children: [
+                //                                 {
+                //                                     key: 'name',
+                //                                     isAnswerProperty: true,
+                //                                     elementType:
+                //                                         ChartSettingsElementType.TEXT_INPUT,
+                //                                     properties: {
+                // value: 'Sales column', },
+                //                                 },
+                //                                 {
+                //                                     elementType:
+                //                                         ChartSettingsElementType.NUMBER_FORMATTER,
+                //                                     key:
+                //                                         'columnProps.columnProperties.format',
+                //                                     isAnswerProperty: true,
+                //                                     properties: {
+                //                                         variant: 'font',
+                //                                         typeProps: {
+                // ariaLabel: 'number-type', },
+                //                                         subTypeProps: {
+                // ariaLabel: 'number-subtype', },
+                //                                         formatProps: {
+                // ariaLabel: 'number-format', },
+                //                                     },
+                //                                 },
+                //                                 {
+                //                                     elementType:
+                //                                         ChartSettingsElementType.LABELLED_VIEW,
+                //                                     properties: {
+                //                                         label: 'Aggregation',
+                //                                     },
+                //                                     children: [
+                //                                         {
+                //                                             elementType:
+                //                                                 ChartSettingsElementType.DROPDOWN,
+                //                                             label: 'Aggregation',
+                //                                             key: 'aggregationType',
+                //                                             isAnswerProperty: true,
+                //                                             runTimeProperties: {
+                //                                                 optionsGroups: 'TS_INPUT', // will be used to update these properties mentioned as key at runtime and have custom logic at TS side
+                //                                             },
+                //                                             properties: {
+                // optionsGroups: [], dropdownWidth:
+                //                                                     'targetWidth',
+                //                                             },
+                //                                         },
+                //                                     ],
+                //                                 },
+                //                                 {
+                // key: 'handleMissingValues', elementType:
+                //                                         ChartSettingsElementType.DROPDOWN,
+                //                                     properties: {
+                //                                         label:
+                // 'Display null and missing data as 0', optionsGroups: [
+                //                                             {
+                //                                                 options: [
+                //                                                     {
+                // id: 'DONT_SHOW', label: 'Ignore', },
+                //                                                     {
+                // id: 'SHOW_AS_ZERO', label:
+                // 'Treat as zero', },
+                //                                                     {
+                // id: 'SHOW_GAP', label: 'Show gaps', },
+                //                                                 ],
+                //                                             },
+                //                                         ],
+                // dropdownWidth: 'targetWidth', value: 'DONT_SHOW',
+                //                                     },
+                //                                 },
+                //                                 {
+                //                                     elementType:
+                //                                         ChartSettingsElementType.COLOR_PICKER,
+                //                                     value: '',
+                //                                     label: '',
+                //                                 },
+                //                                 {
+                //                                     elementType:
+                //                                         ChartSettingsElementType.CONDITIONAL_FORMATTER,
+                //                                 },
+                //                             ],
+                //                         },
+                //                     ],
+                //                 },
+                //             ],
+                //         },
+                //     ],
+                // },
+            ];
+            return { elements, columnsVizPropDefinition, columnSettingsSchema };
         },
         allowedConfigurations: {
             allowColumnConditionalFormatting: true,
             allowColumnNumberFormatting: true,
-            allowMeasureNamesAndValues: true,
+            allowMeasureNamesAndValues: false,
         },
         persistedVisualPropKeys: ['clientStateChart2'],
         chartConfigParameters: {
