@@ -10,6 +10,7 @@
 
 import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
+import { ChartSettingElement } from './chart-settings';
 import { ChartModel } from './common.types';
 
 export type TSTooltipConfig = {
@@ -519,6 +520,10 @@ export interface NativeEditToolTip {
     labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
+export interface ChartSettings {
+    type: 'chartSettings';
+    children: ChartSettingElement[];
+}
 /**
  * Common type placeholder for all the input element types
  *
@@ -566,6 +571,36 @@ export interface VisualPropEditorDefinition {
      * @version SDK: 0.2 | ThoughtSpot:
      */
     columnsVizPropDefinition?: ColumnProp[];
+    /**
+     *To Define axis settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    axisVizPropDefinition?: PropElement[];
+    /**
+     *To Define data label settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    dataLabelVizPropDefinition?: PropElement[];
+    /**
+     *To Define tooltip settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    tooltipVizPropDefinition?: PropElement[];
+    /**
+     *To Define legend settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    legendVizPropDefinition?: PropElement[];
+    /**
+     *To Define display settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    displayVizPropDefinition?: PropElement[];
 }
 
 export type VisualEditorDefinitionSetter = (
