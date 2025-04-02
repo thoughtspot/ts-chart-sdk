@@ -548,32 +548,8 @@ export type PropElement =
 export interface ColumnProp {
     type: ColumnType;
     columnSettingsDefinition: {
-        [columnId: string]: { elements: PropElement[] | ChartSettings[] };
+        [columnId: string]: { elements: PropElement[] };
     };
-}
-
-export interface AxisProp {
-    type: ColumnType;
-    axisSettingsDefinition: {
-        [axisId: string]: { elements: ChartSettingElement[] };
-    };
-}
-export interface DataLabelProp {
-    dataLabelSettingsDefinition: {
-        [columnId: string]: { elements: ChartSettingElement[] };
-    };
-}
-
-export interface TooltipProp {
-    elements: ChartSettingElement[];
-}
-
-export interface LegendProp {
-    elements: ChartSettingElement[];
-}
-
-export interface DisplayProp {
-    elements: ChartSettingElement[];
 }
 
 /**
@@ -600,31 +576,31 @@ export interface VisualPropEditorDefinition {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    axisVizPropDefinition?: AxisProp[];
+    axisVizPropDefinition?: PropElement[];
     /**
      *To Define data label settings.
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    dataLabelVizPropDefinition?: DataLabelProp[];
+    dataLabelVizPropDefinition?: PropElement[];
     /**
      *To Define tooltip settings.
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    tooltipVizPropDefinition?: TooltipProp;
+    tooltipVizPropDefinition?: PropElement[];
     /**
      *To Define legend settings.
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    legendVizPropDefinition?: LegendProp;
+    legendVizPropDefinition?: PropElement[];
     /**
      *To Define display settings.
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    displayVizPropDefinition?: ChartSettingElement[];
+    displayVizPropDefinition?: PropElement[];
 }
 
 export type VisualEditorDefinitionSetter = (

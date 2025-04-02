@@ -514,12 +514,12 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             };
         },
         validateVisualProps: (visualProps: any, chartModel: any) => {
-            if (visualProps?.tooltipconfig1?.columnIds?.length > 2) {
-                return {
-                    isValid: false,
-                    validationErrorMessage: ['Invalid visual props'],
-                };
-            }
+            // if (visualProps?.tooltipconfig1?.columnIds?.length > 2) {
+            //     return {
+            //         isValid: false,
+            //         validationErrorMessage: ['Invalid visual props'],
+            //     };
+            // }
             return {
                 isValid: true,
             };
@@ -730,41 +730,466 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             ] as ColumnProp[];
             const displayVizPropDefinition = [
                 {
-                    elementType: ChartSettingsElementType.SECTION,
+                    key: 'text2',
+                    type: 'text',
+                    defaultValue: 'red',
+                    label: 'Text Input',
+                    placeholder: 'Enter text',
+                    password: false,
+                    disabled: false,
+                },
+                {
+                    key: 'num1',
+                    type: 'number',
+                    defaultValue: 10,
+                    disabled: true,
+                },
+                {
+                    key: 'color',
+                    type: 'colorpicker',
+                    defaultValue: '#000000',
+                    label: 'Color Picker',
+                },
+                {
+                    key: 'toggle',
+                    type: 'toggle',
+                    defaultValue: false,
+                    label: 'Toggle',
+                    disabled: true,
+                },
+                {
+                    key: 'checkbox',
+                    type: 'checkbox',
+                    defaultValue: false,
+                    label: 'Checkbox',
+                    disabled: true,
+                },
+                {
+                    key: 'radio',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Radio',
+                    disabled: true,
+                },
+                {
+                    key: 'section',
+                    type: 'section',
+                    label: 'Section Here',
+                    alignment: 'row',
+                    layoutType: 'accordion',
+                    isAccordianExpanded: true,
+                    disabled: false,
                     children: [
                         {
-                            key: 'checkBox',
-                            elementType: ChartSettingsElementType.CHECKBOX,
-                            addPaddingTop: true,
-                            properties: {
-                                label: 'Fit to screen',
-                                value: false,
-                            },
+                            key: 'dropdown',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown',
+                            disabled: false,
                         },
                         {
-                            elementType: ChartSettingsElementType.LABELLED_VIEW,
-                            properties: {
-                                label: 'Max data points',
-                                orientation: 'Vertical',
-                            },
-                            children: [
-                                {
-                                    key: 'dataSize',
-                                    elementType:
-                                        ChartSettingsElementType.NUMBER_INPUT,
-
-                                    properties: {
-                                        value: 100,
-                                    },
-                                },
-                            ],
+                            key: 'dropdown2',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown2',
+                            disabled: false,
                         },
                     ],
                 },
-            ] as ChartSettingElement[];
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'datalabels',
+                            type: 'text',
+                            defaultValue: 'hello',
+                            label: 'textbox',
+                        },
+                        {
+                            key: 'toggle',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Toggle',
+                        },
+                    ],
+                },
+            ] as PropElement[];
+            const axisVizPropDefinition = [
+                {
+                    key: 'text2',
+                    type: 'text',
+                    defaultValue: 'red',
+                    label: 'Text Input',
+                    placeholder: 'Enter text',
+                    password: false,
+                    disabled: false,
+                },
+                {
+                    key: 'num1',
+                    type: 'number',
+                    defaultValue: 10,
+                    disabled: true,
+                },
+                {
+                    key: 'color',
+                    type: 'colorpicker',
+                    defaultValue: '#000000',
+                    label: 'Color Picker',
+                },
+                {
+                    key: 'toggle',
+                    type: 'toggle',
+                    defaultValue: false,
+                    label: 'Toggle',
+                    disabled: true,
+                },
+                {
+                    key: 'checkbox',
+                    type: 'checkbox',
+                    defaultValue: false,
+                    label: 'Checkbox',
+                    disabled: true,
+                },
+                {
+                    key: 'radio',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Radio',
+                    disabled: true,
+                },
+                {
+                    key: 'section',
+                    type: 'section',
+                    label: 'Section Here',
+                    alignment: 'row',
+                    layoutType: 'accordion',
+                    isAccordianExpanded: true,
+                    disabled: false,
+                    children: [
+                        {
+                            key: 'dropdown',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown',
+                            disabled: false,
+                        },
+                        {
+                            key: 'dropdown2',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown2',
+                            disabled: false,
+                        },
+                    ],
+                },
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'datalabels',
+                            type: 'text',
+                            defaultValue: 'hello',
+                            label: 'textbox',
+                        },
+                        {
+                            key: 'toggle',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Toggle',
+                        },
+                    ],
+                },
+            ] as PropElement[];
+            const dataLabelVizPropDefinition = [
+                {
+                    key: 'text2',
+                    type: 'text',
+                    defaultValue: 'red',
+                    label: 'Text Input',
+                    placeholder: 'Enter text',
+                    password: false,
+                    disabled: false,
+                },
+                {
+                    key: 'num1',
+                    type: 'number',
+                    defaultValue: 10,
+                    disabled: true,
+                },
+                {
+                    key: 'color',
+                    type: 'colorpicker',
+                    defaultValue: '#000000',
+                    label: 'Color Picker',
+                },
+                {
+                    key: 'toggle',
+                    type: 'toggle',
+                    defaultValue: false,
+                    label: 'Toggle',
+                    disabled: true,
+                },
+                {
+                    key: 'checkbox',
+                    type: 'checkbox',
+                    defaultValue: false,
+                    label: 'Checkbox',
+                    disabled: true,
+                },
+                {
+                    key: 'radio',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Radio',
+                    disabled: true,
+                },
+                {
+                    key: 'section',
+                    type: 'section',
+                    label: 'Section Here',
+                    alignment: 'row',
+                    layoutType: 'accordion',
+                    isAccordianExpanded: true,
+                    disabled: false,
+                    children: [
+                        {
+                            key: 'dropdown',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown',
+                            disabled: false,
+                        },
+                        {
+                            key: 'dropdown2',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown2',
+                            disabled: false,
+                        },
+                    ],
+                },
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'datalabels',
+                            type: 'text',
+                            defaultValue: 'hello',
+                            label: 'textbox',
+                        },
+                        {
+                            key: 'toggle',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Toggle',
+                        },
+                    ],
+                },
+            ] as PropElement[];
+            const tooltipVizPropDefinition = [
+                {
+                    key: 'text2',
+                    type: 'text',
+                    defaultValue: 'red',
+                    label: 'Text Input',
+                    placeholder: 'Enter text',
+                    password: false,
+                    disabled: false,
+                },
+                {
+                    key: 'num1',
+                    type: 'number',
+                    defaultValue: 10,
+                    disabled: true,
+                },
+                {
+                    key: 'color',
+                    type: 'colorpicker',
+                    defaultValue: '#000000',
+                    label: 'Color Picker',
+                },
+                {
+                    key: 'toggle',
+                    type: 'toggle',
+                    defaultValue: false,
+                    label: 'Toggle',
+                    disabled: true,
+                },
+                {
+                    key: 'checkbox',
+                    type: 'checkbox',
+                    defaultValue: false,
+                    label: 'Checkbox',
+                    disabled: true,
+                },
+                {
+                    key: 'radio',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Radio',
+                    disabled: true,
+                },
+                {
+                    key: 'section',
+                    type: 'section',
+                    label: 'Section Here',
+                    alignment: 'row',
+                    layoutType: 'accordion',
+                    isAccordianExpanded: true,
+                    disabled: false,
+                    children: [
+                        {
+                            key: 'dropdown',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown',
+                            disabled: false,
+                        },
+                        {
+                            key: 'dropdown2',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown2',
+                            disabled: false,
+                        },
+                    ],
+                },
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'datalabels',
+                            type: 'text',
+                            defaultValue: 'hello',
+                            label: 'textbox',
+                        },
+                        {
+                            key: 'toggle',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Toggle',
+                        },
+                    ],
+                },
+            ] as PropElement[];
+            const legendVizPropDefinition = [
+                {
+                    key: 'text2',
+                    type: 'text',
+                    defaultValue: 'red',
+                    label: 'Text Input',
+                    placeholder: 'Enter text',
+                    password: false,
+                    disabled: false,
+                },
+                {
+                    key: 'num1',
+                    type: 'number',
+                    defaultValue: 10,
+                    disabled: true,
+                },
+                {
+                    key: 'color',
+                    type: 'colorpicker',
+                    defaultValue: '#000000',
+                    label: 'Color Picker',
+                },
+                {
+                    key: 'toggle',
+                    type: 'toggle',
+                    defaultValue: false,
+                    label: 'Toggle',
+                    disabled: true,
+                },
+                {
+                    key: 'checkbox',
+                    type: 'checkbox',
+                    defaultValue: false,
+                    label: 'Checkbox',
+                    disabled: true,
+                },
+                {
+                    key: 'radio',
+                    type: 'radio',
+                    defaultValue: 'red',
+                    values: ['red', 'green', 'yellow'],
+                    label: 'Radio',
+                    disabled: true,
+                },
+                {
+                    key: 'section',
+                    type: 'section',
+                    label: 'Section Here',
+                    alignment: 'row',
+                    layoutType: 'accordion',
+                    isAccordianExpanded: true,
+                    disabled: false,
+                    children: [
+                        {
+                            key: 'dropdown',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown',
+                            disabled: false,
+                        },
+                        {
+                            key: 'dropdown2',
+                            type: 'dropdown',
+                            defaultValue: 'red',
+                            values: ['red', 'green', 'yellow'],
+                            label: 'Dropdown2',
+                            disabled: false,
+                        },
+                    ],
+                },
+                {
+                    type: 'section',
+                    key: 'accordion',
+                    label: 'Accordion',
+                    children: [
+                        {
+                            key: 'datalabels',
+                            type: 'text',
+                            defaultValue: 'hello',
+                            label: 'textbox',
+                        },
+                        {
+                            key: 'toggle',
+                            type: 'toggle',
+                            defaultValue: false,
+                            label: 'Toggle',
+                        },
+                    ],
+                },
+            ] as PropElement[];
             return {
                 elements,
                 columnsVizPropDefinition,
+                axisVizPropDefinition,
+                dataLabelVizPropDefinition,
+                tooltipVizPropDefinition,
+                legendVizPropDefinition,
                 displayVizPropDefinition,
             };
         },
