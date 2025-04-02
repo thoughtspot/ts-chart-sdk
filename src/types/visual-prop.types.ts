@@ -10,6 +10,7 @@
 
 import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
+import { ChartSettingElement } from './chart-settings';
 import { ChartModel } from './common.types';
 
 export type TSTooltipConfig = {
@@ -519,6 +520,10 @@ export interface NativeEditToolTip {
     labelTranslation?: VisualPropComponentTranslationKeys;
 }
 
+export interface ChartSettings {
+    type: 'chartSettings';
+    children: ChartSettingElement[];
+}
 /**
  * Common type placeholder for all the input element types
  *
@@ -543,8 +548,32 @@ export type PropElement =
 export interface ColumnProp {
     type: ColumnType;
     columnSettingsDefinition: {
-        [columnId: string]: { elements: PropElement[] };
+        [columnId: string]: { elements: PropElement[] | ChartSettings[] };
     };
+}
+
+export interface AxisProp {
+    type: ColumnType;
+    axisSettingsDefinition: {
+        [axisId: string]: { elements: ChartSettingElement[] };
+    };
+}
+export interface DataLabelProp {
+    dataLabelSettingsDefinition: {
+        [columnId: string]: { elements: ChartSettingElement[] };
+    };
+}
+
+export interface TooltipProp {
+    elements: ChartSettingElement[];
+}
+
+export interface LegendProp {
+    elements: ChartSettingElement[];
+}
+
+export interface DisplayProp {
+    elements: ChartSettingElement[];
 }
 
 /**
@@ -566,6 +595,36 @@ export interface VisualPropEditorDefinition {
      * @version SDK: 0.2 | ThoughtSpot:
      */
     columnsVizPropDefinition?: ColumnProp[];
+    /**
+     *To Define axis settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    axisVizPropDefinition?: AxisProp[];
+    /**
+     *To Define data label settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    dataLabelVizPropDefinition?: DataLabelProp[];
+    /**
+     *To Define tooltip settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    tooltipVizPropDefinition?: TooltipProp;
+    /**
+     *To Define legend settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    legendVizPropDefinition?: LegendProp;
+    /**
+     *To Define display settings.
+     *
+     * @version SDK: 0.2 | ThoughtSpot:
+     */
+    displayVizPropDefinition?: ChartSettingElement[];
 }
 
 export type VisualEditorDefinitionSetter = (
