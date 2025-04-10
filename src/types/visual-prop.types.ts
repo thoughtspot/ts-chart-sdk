@@ -203,29 +203,6 @@ export interface InputValidation extends CommonElementProps {
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
     rangeError?: string;
-    /**
-     * Whether the element is advanced
-     */
-    isAdvanced?: boolean;
-    /**
-     * Visible when the element key matches the value.
-     * Controls visibility of this element based on the specified value of the element
-     *
-     * @version SDK: 2.0.0 | ThoughtSpot:
-     */
-    visibleWhen?: { elementKey: string; value: Value };
-    /**
-     * Helper text to display when the element is hovered
-     *
-     * @version SDK: 2.0.0 | ThoughtSpot:
-     */
-    helperText?: string;
-    /**
-     * Link to another element
-     *
-     * @version SDK: 2.0.0 | ThoughtSpot:
-     */
-    link?: { elementId: string; isLinked: boolean };
 }
 
 /**
