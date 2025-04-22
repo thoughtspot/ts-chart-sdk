@@ -2,7 +2,7 @@ import { onMessage, sendMessage } from 'promise-postmessage';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { timeout } from './util';
 
-const TIMEOUT_THRESHOLD = 24000000; // 30sec
+const TIMEOUT_THRESHOLD = 30000; // 30sec
 
 const elSelector = new URL(import.meta.url).searchParams.get('elSelector');
 const target =
