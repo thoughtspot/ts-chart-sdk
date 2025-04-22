@@ -16,6 +16,10 @@ export type TSTooltipConfig = {
     columnIds: Array<string>;
 };
 
+type Value = string | boolean | number | object | any[];
+
+type ElementProperties = { [key: string]: Value };
+
 export enum VisualPropComponentTranslationKeys {
     SHOW_ALL_LABELS = 'SHOW_ALL_LABELS',
     TOO_MANY_LABELS = 'TOO_MANY_LABELS',
@@ -46,6 +50,105 @@ export enum VisualPropComponentTranslationKeys {
     LEFT_LEGEND = 'LEFT_LEGEND',
     TOP_LEGEND = 'TOP_LEGEND',
     BOTTOM_LEGEND = 'BOTTOM_LEGEND',
+}
+
+/**
+ * Type of the element in the Chart Settings V2
+ */
+export enum SettingsElementType {
+    TEXT_INPUT = 'InputText',
+    NUMBER_INPUT = 'InputNumber',
+    DATE_INPUT = 'InputText',
+    RADIO = 'Radio',
+    RADIO_GROUP = 'RadioGroup',
+    CHECKBOX = 'Checkbox',
+    CHECKBOX_GROUP = 'CheckboxGroup',
+    CHECKBOX_GROUP_ITEM = 'CheckboxGroupItem',
+    NUMBER_RANGE = 'NumberRange',
+    DROPDOWN = 'Dropdown',
+    COLOR_PICKER = 'ColorPicker',
+    TOGGLE = 'Toggle',
+    BUTTON = 'Button',
+    TYPOGRAPHY = 'Typography',
+    TAB = 'Tab',
+    TAB_ITEM = 'TabItem',
+    ACCORDION = 'Accordion',
+    ACCORDION_ITEM = 'AccordionItem',
+    FONT_FORMATTER = 'Formatter',
+    NUMBER_FORMATTER = 'NumberFormatter',
+    LINE_FORMATTER = 'LineFormatter',
+    TICK_FORMATTER = 'TickFormatter',
+    BACKGROUND_FORMATTER = 'BackgroundFormatter',
+    MARKER_FORMATTER = 'MarkerFormatter',
+    VIEW = 'View',
+    TOOLTIP_CONFIGURATOR = 'TooltipConfigurator',
+    CONDITIONAL_FORMATTER = 'ConditionalFormatter',
+    POSITION_CONTROL = 'PositionControl',
+    INHERITANCE_WIDGET = 'InheritanceWidget',
+    SECTION = 'Section',
+    LABELLED_VIEW = 'LabelledView',
+    MULTILEVEL_DROPDOWN = 'MultilevelDropdown',
+}
+
+/**
+ * Common interface for all Chart Settings V2 elements
+ *
+ * @version SDK: 2.0.0 | ThoughtSpot:
+ */
+export interface SettingsElement {
+    /**
+     * Unique identifier for the element
+     */
+    key?: string;
+    /**
+     * Type of the element
+     */
+    elementType: SettingsElementType;
+    /**
+     * Children elements
+     */
+    children?: SettingsElement[];
+    /**
+     * Properties of the element
+     */
+    properties?: ElementProperties;
+    /**
+     * Class name of the element
+     */
+    className?: string;
+    /**
+     * Whether the element is disabled
+     */
+    isDisable?: boolean;
+    /**
+     * Whether the element can have an auto value
+     */
+    canHaveAutoValue?: boolean;
+    /**
+     * Whether the element is advanced
+     */
+    isAdvanced?: boolean;
+    /**
+     * Whether the element is an answer property
+     */
+    isAnswerProperty?: boolean;
+    /**
+     * Helper text to display when the element is hovered
+     */
+    helperText?: string;
+    /**
+     * Run time properties to be used in the chart
+     */
+    runTimeProperties?: {
+        [key: string]: {
+            value: Value;
+            elementKey: string;
+        };
+    };
+    /**
+     * Link to another element
+     */
+    link?: { elementId: string; isLinked: boolean };
 }
 
 /**
@@ -543,7 +646,7 @@ export type PropElement =
 export interface ColumnProp {
     type: ColumnType;
     columnSettingsDefinition: {
-        [columnId: string]: { elements: PropElement[] };
+        [columnId: string]: { elements: PropElement[] | SettingsElement[] };
     };
 }
 
@@ -566,6 +669,36 @@ export interface VisualPropEditorDefinition {
      * @version SDK: 0.2 | ThoughtSpot:
      */
     columnsVizPropDefinition?: ColumnProp[];
+    /**
+     *To Define axis settings.
+     *
+     * @version SDK: 2.0.0 | ThoughtSpot:
+     */
+    axisVizPropDefinition?: SettingsElement[];
+    /**
+     *To Define data label settings.
+     *
+     * @version SDK: 2.0.0 | ThoughtSpot:
+     */
+    dataLabelVizPropDefinition?: SettingsElement[];
+    /**
+     *To Define tooltip settings.
+     *
+     * @version SDK: 2.0.0 | ThoughtSpot:
+     */
+    tooltipVizPropDefinition?: SettingsElement[];
+    /**
+     *To Define legend settings.
+     *
+     * @version SDK: 2.0.0 | ThoughtSpot:
+     */
+    legendVizPropDefinition?: SettingsElement[];
+    /**
+     *To Define display settings.
+     *
+     * @version SDK: 2.0.0 | ThoughtSpot:
+     */
+    displayVizPropDefinition?: SettingsElement[];
 }
 
 export type VisualEditorDefinitionSetter = (
