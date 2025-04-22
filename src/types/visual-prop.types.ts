@@ -55,7 +55,7 @@ export enum VisualPropComponentTranslationKeys {
 /**
  * Type of the element in the Chart Settings V2
  */
-export enum SettingsV2ElementType {
+export enum SettingsElementType {
     TEXT_INPUT = 'InputText',
     NUMBER_INPUT = 'InputNumber',
     DATE_INPUT = 'InputText',
@@ -95,7 +95,7 @@ export enum SettingsV2ElementType {
  *
  * @version SDK: 2.0.0 | ThoughtSpot:
  */
-export interface SettingsV2Element {
+export interface SettingsElement {
     /**
      * Unique identifier for the element
      */
@@ -103,11 +103,11 @@ export interface SettingsV2Element {
     /**
      * Type of the element
      */
-    elementType: SettingsV2ElementType;
+    elementType: SettingsElementType;
     /**
      * Children elements
      */
-    children?: SettingsV2Element[];
+    children?: SettingsElement[];
     /**
      * Properties of the element
      */
@@ -646,7 +646,7 @@ export type PropElement =
 export interface ColumnProp {
     type: ColumnType;
     columnSettingsDefinition: {
-        [columnId: string]: { elements: PropElement[] | SettingsV2Element[] };
+        [columnId: string]: { elements: PropElement[] | SettingsElement[] };
     };
 }
 
@@ -674,31 +674,31 @@ export interface VisualPropEditorDefinition {
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    axisVizPropDefinition?: SettingsV2Element[];
+    axisVizPropDefinition?: SettingsElement[];
     /**
      *To Define data label settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    dataLabelVizPropDefinition?: SettingsV2Element[];
+    dataLabelVizPropDefinition?: SettingsElement[];
     /**
      *To Define tooltip settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    tooltipVizPropDefinition?: SettingsV2Element[];
+    tooltipVizPropDefinition?: SettingsElement[];
     /**
      *To Define legend settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    legendVizPropDefinition?: SettingsV2Element[];
+    legendVizPropDefinition?: SettingsElement[];
     /**
      *To Define display settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    displayVizPropDefinition?: SettingsV2Element[];
+    displayVizPropDefinition?: SettingsElement[];
 }
 
 export type VisualEditorDefinitionSetter = (
