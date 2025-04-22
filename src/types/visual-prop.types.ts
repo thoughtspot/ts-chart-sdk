@@ -95,7 +95,7 @@ export enum SettingsV2ElementType {
  *
  * @version SDK: 2.0.0 | ThoughtSpot:
  */
-export interface SettingElement {
+export interface SettingsV2Element {
     /**
      * Unique identifier for the element
      */
@@ -107,7 +107,7 @@ export interface SettingElement {
     /**
      * Children elements
      */
-    children?: SettingElement[];
+    children?: SettingsV2Element[];
     /**
      * Properties of the element
      */
@@ -646,7 +646,7 @@ export type PropElement =
 export interface ColumnProp {
     type: ColumnType;
     columnSettingsDefinition: {
-        [columnId: string]: { elements: PropElement[] | SettingElement[] };
+        [columnId: string]: { elements: PropElement[] | SettingsV2Element[] };
     };
 }
 
@@ -674,31 +674,31 @@ export interface VisualPropEditorDefinition {
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    axisVizPropDefinition?: SettingElement[];
+    axisVizPropDefinition?: SettingsV2Element[];
     /**
      *To Define data label settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    dataLabelVizPropDefinition?: SettingElement[];
+    dataLabelVizPropDefinition?: SettingsV2Element[];
     /**
      *To Define tooltip settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    tooltipVizPropDefinition?: SettingElement[];
+    tooltipVizPropDefinition?: SettingsV2Element[];
     /**
      *To Define legend settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    legendVizPropDefinition?: SettingElement[];
+    legendVizPropDefinition?: SettingsV2Element[];
     /**
      *To Define display settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    displayVizPropDefinition?: SettingElement[];
+    displayVizPropDefinition?: SettingsV2Element[];
 }
 
 export type VisualEditorDefinitionSetter = (
