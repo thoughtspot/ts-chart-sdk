@@ -53,7 +53,7 @@ export enum VisualPropComponentTranslationKeys {
 }
 
 /**
- * Type of the element in the chart settings
+ * Type of the element in the Chart Settings V2
  */
 export enum SettingsV2ElementType {
     TEXT_INPUT = 'InputText',
@@ -91,7 +91,7 @@ export enum SettingsV2ElementType {
 }
 
 /**
- * Common interface for all chart setting elements
+ * Common interface for all Chart Settings V2 elements
  *
  * @version SDK: 2.0.0 | ThoughtSpot:
  */
