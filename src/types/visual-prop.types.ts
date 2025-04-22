@@ -55,7 +55,7 @@ export enum VisualPropComponentTranslationKeys {
 /**
  * Type of the element in the chart settings
  */
-export enum SettingsElementType {
+export enum SettingsV2ElementType {
     TEXT_INPUT = 'InputText',
     NUMBER_INPUT = 'InputNumber',
     DATE_INPUT = 'InputText',
@@ -91,36 +91,11 @@ export enum SettingsElementType {
 }
 
 /**
- * Common properties for all elements
- *
- * @version SDK: 2.0.0 | ThoughtSpot:
- */
-interface CommonElementProps {
-    /**
-     * Whether the element is advanced
-     */
-    isAdvanced?: boolean;
-    /**
-     * Visible when the element key matches the value.
-     * Controls visibility of this element based on the specified value of the element
-     */
-    visibleWhen?: { elementKey: string; value: Value };
-    /**
-     * Helper text to display when the element is hovered
-     */
-    helperText?: string;
-    /**
-     * Link to another element
-     */
-    link?: { elementId: string; isLinked: boolean };
-}
-
-/**
  * Common interface for all chart setting elements
  *
  * @version SDK: 2.0.0 | ThoughtSpot:
  */
-export interface SettingElement extends CommonElementProps {
+export interface SettingElement {
     /**
      * Unique identifier for the element
      */
@@ -128,7 +103,7 @@ export interface SettingElement extends CommonElementProps {
     /**
      * Type of the element
      */
-    elementType: SettingsElementType;
+    elementType: SettingsV2ElementType;
     /**
      * Children elements
      */
@@ -149,12 +124,37 @@ export interface SettingElement extends CommonElementProps {
      * Whether the element can have an auto value
      */
     canHaveAutoValue?: boolean;
+    /**
+     * Whether the element is advanced
+     */
+    isAdvanced?: boolean;
+    /**
+     * Whether the element is an answer property
+     */
+    isAnswerProperty?: boolean;
+    /**
+     * Helper text to display when the element is hovered
+     */
+    helperText?: string;
+    /**
+     * Run time properties to be used in the chart
+     */
+    runTimeProperties?: {
+        [key: string]: {
+            value: Value;
+            elementKey: string;
+        };
+    };
+    /**
+     * Link to another element
+     */
+    link?: { elementId: string; isLinked: boolean };
 }
 
 /**
  * Configuration for input validation rules
  */
-export interface InputValidation extends CommonElementProps {
+export interface InputValidation {
     /**
      * Determines if the input is required.
      *
@@ -210,7 +210,7 @@ export interface InputValidation extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface TextInputFormDetail extends CommonElementProps {
+export interface TextInputFormDetail {
     type: 'text';
     /**
      * Key to store the value
@@ -275,7 +275,7 @@ export interface TextInputFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface NumberInputFormDetail extends CommonElementProps {
+export interface NumberInputFormDetail {
     type: 'number';
     /**
      * Key to store the value
@@ -320,7 +320,7 @@ export interface NumberInputFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface ColorPickerFormDetail extends CommonElementProps {
+export interface ColorPickerFormDetail {
     type: 'colorpicker';
     /**
      * Key to store the value
@@ -360,7 +360,7 @@ export interface ColorPickerFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface ToggleFormDetail extends CommonElementProps {
+export interface ToggleFormDetail {
     type: 'toggle';
     /**
      * Key to store the value
@@ -399,7 +399,7 @@ export interface ToggleFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface CheckboxFormDetail extends CommonElementProps {
+export interface CheckboxFormDetail {
     type: 'checkbox';
     /**
      * Key to store the value
@@ -438,7 +438,7 @@ export interface CheckboxFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface RadioButtonFormDetail extends CommonElementProps {
+export interface RadioButtonFormDetail {
     type: 'radio';
     /**
      * Key to store the value
@@ -483,7 +483,7 @@ export interface RadioButtonFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface DropDownFormDetail extends CommonElementProps {
+export interface DropDownFormDetail {
     type: 'dropdown';
     /**
      * Key to store the value
@@ -528,7 +528,7 @@ export interface DropDownFormDetail extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface Section extends CommonElementProps {
+export interface Section {
     type: 'section';
     /**
      * Key to define & store the children's parent
@@ -587,7 +587,7 @@ export interface Section extends CommonElementProps {
  *
  * @group Visual Properties Editor
  */
-export interface NativeEditToolTip extends CommonElementProps {
+export interface NativeEditToolTip {
     type: 'tooltipconfig';
     /**
      * Key to store the value
@@ -639,13 +639,6 @@ export type PropElement =
     | NativeEditToolTip;
 
 /**
- * Common type placeholder for SettingElement and PropElement
- *
- * @group Visual Properties Editor
- */
-export type ChartSettingElement = SettingElement | PropElement;
-
-/**
  * Define Column settings, based on column type, settings needs to be defined in
  * visualPropEditorDefinition using the current config columns,
  * @version SDK: 0.2 | ThoughtSpot:
@@ -653,7 +646,7 @@ export type ChartSettingElement = SettingElement | PropElement;
 export interface ColumnProp {
     type: ColumnType;
     columnSettingsDefinition: {
-        [columnId: string]: { elements: ChartSettingElement[] };
+        [columnId: string]: { elements: PropElement[] | SettingElement[] };
     };
 }
 
@@ -681,31 +674,31 @@ export interface VisualPropEditorDefinition {
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    axisVizPropDefinition?: ChartSettingElement[];
+    axisVizPropDefinition?: SettingElement[];
     /**
      *To Define data label settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    dataLabelVizPropDefinition?: ChartSettingElement[];
+    dataLabelVizPropDefinition?: SettingElement[];
     /**
      *To Define tooltip settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    tooltipVizPropDefinition?: ChartSettingElement[];
+    tooltipVizPropDefinition?: SettingElement[];
     /**
      *To Define legend settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    legendVizPropDefinition?: ChartSettingElement[];
+    legendVizPropDefinition?: SettingElement[];
     /**
      *To Define display settings.
      *
      * @version SDK: 2.0.0 | ThoughtSpot:
      */
-    displayVizPropDefinition?: ChartSettingElement[];
+    displayVizPropDefinition?: SettingElement[];
 }
 
 export type VisualEditorDefinitionSetter = (
