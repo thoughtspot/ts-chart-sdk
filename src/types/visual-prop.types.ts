@@ -77,7 +77,7 @@ export enum SettingsElementType {
     FONT_FORMATTER = 'Formatter',
     NUMBER_FORMATTER = 'NumberFormatter',
     LINE_FORMATTER = 'LineFormatter',
-    TICK_FORMATTER = 'TickFormatter',
+    INTERVAL_FORMATTER = 'IntervalFormatter',
     BACKGROUND_FORMATTER = 'BackgroundFormatter',
     MARKER_FORMATTER = 'MarkerFormatter',
     VIEW = 'View',
@@ -88,6 +88,8 @@ export enum SettingsElementType {
     SECTION = 'Section',
     LABELLED_VIEW = 'LabelledView',
     MULTILEVEL_DROPDOWN = 'MultilevelDropdown',
+    CHART_ZOOM = 'ChartZoom',
+    BACKGROUND_IMAGE_EDITOR = 'BackgroundImageEditor',
 }
 
 /**
