@@ -59,7 +59,7 @@ import { create } from './logger';
 import {
     globalThis,
     initMessageListener,
-    postMessageToHostApp,
+    postMessageToHostApp
 } from './post-message-event-bridge';
 
 const logger = create('TsChartSDKContext');
@@ -248,8 +248,8 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfigEditorDefinition?:
-        | ConfigEditorDefinitionSetter
-        | ChartConfigEditorDefinition[];
+    | ConfigEditorDefinitionSetter
+    | ChartConfigEditorDefinition[];
 
     /**
      * Definition to help edit/customize the visual properties from chart settings editor
@@ -261,8 +261,8 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?:
-        | VisualEditorDefinitionSetter
-        | VisualPropEditorDefinition;
+    | VisualEditorDefinitionSetter
+    | VisualPropEditorDefinition;
 
     /**
      * Optional configuration to toggle native TS UI configurations, such as column number
@@ -1092,9 +1092,9 @@ export class CustomChartContext {
             const { isValid } =
                 hasChartConfig && this.chartContextProps.validateConfig
                     ? this.chartContextProps.validateConfig(
-                          this.chartModel.config.chartConfig ?? [],
-                          this.chartModel,
-                      )
+                        this.chartModel.config.chartConfig ?? [],
+                        this.chartModel,
+                    )
                     : { isValid: false };
 
             let defaultChartConfig: ChartConfig[] = [];

@@ -1,4 +1,4 @@
-import { onMessage, sendMessage } from 'promise-postmessage';
+import { onMessage, sendMessage, ON_MESSAGE_CALLBACK_SKIP_PROCESSING } from 'promise-postmessage';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { timeout } from './util';
 
@@ -17,7 +17,17 @@ const globalThis = (target === window.parent ? window : target) as any;
  * @param  {any} handleMessageEvent
  */
 const init = (handleMessageEvent: (data: any) => Promise<any> | any) => {
-    return onMessage(handleMessageEvent, target, 'child');
+    return onMessage(
+        (data: any) => {
+            if (!data.eventType) {
+                return ON_MESSAGE_CALLBACK_SKIP_PROCESSING;
+            } else {
+                return handleMessageEvent(data);
+            }
+        },
+        target,
+        'child'
+    );
 };
 
 /**
