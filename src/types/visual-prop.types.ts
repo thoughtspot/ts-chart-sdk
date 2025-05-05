@@ -8,6 +8,7 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
+// eslint-disable-next-line prettier/prettier
 import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
@@ -18,7 +19,35 @@ export type TSTooltipConfig = {
 
 type Value = string | boolean | number | object | any[];
 
-type ElementProperties = { [key: string]: Value };
+type ElementProperties = {
+    [key: string]: Value;
+} & {
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
+};
+
+/**
+ * Enum for the keys of the answer properties.
+ *
+ * These are the keys you can use when `isAnswerProperty` is true.
+ *
+ * @enum {string}
+ */
+export enum AnswerPropertyKeys {
+    /** The name of the property */
+    NAME = 'name',
+    /** Sort configuration */
+    SORT_CONFIG = 'sortConfig',
+    /** Number formatter */
+    NUMBER_FORMATTER = 'numberFormatter',
+    /** Aggregation type */
+    SORT_ORDER_VALUE = 'aggregationType',
+    /** Time bucket */
+    SORT_ORDER_VALUE_VALUE = 'timeBucket',
+    /** Background property */
+    BACKGROUND = 'Background',
+    /** Handle missing values */
+    HANDLE_MISSING_VALUES = 'handleMissingValues',
+}
 
 export enum VisualPropComponentTranslationKeys {
     SHOW_ALL_LABELS = 'SHOW_ALL_LABELS',
@@ -269,7 +298,7 @@ export interface TextInputFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
