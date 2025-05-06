@@ -198,7 +198,7 @@ export type VisualPropError = {
 /**
  * Represents a validation error message with its translation key.
  * This type is used to provide localized error messages for validation failures.
- * 
+ *
  * @example
  * ```typescript
  * const validationError: ValidationErrorMessage = {
@@ -206,7 +206,7 @@ export type VisualPropError = {
  *   errorTranslation: "REQUIRED_FIELD_ERROR"
  * };
  * ```
- * 
+ *
  * @property errorTranslation - The translation key that will be used to look up the translated error message
  * @property errorMessage - The default error message that will be shown if translation is not available
  */
@@ -314,6 +314,29 @@ export interface DateFormats {
 }
 
 /**
+ * User properties have some extra information about the user such as source, persona, teamId and companyName.
+ * @type {UserProperties}
+ */
+export type UserProperties = {
+    source?: string;
+    persona?: string;
+    teamId?: string;
+    companyName?: string;
+};
+
+/**
+ * contains user info type. contians user guid, user name, user email, user type and user properties.
+ * @type {UserInfo}
+ */
+export type UserInfo = {
+    userGuid?: string;
+    userName?: string;
+    userEmail?: string;
+    userType?: string;
+    userProperties?: UserProperties;
+};
+
+/**
  * Configuration object for date formats and settings in the Chart SDK.
  * Provides locale-specific date and string formats, constants, and custom calendars.
  *
@@ -376,7 +399,20 @@ export interface AppConfig {
         // runtime configurations
         isDebugMode?: boolean; // enables debug mode for logging
     };
-
+    /**
+     * Release version of ThoughtSpot custom chart is getting rendered upon.
+     */
+    releaseVersion?: string;
+    /**
+     * @type {UserInfo}
+     * Contains user info from the ThoughtSpot instance. This can be used custom chart developers
+     * to know information about which client is accessing the chart.
+     * This cantains information about user guid, user name, user email, user type and
+     * user properties.
+     * #example: collecting matrics for about rendering of the chart with respect
+     * to different user using the developer custom chart.
+     */
+    userInfo?: UserInfo;
     // locale related settings
     localeOptions?: {
         locale: string;
