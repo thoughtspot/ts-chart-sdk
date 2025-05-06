@@ -17,6 +17,9 @@ export type TSTooltipConfig = {
     columnIds: Array<string>;
 };
 
+// Value in visual prop will be tranlated using valueTranslation key
+export type TranslatedValue = { valueTranslation: string; value: string };
+
 type Value = string | boolean | number | object | any[];
 
 type ElementProperties = {
@@ -280,7 +283,7 @@ export interface TextInputFormDetail {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string;
+    defaultValue?: string | TranslatedValue;
     /**
      * inputValidation config for input field
      *
@@ -488,13 +491,13 @@ export interface RadioButtonFormDetail {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string;
+    defaultValue?: string | TranslatedValue;
     /**
      * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    values: string[];
+    values: string[] | TranslatedValue[];
     /**
      * Determines whether it should be disabled or not
      *
@@ -533,13 +536,13 @@ export interface DropDownFormDetail {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string;
+    defaultValue?: string | TranslatedValue;
     /**
      * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    values: string[];
+    values: string[] | TranslatedValue[];
     /**
      * Determines whether it should be disabled or not
      *

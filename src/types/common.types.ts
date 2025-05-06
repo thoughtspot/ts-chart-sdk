@@ -195,10 +195,15 @@ export type VisualPropError = {
     value: unknown;
 };
 
+export type ValidationErrorMessage = {
+    errorTranslation: string;
+    errorMessage: string;
+};
+
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
-    validationErrorMessage?: string[];
+    validationErrorMessage?: string[] | ValidationErrorMessage[];
     visualPropError?: VisualPropError;
 };
 
