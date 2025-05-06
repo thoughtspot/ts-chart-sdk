@@ -1,4 +1,8 @@
-import { onMessage, sendMessage, ON_MESSAGE_CALLBACK_SKIP_PROCESSING } from 'promise-postmessage';
+import {
+    ON_MESSAGE_CALLBACK_SKIP_PROCESSING,
+    onMessage,
+    sendMessage,
+} from 'promise-postmessage';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
 import { timeout } from './util';
 
@@ -21,12 +25,11 @@ const init = (handleMessageEvent: (data: any) => Promise<any> | any) => {
         (data: any) => {
             if (!data.eventType) {
                 return ON_MESSAGE_CALLBACK_SKIP_PROCESSING;
-            } else {
-                return handleMessageEvent(data);
             }
+            return handleMessageEvent(data);
         },
         target,
-        'child'
+        'child',
     );
 };
 
