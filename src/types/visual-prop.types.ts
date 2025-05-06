@@ -283,7 +283,7 @@ export interface TextInputFormDetail {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string | TranslatedValue;
+    defaultValue?: string;
     /**
      * inputValidation config for input field
      *
