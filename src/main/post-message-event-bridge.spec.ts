@@ -4,7 +4,7 @@
  *  @author Chetan Agrawal <chetan.agrawal@thoughtspot.com>
  */
 import _ from 'lodash';
-import { postMessageToHostApp } from './post-message-event-bridge';
+import { postMessageToHostApp, initMessageListener } from './post-message-event-bridge';
 
 const TIMEOUT_THRESHOLD = 30000;
 
@@ -210,5 +210,51 @@ describe('postMessageToHostApp', () => {
             hostUrl,
             expect.any(Array),
         );
+    });
+});
+
+describe('initMessageListener', () => {
+    let mockOnMessage: jest.SpyInstance;
+    let mockHandleMessageEvent: jest.Mock;
+
+    beforeEach(() => {
+        mockHandleMessageEvent = jest.fn();
+        mockOnMessage = jest.spyOn(require('promise-postmessage'), 'onMessage');
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('should skip processing when message has no eventType', () => {
+        const messageWithoutEventType = { payload: { someData: 'test' } };
+        mockOnMessage.mockImplementation((callback) => {
+            const result = callback(messageWithoutEventType);
+            expect(result).toBe(require('promise-postmessage').ON_MESSAGE_CALLBACK_SKIP_PROCESSING);
+            return () => null;
+        });
+
+        initMessageListener(mockHandleMessageEvent);
+
+        expect(mockHandleMessageEvent).not.toHaveBeenCalled();
+    });
+
+    test('should process message when it has eventType', () => {
+        const messageWithEventType = {
+            eventType: 'TEST_EVENT',
+            payload: { someData: 'test' }
+        };
+        const expectedResponse = { processed: true };
+        mockHandleMessageEvent.mockReturnValue(expectedResponse);
+
+        mockOnMessage.mockImplementation((callback) => {
+            const result = callback(messageWithEventType);
+            expect(result).toBe(expectedResponse);
+            return () => null;
+        });
+
+        initMessageListener(mockHandleMessageEvent);
+
+        expect(mockHandleMessageEvent).toHaveBeenCalledWith(messageWithEventType);
     });
 });
