@@ -198,7 +198,7 @@ export type VisualPropError = {
 /**
  * Represents a validation error message with its translation key.
  * This type is used to provide localized error messages for validation failures.
- * 
+ *
  * @example
  * ```typescript
  * const validationError: ValidationErrorMessage = {
@@ -206,7 +206,7 @@ export type VisualPropError = {
  *   errorTranslation: "REQUIRED_FIELD_ERROR"
  * };
  * ```
- * 
+ *
  * @property errorTranslation - The translation key that will be used to look up the translated error message
  * @property errorMessage - The default error message that will be shown if translation is not available
  */
