@@ -8,7 +8,6 @@
  * Copyright: ThoughtSpot Inc. 2023
  */
 
-// eslint-disable-next-line prettier/prettier
 import type { CustomChartContext } from '../main/custom-chart-context';
 import { ColumnType } from './answer-column.types';
 import { ChartModel } from './common.types';
@@ -17,7 +16,22 @@ export type TSTooltipConfig = {
     columnIds: Array<string>;
 };
 
-// Value in visual prop will be tranlated using valueTranslation key
+/**
+ * Represents a value that needs to be translated in visual properties.
+ * This type is used when a value needs to be displayed in different languages
+ * or when the display value needs to be different from the actual value.
+ * 
+ * @example
+ * ```typescript
+ * const translatedValue: TranslatedValue = {
+ *   value: "show_all",
+ *   valueTranslation: "SHOW_ALL_LABELS"
+ * };
+ * ```
+ * 
+ * @property valueTranslation - The translation key that will be used to look up the translated text
+ * @property value - The actual value that will be used in the application logic
+ */
 export type TranslatedValue = { valueTranslation: string; value: string };
 
 type Value = string | boolean | number | object | any[];
