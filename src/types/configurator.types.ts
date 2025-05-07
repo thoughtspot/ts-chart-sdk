@@ -35,6 +35,13 @@ export interface ChartConfigSection {
     label: string;
 
     /**
+     * Translation key for the label
+     *
+     * @version SDK: 2.0.2 | ThoughtSpot:
+     */
+    labelTranslation?: string;
+
+    /**
      * In the UI, the following values will only prevent dropping unnecessary
      * columns on the section config or prevent users from opening a drop-down in case of
      * multiple queries. Developers must validate this flow.

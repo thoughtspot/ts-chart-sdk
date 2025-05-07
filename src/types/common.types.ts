@@ -195,10 +195,30 @@ export type VisualPropError = {
     value: unknown;
 };
 
+/**
+ * Represents a validation error message with its translation key.
+ * This type is used to provide localized error messages for validation failures.
+ * 
+ * @example
+ * ```typescript
+ * const validationError: ValidationErrorMessage = {
+ *   errorMessage: "Field is required",
+ *   errorTranslation: "REQUIRED_FIELD_ERROR"
+ * };
+ * ```
+ * 
+ * @property errorTranslation - The translation key that will be used to look up the translated error message
+ * @property errorMessage - The default error message that will be shown if translation is not available
+ */
+export type ValidationErrorMessage = {
+    errorTranslation: string;
+    errorMessage: string;
+};
+
 // Generic Validation Response
 export type ValidationResponse = {
     isValid: boolean;
-    validationErrorMessage?: string[];
+    validationErrorMessage?: string[] | ValidationErrorMessage[];
     visualPropError?: VisualPropError;
 };
 

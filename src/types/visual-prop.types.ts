@@ -16,9 +16,55 @@ export type TSTooltipConfig = {
     columnIds: Array<string>;
 };
 
+/**
+ * Represents a value that needs to be translated in visual properties.
+ * This type is used when a value needs to be displayed in different languages
+ * or when the display value needs to be different from the actual value.
+ * 
+ * @example
+ * ```typescript
+ * const translatedValue: TranslatedValue = {
+ *   value: "show_all",
+ *   valueTranslation: "SHOW_ALL_LABELS"
+ * };
+ * ```
+ * 
+ * @property valueTranslation - The translation key that will be used to look up the translated text
+ * @property value - The actual value that will be used in the application logic
+ */
+export type TranslatedValue = { valueTranslation: string; value: string };
+
 type Value = string | boolean | number | object | any[];
 
-type ElementProperties = { [key: string]: Value };
+type ElementProperties = {
+    [key: string]: Value;
+} & {
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
+};
+
+/**
+ * Enum for the keys of the answer properties.
+ *
+ * These are the keys you can use when `isAnswerProperty` is true.
+ *
+ * @enum {string}
+ */
+export enum AnswerPropertyKeys {
+    /** The name of the property */
+    NAME = 'name',
+    /** Sort configuration */
+    SORT_CONFIG = 'sortConfig',
+    /** Number formatter */
+    NUMBER_FORMATTER = 'numberFormatter',
+    /** Aggregation type */
+    SORT_ORDER_VALUE = 'aggregationType',
+    /** Time bucket */
+    SORT_ORDER_VALUE_VALUE = 'timeBucket',
+    /** Background property */
+    BACKGROUND = 'Background',
+    /** Handle missing values */
+    HANDLE_MISSING_VALUES = 'handleMissingValues',
+}
 
 export enum VisualPropComponentTranslationKeys {
     SHOW_ALL_LABELS = 'SHOW_ALL_LABELS',
@@ -269,7 +315,7 @@ export interface TextInputFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -459,13 +505,13 @@ export interface RadioButtonFormDetail {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string;
+    defaultValue?: string | TranslatedValue;
     /**
      * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    values: string[];
+    values: string[] | TranslatedValue[];
     /**
      * Determines whether it should be disabled or not
      *
@@ -504,13 +550,13 @@ export interface DropDownFormDetail {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    defaultValue?: string;
+    defaultValue?: string | TranslatedValue;
     /**
      * List of values to select from
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    values: string[];
+    values: string[] | TranslatedValue[];
     /**
      * Determines whether it should be disabled or not
      *
