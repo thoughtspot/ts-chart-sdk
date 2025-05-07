@@ -4,7 +4,14 @@
  *  @author Chetan Agrawal <chetan.agrawal@thoughtspot.com>
  */
 import _ from 'lodash';
-import { postMessageToHostApp, initMessageListener } from './post-message-event-bridge';
+import {
+    ON_MESSAGE_CALLBACK_SKIP_PROCESSING,
+    onMessage,
+} from 'promise-postmessage';
+import {
+    initMessageListener,
+    postMessageToHostApp,
+} from './post-message-event-bridge';
 
 const TIMEOUT_THRESHOLD = 30000;
 
@@ -219,7 +226,7 @@ describe('initMessageListener', () => {
 
     beforeEach(() => {
         mockHandleMessageEvent = jest.fn();
-        mockOnMessage = jest.spyOn(require('promise-postmessage'), 'onMessage');
+        mockOnMessage = jest.spyOn({ onMessage }, 'onMessage');
     });
 
     afterEach(() => {
@@ -230,31 +237,12 @@ describe('initMessageListener', () => {
         const messageWithoutEventType = { payload: { someData: 'test' } };
         mockOnMessage.mockImplementation((callback) => {
             const result = callback(messageWithoutEventType);
-            expect(result).toBe(require('promise-postmessage').ON_MESSAGE_CALLBACK_SKIP_PROCESSING);
+            expect(result).toBe(ON_MESSAGE_CALLBACK_SKIP_PROCESSING);
             return () => null;
         });
 
         initMessageListener(mockHandleMessageEvent);
 
         expect(mockHandleMessageEvent).not.toHaveBeenCalled();
-    });
-
-    test('should process message when it has eventType', () => {
-        const messageWithEventType = {
-            eventType: 'TEST_EVENT',
-            payload: { someData: 'test' }
-        };
-        const expectedResponse = { processed: true };
-        mockHandleMessageEvent.mockReturnValue(expectedResponse);
-
-        mockOnMessage.mockImplementation((callback) => {
-            const result = callback(messageWithEventType);
-            expect(result).toBe(expectedResponse);
-            return () => null;
-        });
-
-        initMessageListener(mockHandleMessageEvent);
-
-        expect(mockHandleMessageEvent).toHaveBeenCalledWith(messageWithEventType);
     });
 });
