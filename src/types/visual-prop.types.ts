@@ -39,7 +39,7 @@ type Value = string | boolean | number | object | any[];
 type ElementProperties = {
     [key: string]: Value;
 } & {
-    labelTranslation?: VisualPropComponentTranslationKeys | string;
+    labelTranslation?: string;
 };
 
 /**
@@ -360,7 +360,7 @@ export interface NumberInputFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -400,7 +400,7 @@ export interface ColorPickerFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -439,7 +439,7 @@ export interface ToggleFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -478,7 +478,7 @@ export interface CheckboxFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -523,7 +523,7 @@ export interface RadioButtonFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -568,7 +568,7 @@ export interface DropDownFormDetail {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -627,7 +627,7 @@ export interface Section {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
@@ -667,7 +667,7 @@ export interface NativeEditToolTip {
      *
      * @version SDK: 0.2 | ThoughtSpot:
      */
-    labelTranslation?: VisualPropComponentTranslationKeys;
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
 }
 
 /**
