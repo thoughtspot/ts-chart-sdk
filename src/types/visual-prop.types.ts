@@ -20,7 +20,7 @@ export type TSTooltipConfig = {
  * Represents a value that needs to be translated in visual properties.
  * This type is used when a value needs to be displayed in different languages
  * or when the display value needs to be different from the actual value.
- * 
+ *
  * @example
  * ```typescript
  * const translatedValue: TranslatedValue = {
@@ -28,7 +28,7 @@ export type TSTooltipConfig = {
  *   valueTranslation: "SHOW_ALL_LABELS"
  * };
  * ```
- * 
+ *
  * @property valueTranslation - The translation key that will be used to look up the translated text
  * @property value - The actual value that will be used in the application logic
  */

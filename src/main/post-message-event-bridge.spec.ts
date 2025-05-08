@@ -4,7 +4,14 @@
  *  @author Chetan Agrawal <chetan.agrawal@thoughtspot.com>
  */
 import _ from 'lodash';
-import { postMessageToHostApp } from './post-message-event-bridge';
+import {
+    ON_MESSAGE_CALLBACK_SKIP_PROCESSING,
+    onMessage,
+} from 'promise-postmessage';
+import {
+    initMessageListener,
+    postMessageToHostApp,
+} from './post-message-event-bridge';
 
 const TIMEOUT_THRESHOLD = 30000;
 
@@ -210,5 +217,32 @@ describe('postMessageToHostApp', () => {
             hostUrl,
             expect.any(Array),
         );
+    });
+});
+
+describe('initMessageListener', () => {
+    let mockOnMessage: jest.SpyInstance;
+    let mockHandleMessageEvent: jest.Mock;
+
+    beforeEach(() => {
+        mockHandleMessageEvent = jest.fn();
+        mockOnMessage = jest.spyOn({ onMessage }, 'onMessage');
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('should skip processing when message has no eventType', () => {
+        const messageWithoutEventType = { payload: { someData: 'test' } };
+        mockOnMessage.mockImplementation((callback) => {
+            const result = callback(messageWithoutEventType);
+            expect(result).toBe(ON_MESSAGE_CALLBACK_SKIP_PROCESSING);
+            return () => null;
+        });
+
+        initMessageListener(mockHandleMessageEvent);
+
+        expect(mockHandleMessageEvent).not.toHaveBeenCalled();
     });
 });
