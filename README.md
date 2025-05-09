@@ -782,6 +782,8 @@ const init = async () => {
         },
         renderChart: (context) => renderChart(context),
     });
+    // For initial load we need to call renderChart explicitly 
+    renderChart(ctx)
 };
 
 init();
