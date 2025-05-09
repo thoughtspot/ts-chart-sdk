@@ -401,7 +401,7 @@ To run the chart and test your implementation, you need a Playground.
 
 1. Open the following link to test your implementation with predefined data sets:
 
-[https://ts-chart-playground.vercel.app/](https://ts-chart-playground.vercel.app/)
+[https://byoc-playground.vercel.app/](https://byoc-playground.vercel.app/)
 
 > **NOTE**
 >
@@ -782,7 +782,7 @@ const init = async () => {
         },
         renderChart: (context) => renderChart(context),
     });
-    // For initial load we need to call renderChart explicitly 
+    // For initial load we need to call renderChart explicitly
     renderChart(ctx)
 };
 
@@ -815,7 +815,7 @@ To allow the use of Vercel application content in Thoughtspot, add the Vercel do
 
 ### Test framework
 
--   Open [Playground](https://ts-chart-playground.vercel.app/) to play with ts-chart-sdk with mock chartModel.
+-   Open [Playground](https://byoc-playground.vercel.app/) to play with ts-chart-sdk with mock chartModel.
 
 ### Code Walkthrough
 
