@@ -376,7 +376,10 @@ export interface AppConfig {
         // runtime configurations
         isDebugMode?: boolean; // enables debug mode for logging
     };
-
+    /**
+     * Release version of ThoughtSpot custom chart is getting rendered upon.
+     */
+    releaseVersion?: string;
     // locale related settings
     localeOptions?: {
         locale: string;
