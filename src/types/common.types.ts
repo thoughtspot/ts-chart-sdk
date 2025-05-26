@@ -425,7 +425,7 @@ export interface AppConfig {
      *   }
      * }
      */
-    initFlags?: any;
+    initFlags?: Record<string, { flagId: string; flagValue: boolean }>;
 }
 
 /**
