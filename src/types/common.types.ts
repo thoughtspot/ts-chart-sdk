@@ -408,6 +408,24 @@ export interface AppConfig {
      * third party developer
      */
     chartAppAccessToken?: string;
+    /**
+     * Array of configuration flags required during chart initialization.
+     * Each flag object can contain different configuration settings that control
+     * various features and behaviors of the chart.
+     *
+     * @example
+     * initFlags: {
+     *   "CHART_SETTINGS_V2": {
+     *     flagId: "CHART_SETTINGS_V2",
+     *     flagValue: true
+     *   },
+     *   "CUSTOM_FEATURE_ENABLED": {
+     *     flagId: "CUSTOM_FEATURE_ENABLED",
+     *     flagValue: false
+     *   }
+     * }
+     */
+    initFlags?: any;
 }
 
 /**
