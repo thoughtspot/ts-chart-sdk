@@ -42,12 +42,12 @@ type ElementProperties = {
     labelTranslation?: string;
 };
 
-export declare enum AccordionVariant {
+export enum AccordionVariant {
     BASIC = 'basic',
     MULTI_LEVEL = 'nested',
     LONG_LIST = 'long',
     SIDE_NAV = 'sideNav',
-    MINIMAL = 'minimal'
+    MINIMAL = 'minimal',
 }
 
 /**
