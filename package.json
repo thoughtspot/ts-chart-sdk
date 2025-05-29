@@ -75,7 +75,7 @@
         "vite": "4.2.1"
     },
     "dependencies": {
-        "cldr-data": "^36.0.2",
+        "cldr-data": "^36.0.4",
         "globalize": "^1.7.0",
         "lodash": "^4.17.21",
         "luxon": "^3.4.4",
