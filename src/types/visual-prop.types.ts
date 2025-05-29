@@ -42,6 +42,14 @@ type ElementProperties = {
     labelTranslation?: string;
 };
 
+export enum AccordionVariant {
+    BASIC = 'basic',
+    MULTI_LEVEL = 'nested',
+    LONG_LIST = 'long',
+    SIDE_NAV = 'sideNav',
+    MINIMAL = 'minimal',
+}
+
 /**
  * Enum for the keys of the answer properties.
  *
@@ -710,7 +718,7 @@ export interface VisualPropEditorDefinition {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    elements: PropElement[];
+    elements?: PropElement[];
     /**
      *To Define column level settings.
      *
