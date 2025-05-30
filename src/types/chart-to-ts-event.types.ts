@@ -51,13 +51,6 @@ export enum ChartToTSEvent {
      */
     ShowToolTip = 'ShowToolTip',
     HideToolTip = 'HideToolTip',
-
-    /**
-     * Flag events
-     *
-     */
-    GetBlinkFlags = 'GetBlinkFlags',
-
     /**
      * Label translation events.
      */
@@ -157,11 +150,6 @@ export interface ChartToTSEventsPayloadMap {
      */
     [ChartToTSEvent.CloseAxisMenu]: [];
     /**
-     *  Trigger to fetch blink flags from session service if exists
-     * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
-     */
-    [ChartToTSEvent.GetBlinkFlags]: [GetBlinkFlagsPayload];
-    /**
      * Trigger this event to get the locale translated msg values based on the msgId provided.
      * These msgIds corresponds to the msgIds defined in string.po file of ThoughtSpot.
      * example:
@@ -181,14 +169,6 @@ export interface UpdateVisualPropsEventPayload {
 }
 
 /**
- * This payload is used to get the blink flags from the session service.
- * @group Chart to ThoughtSpot Events
- */
-export interface GetBlinkFlagsPayload {
-    flags: string[];
-}
-
-/**
  *
  * @group Chart to ThoughtSpot Events
  */
@@ -201,6 +181,7 @@ export interface SetTMLStringEventPayload {
  * This payload is used to get array of msgIds to get the locale translated msg values.
  * @group Chart to ThoughtSpot Events
  */
+
 export interface GetLabelTranslationPayload {
     msgIds: string[];
 }
