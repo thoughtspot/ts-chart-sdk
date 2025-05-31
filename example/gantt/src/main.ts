@@ -3,6 +3,8 @@ import {
     ChartColumn,
     ChartConfig,
     ChartModel,
+    ChartToTSEvent,
+    CustomChartContext,
     DataPointsArray,
     Query,
     getChartContext,
@@ -70,7 +72,7 @@ const getDataModel = (chartModel: any) => {
     };
 };
 
-const renderChart = (ctx: any) => {
+const render = (ctx: CustomChartContext) => {
     const chartModel = ctx.getChartModel();
     console.log('chartModel:', chartModel);
     console.log('data:', chartModel.data);
@@ -114,8 +116,22 @@ const renderChart = (ctx: any) => {
         },
 
         series: dataModel.dataSeries,
-    } as any);
-    return Promise.resolve();
+    } as any); // adding basic styling for map and popup feature.
+    return;
+};
+
+const renderChart = async (ctx: CustomChartContext): Promise<void> =>{
+    try {
+        ctx.emitEvent(ChartToTSEvent.RenderStart);
+        render(ctx);
+    } catch (e) {
+        ctx.emitEvent(ChartToTSEvent.RenderError, {
+            hasError: true,
+            error: e,
+        });
+    } finally {
+        ctx.emitEvent(ChartToTSEvent.RenderComplete);
+    }
 };
 
 const init = async () => {
