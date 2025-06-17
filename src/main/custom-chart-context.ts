@@ -224,6 +224,7 @@ export type CustomChartContextProps = {
     validateConfig?: (
         updatedConfig: ChartConfig[],
         chartModel: ChartModel,
+        appConfig?: AppConfig,
     ) => ValidationResponse;
 
     /**
@@ -239,6 +240,7 @@ export type CustomChartContextProps = {
         updatedVisualProps: VisualProps,
         chartModel: ChartModel,
         activeColumnId?: string,
+        appConfig?: AppConfig,
     ) => ValidationResponse;
 
     /**
@@ -787,6 +789,7 @@ export class CustomChartContext {
                             payload.visualProps,
                             this.chartModel,
                             payload?.activeColumnId,
+                            this.appConfig,
                         );
                     if (validationResponse.isValid) {
                         const currentVisualState = {
@@ -823,6 +826,7 @@ export class CustomChartContext {
                         this.chartContextProps.validateConfig(
                             payload.chartConfig,
                             this.chartModel,
+                            this.appConfig,
                         );
                     if (validationResponse.isValid) {
                         const currentConfigState = {
@@ -1094,6 +1098,7 @@ export class CustomChartContext {
                     ? this.chartContextProps.validateConfig(
                           this.chartModel.config.chartConfig ?? [],
                           this.chartModel,
+                          this.appConfig,
                       )
                     : { isValid: false };
 

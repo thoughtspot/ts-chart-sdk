@@ -612,6 +612,7 @@ describe('CustomChartContext', () => {
                 undefined,
                 {},
                 'column-id',
+                {},
             );
             const validationResponse = eventProcessor({
                 payload: {

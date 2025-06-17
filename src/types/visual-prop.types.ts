@@ -196,10 +196,7 @@ export interface SettingsElement {
      * Run time properties to be used in the chart
      */
     runTimeProperties?: {
-        [key: string]: {
-            value: Value;
-            elementKey: string;
-        };
+        [key: string]: any;
     };
     /**
      * Link to another element
