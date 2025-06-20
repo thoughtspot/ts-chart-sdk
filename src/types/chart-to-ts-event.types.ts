@@ -4,6 +4,7 @@ import {
     CustomContextMenuAction,
     Query,
 } from './ts-to-chart-event.types';
+import { VisualPropEditorDefinition } from './visual-prop.types';
 
 /**
  *
@@ -55,6 +56,10 @@ export enum ChartToTSEvent {
      * Label translation events.
      */
     GetLabelTranslation = 'GetLabelTranslation',
+    /**
+     * Update visual prop editor definition
+     */
+    UpdateVisualPropEditorDefinition = 'UpdateVisualPropEditorDefinition',
 }
 
 /**
@@ -158,6 +163,13 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 2.1.0 | ThoughtSpot:
      */
     [ChartToTSEvent.GetLabelTranslation]: [GetLabelTranslationPayload];
+    /**
+     * Trigger this event when you want to update the visual prop editor definition.
+     * This event takes the updated editor definition as payload.
+     */
+    [ChartToTSEvent.UpdateVisualPropEditorDefinition]: [
+        UpdateVisualPropEditorDefinitionEventPayload,
+    ];
 }
 
 /**
@@ -272,6 +284,14 @@ export interface RenderErrorEventPayload {
  */
 export interface GetDataForQueryEventPayload {
     queries: Query[];
+}
+
+export interface UpdateVisualPropEditorDefinitionEventPayload {
+    /**
+     * The updated visual prop editor definition.
+     * This is used to update the visual prop editor in the chart.
+     */
+    visualPropEditorDefinition: VisualPropEditorDefinition;
 }
 
 /**
