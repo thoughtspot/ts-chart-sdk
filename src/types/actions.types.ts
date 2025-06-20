@@ -1012,4 +1012,14 @@ export enum Action {
      *
      */
     DisableChipReorder = 'disableChipReorder',
+
+    /**
+     * Action ID for adding comments in the liveboard.
+     * @example
+     * ```js
+     * const disabledActions = [Action.AddComment]
+     * ```
+     *
+     */
+    AddComment = 'context-menu-item-add-comment',
 }
