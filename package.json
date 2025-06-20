@@ -1,7 +1,7 @@
 {
     "name": "@thoughtspot/ts-chart-sdk",
     "private": false,
-    "version": "2.1.6",
+    "version": "2.1.7",
     "module": "lib/index",
     "main": "lib/index",
     "types": "lib/index",
