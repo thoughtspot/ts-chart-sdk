@@ -1291,6 +1291,37 @@ describe('CustomChartContext', () => {
                 TEST_EVENT_TYPE,
             );
         });
+
+        test('should update visual props on successful visual prop editor definition update', async () => {
+            // Initialize context
+            eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
+            });
+            eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            await customChartContext.initialize();
+
+            // Mock successful response for UpdateVisualPropEditorDefinition
+            const mockVisualProps = { color: 'blue' };
+            mockPostMessageToHost.mockResolvedValue({
+                hasError: false,
+                data: mockVisualProps,
+            });
+
+            // Emit event and wait for post-processing
+            await customChartContext.emitEvent(
+                ChartToTSEvent.UpdateVisualPropEditorDefinition,
+                { visualPropEditorDefinition: { elements: [] } },
+            );
+
+            // Verify that visualProps in chartModel is updated
+            expect(customChartContext.getChartModel().visualProps).toEqual(
+                mockVisualProps,
+            );
+        });
     });
     describe('DownloadExcelTrigger', () => {
         let customChartContext: CustomChartContext;

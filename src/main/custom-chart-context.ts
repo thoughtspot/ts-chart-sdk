@@ -666,6 +666,32 @@ export class CustomChartContext {
         }
     }
 
+    private eventPayloadPostProcessor<
+        T extends keyof ChartToTSEventsPayloadMap,
+    >(eventType: T, eventResponse: Promise<any>): any {
+        switch (eventType) {
+            case ChartToTSEvent.UpdateVisualPropEditorDefinition:
+                return this.updateVisualPropEditorDefinitionPostProcessor(
+                    eventResponse,
+                );
+            default:
+                return eventResponse;
+        }
+    }
+
+    private async updateVisualPropEditorDefinitionPostProcessor(
+        eventResponse: Promise<any>,
+    ): Promise<any> {
+        // eslint-disable-next-line promise/catch-or-return
+        return eventResponse.then((response) => {
+            // eslint-disable-next-line promise/always-return
+            if (!response?.hasError) {
+                const customVisualProp = response.data;
+                this.chartModel.visualProps = customVisualProp;
+            }
+        });
+    }
+
     private validationsResponseProcessor(
         currentValidationState: Partial<ChartModel>,
         validationResponse: ValidationResponse,
@@ -708,12 +734,13 @@ export class CustomChartContext {
             eventType,
             eventPayload,
         );
-        return postMessageToHostApp(
+        const res = postMessageToHostApp(
             this.componentId,
             this.hostUrl,
             processedPayload?.[0] ?? null,
             eventType,
         );
+        return this.eventPayloadPostProcessor(eventType, res);
     }
 
     /**
