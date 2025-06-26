@@ -73,6 +73,9 @@ let exampleClientStateChart2 = {
     localCounterState,
 };
 
+let latestVisualPropEditorDefinition: any = {
+    elements: [],
+};
 function getDataForColumn(column: ChartColumn, dataArr: DataPointsArray) {
     const formatter = getDataFormatter(column, { isMillisIncluded: false });
     const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
@@ -316,7 +319,8 @@ function render(ctx: CustomChartContext) {
                                 onClick: (...arg) => {
                                     console.log(chartModel.visualProps);
                                     if (
-                                        chartModel.visualProps.clientStateChart2
+                                        chartModel.visualProps
+                                            ?.clientStateChart2
                                     ) {
                                         const parsedVisualProp = JSON.parse(
                                             (
@@ -399,6 +403,26 @@ function render(ctx: CustomChartContext) {
                                     console.log(
                                         'custom action 1 triggered',
                                         arg,
+                                    );
+                                },
+                            },
+                            {
+                                id: 'add-checkbox',
+                                label: 'Add checkbox',
+                                icon: '',
+                                onClick: () => {
+                                    latestVisualPropEditorDefinition.elements.push(
+                                        {
+                                            key: 'colors-2',
+                                            type: 'radio',
+                                            defaultValue: 'red',
+                                            values: ['red', 'green', 'yellow'],
+                                            label: 'Custom Context Colors',
+                                        },
+                                    );
+                                    ctx.emitEvent(
+                                        ChartToTSEvent.UpdateVisualPropEditorDefinition,
+                                        latestVisualPropEditorDefinition,
                                     );
                                 },
                             },
@@ -613,7 +637,11 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
                     });
                 }
             }
-            return { elements };
+            latestVisualPropEditorDefinition.elements = _.merge(
+                latestVisualPropEditorDefinition?.elements,
+                elements,
+            );
+            return latestVisualPropEditorDefinition;
         },
         allowedConfigurations: {
             allowColumnConditionalFormatting: true,
