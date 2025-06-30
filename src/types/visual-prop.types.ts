@@ -144,6 +144,10 @@ export enum SettingsElementType {
     MULTILEVEL_DROPDOWN = 'MultilevelDropdown',
     CHART_ZOOM = 'ChartZoom',
     BACKGROUND_IMAGE_EDITOR = 'BackgroundImageEditor',
+    CHART_DATA_COLOR_PICKER = 'ChartDataColorPicker',
+    NUMERIC_FILTER_INPUT = 'NumericFilterInput',
+    COLOR_PICKER_V2 = 'ColorPickerV2',
+    COLUMN_RENAME_INPUT = 'ColumnRenameInput',
 }
 
 /**
