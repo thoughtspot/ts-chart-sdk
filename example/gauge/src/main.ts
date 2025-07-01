@@ -561,7 +561,6 @@ const init = async () => {
                 },
             ],
         },
-        persistedVisualPropKeys: ['clientStateChart1'],
         validateConfig: (
             updatedConfig: ChartConfig[],
             _chartModel: ChartModel,
