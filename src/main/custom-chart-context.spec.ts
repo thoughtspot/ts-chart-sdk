@@ -1475,7 +1475,7 @@ describe('CustomChartContext', () => {
                 .mockImplementation(
                     async (
                         testPayload: DownloadExcelTriggerPayload,
-                        response?: DownloadExcelTriggerResponse,
+                        response?: any,
                     ) => {
                         if (response) {
                             return response;

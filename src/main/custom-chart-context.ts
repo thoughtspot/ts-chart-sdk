@@ -1025,7 +1025,7 @@ export class CustomChartContext {
             TSToChartEvent.ChartModelUpdate,
             (
                 payload: ChartModelUpdateEventPayload,
-                response?: { triggerRenderChart: boolean },
+                response?: any,
             ): { triggerRenderChart: boolean } => {
                 this.chartModel = payload.chartModel;
                 if (response) {
@@ -1048,7 +1048,7 @@ export class CustomChartContext {
             TSToChartEvent.DataUpdate,
             (
                 payload: DataUpdateEventPayload,
-                response?: { triggerRenderChart: boolean },
+                response?: any,
             ): {
                 triggerRenderChart: boolean;
             } => {
@@ -1073,7 +1073,7 @@ export class CustomChartContext {
             TSToChartEvent.VisualPropsUpdate,
             (
                 payload: VisualPropsUpdateEventPayload,
-                response?: VisualPropsUpdateEventResponse,
+                response?: any,
             ): VisualPropsUpdateEventResponse => {
                 this.chartModel.visualProps = payload.visualProps;
                 if (response) {
@@ -1091,10 +1091,7 @@ export class CustomChartContext {
          */
         this.on(
             TSToChartEvent.DownloadExcelTrigger,
-            async (
-                payload: DownloadExcelTriggerPayload,
-                response?: DownloadExcelTriggerResponse,
-            ) => {
+            async (payload: DownloadExcelTriggerPayload, response?: any) => {
                 logger.log(
                     'DownloadExcelTrigger event triggered from TS with payload:',
                     payload,
