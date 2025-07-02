@@ -422,7 +422,10 @@ function render(ctx: CustomChartContext) {
                                     );
                                     ctx.emitEvent(
                                         ChartToTSEvent.UpdateVisualPropEditorDefinition,
-                                        latestVisualPropEditorDefinition,
+                                        {
+                                            visualPropEditorDefinition:
+                                                latestVisualPropEditorDefinition,
+                                        },
                                     );
                                 },
                             },

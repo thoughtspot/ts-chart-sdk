@@ -699,7 +699,11 @@ export class CustomChartContext {
             // eslint-disable-next-line promise/always-return
             if (!response?.hasError) {
                 const customVisualProp = response.data;
-                this.chartModel.visualProps = customVisualProp;
+                this.chartModel.visualProps = _.merge(
+                    {},
+                    customVisualProp,
+                    this.chartModel.visualProps,
+                );
             }
         });
     }
