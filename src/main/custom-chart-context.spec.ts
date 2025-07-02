@@ -1386,10 +1386,7 @@ describe('CustomChartContext', () => {
                 eventType: TSToChartEvent.DownloadExcelTrigger,
             });
 
-            expect(mockDownloadHandler).toHaveBeenCalledWith(
-                testPayload,
-                undefined,
-            );
+            expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
             expect(response).toEqual({
                 fileName: 'custom-report.xlsx',
                 error: '',
@@ -1463,13 +1460,10 @@ describe('CustomChartContext', () => {
                 eventType: TSToChartEvent.DownloadExcelTrigger,
             });
 
-            expect(mockDownloadHandler).toHaveBeenCalledWith(
-                testPayload,
-                undefined,
-            );
+            expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
         });
 
-        test('should chain responses through multiple handlers in LIFO order', async () => {
+        test('should chain responses through multiple handlers in LIFO order when reverseEventExecutionOrder is true', async () => {
             const firstHandler = jest
                 .fn()
                 .mockImplementation(
@@ -1501,6 +1495,7 @@ describe('CustomChartContext', () => {
                 getDefaultChartConfig,
                 getQueriesFromChartConfig,
                 renderChart,
+                reverseEventExecutionOrder: true,
             });
 
             // Register handlers - second will execute first (LIFO)

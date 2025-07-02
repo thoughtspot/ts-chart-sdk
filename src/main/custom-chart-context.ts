@@ -298,6 +298,15 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfigParameters?: ChartConfigParameters;
+    /**
+     * Controls the execution order of event listeners.
+     * When true, executes in LIFO order (Last In, First Out) - reverse order.
+     * When false, executes in FIFO order (First In, First Out) - normal order.
+     *
+     * @default false
+     * @version SDK: 2.2.0 | ThoughtSpot:
+     */
+    reverseEventExecutionOrder?: boolean;
 };
 
 export type ValidationFunctions =
@@ -327,6 +336,7 @@ const DEFAULT_CHART_CONTEXT_PROPS: Partial<CustomChartContextProps> = {
         },
         batchSizeLimit: 20000,
     },
+    reverseEventExecutionOrder: false,
 };
 
 export class CustomChartContext {
@@ -1188,24 +1198,35 @@ export class CustomChartContext {
         const payload = data.payload;
         let response: any;
         if (_.isArray(this.eventListeners[data.eventType])) {
-            // Execute event listeners in reverse order (LIFO - Last In, First
-            // Out) This ensures that:
-            // 1. Developer-defined event handlers execute first, allowing them
-            // to process the payload and potentially modify the response
-            // 2. Default/internal event handlers execute last, ensuring they
-            // have the final say on updating the private chartModel and
-            // handling any remaining processing
-            // 3. Only the last (default) callback should handle chartModel
-            // updates since chartModel is private and can only be modified by
-            // internal/default callbacks 4. Developer callbacks can return
-            // responses that will be considered by subsequent handlers in the
-            // chain
-            response = this.eventListeners[data.eventType].reduceRight(
-                (res, callback) => {
-                    return callback(payload, res);
-                },
-                response,
-            );
+            // Execute event listeners based on the reverse flag
+            if (this.chartContextProps.reverseEventExecutionOrder) {
+                // Execute in reverse order (LIFO - Last In, First Out)
+                // This ensures that:
+                // 1. Developer-defined event handlers execute first, allowing
+                // them to process the payload and potentially modify the
+                // response.
+                // 2. Default/internal event handlers execute last,
+                // ensuring they have the final say on updating the private
+                // chartModel and handling any remaining processing.
+                // 3. Only the last (default) callback should handle chartModel
+                // updates since chartModel is private and can only be modified
+                // by internal/default callbacks.
+                // 4. Developer callbacks canreturn responses that will be
+                // considered by subsequent handlers in the chain
+                response = this.eventListeners[data.eventType].reduceRight(
+                    (res, callback) => {
+                        return callback(payload, res);
+                    },
+                    response,
+                );
+            } else {
+                // Execute in normal order (FIFO - First In, First Out)
+                this.eventListeners[data.eventType].forEach((callback) => {
+                    // Only the last response will be sent back to
+                    // the server
+                    response = callback(payload);
+                });
+            }
         } else {
             response = {
                 hasError: true,
