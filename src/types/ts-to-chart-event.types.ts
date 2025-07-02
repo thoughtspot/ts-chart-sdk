@@ -348,6 +348,11 @@ export interface VisualPropsUpdateEventPayload {
     visualProps: VisualProps;
 }
 
+export interface VisualPropsUpdateEventResponse {
+    triggerRenderChart?: boolean;
+    triggerUpdateChartModel?: boolean;
+}
+
 /**
  *
  * @group ThoughtSpot to Chart Events

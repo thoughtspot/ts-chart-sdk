@@ -37,6 +37,7 @@ import {
     ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
     DownloadExcelTriggerPayload,
+    DownloadExcelTriggerResponse,
     GetColumnDataPayload,
     GetColumnDataResponsePayload,
     GetDataQueryPayload,
@@ -48,6 +49,7 @@ import {
     TSToChartEventsPayloadMap,
     TSToChartInternalEventsPayloadMap,
     VisualPropsUpdateEventPayload,
+    VisualPropsUpdateEventResponse,
     VisualPropsValidateEventPayload,
 } from '../types/ts-to-chart-event.types';
 import {
@@ -1016,13 +1018,19 @@ export class CustomChartContext {
          * This event is triggered when the TS app sends the updated chart model.
          * If event is not defined by developer, default is always sent to refresh the
          * chart iframe.
+         *
+         * Optional response from previous event handlers in the chain.
          */
         this.on(
             TSToChartEvent.ChartModelUpdate,
             (
                 payload: ChartModelUpdateEventPayload,
+                response?: { triggerRenderChart: boolean },
             ): { triggerRenderChart: boolean } => {
                 this.chartModel = payload.chartModel;
+                if (response) {
+                    return response;
+                }
                 return {
                     triggerRenderChart: true,
                 };
@@ -1033,15 +1041,21 @@ export class CustomChartContext {
          * This event is triggered when the TS app sends the updated data.
          * If event is not defined by developer, default is always sent to refresh the
          * chart iframe.
+         *
+         * Optional response from previous event handlers in the chain.
          */
         this.on(
             TSToChartEvent.DataUpdate,
             (
                 payload: DataUpdateEventPayload,
+                response?: { triggerRenderChart: boolean },
             ): {
                 triggerRenderChart: boolean;
             } => {
                 this.chartModel.data = payload.data;
+                if (response) {
+                    return response;
+                }
                 return {
                     triggerRenderChart: true,
                 };
@@ -1052,13 +1066,19 @@ export class CustomChartContext {
          * This event is triggered when the TS app sends the updated visual properties.
          * If event is not defined by developer, default is always sent to refresh the
          * chart iframe.
+         *
+         * Optional response from previous event handlers in the chain.
          */
         this.on(
             TSToChartEvent.VisualPropsUpdate,
             (
                 payload: VisualPropsUpdateEventPayload,
-            ): { triggerRenderChart: boolean } => {
+                response?: VisualPropsUpdateEventResponse,
+            ): VisualPropsUpdateEventResponse => {
                 this.chartModel.visualProps = payload.visualProps;
+                if (response) {
+                    return response;
+                }
                 return {
                     triggerRenderChart: true,
                 };
@@ -1066,14 +1086,22 @@ export class CustomChartContext {
         );
         /**
          * This event is triggered when the TS app sends the download excel trigger.
+         *
+         * Optional response from previous event handlers in the chain.
          */
         this.on(
             TSToChartEvent.DownloadExcelTrigger,
-            async (payload: DownloadExcelTriggerPayload) => {
+            async (
+                payload: DownloadExcelTriggerPayload,
+                response?: DownloadExcelTriggerResponse,
+            ) => {
                 logger.log(
                     'DownloadExcelTrigger event triggered from TS with payload:',
                     payload,
                 );
+                if (response) {
+                    return response;
+                }
                 return Promise.resolve({
                     fileName: '',
                     error: '',
@@ -1161,14 +1189,26 @@ export class CustomChartContext {
     private executeEventListenerCBs = (data: any): any => {
         // do basic sanity
         const payload = data.payload;
-        let response;
+        let response: any;
         if (_.isArray(this.eventListeners[data.eventType])) {
-            this.eventListeners[data.eventType].forEach((callback) => {
-                // this is a problem today if we have multiple callbacks
-                // registered. only the last response will be sent back to the
-                // server
-                response = callback(payload);
-            });
+            // Execute event listeners in reverse order (LIFO - Last In, First
+            // Out) This ensures that:
+            // 1. Developer-defined event handlers execute first, allowing them
+            // to process the payload and potentially modify the response
+            // 2. Default/internal event handlers execute last, ensuring they
+            // have the final say on updating the private chartModel and
+            // handling any remaining processing
+            // 3. Only the last (default) callback should handle chartModel
+            // updates since chartModel is private and can only be modified by
+            // internal/default callbacks 4. Developer callbacks can return
+            // responses that will be considered by subsequent handlers in the
+            // chain
+            response = this.eventListeners[data.eventType].reduceRight(
+                (res, callback) => {
+                    return callback(payload, res);
+                },
+                response,
+            );
         } else {
             response = {
                 hasError: true,

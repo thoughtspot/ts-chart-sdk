@@ -8,7 +8,11 @@ import _ from 'lodash';
 import { mockInitializeContextPayload } from '../test/test-utils';
 import { ColumnType } from '../types/answer-column.types';
 import { ChartToTSEvent, ErrorType } from '../types/chart-to-ts-event.types';
-import { TSToChartEvent } from '../types/ts-to-chart-event.types';
+import {
+    DownloadExcelTriggerPayload,
+    DownloadExcelTriggerResponse,
+    TSToChartEvent,
+} from '../types/ts-to-chart-event.types';
 import { PropElement } from '../types/visual-prop.types';
 import { CustomChartContext, getChartContext } from './custom-chart-context';
 import * as PostMessageEventBridge from './post-message-event-bridge';
@@ -1382,7 +1386,10 @@ describe('CustomChartContext', () => {
                 eventType: TSToChartEvent.DownloadExcelTrigger,
             });
 
-            expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
+            expect(mockDownloadHandler).toHaveBeenCalledWith(
+                testPayload,
+                undefined,
+            );
             expect(response).toEqual({
                 fileName: 'custom-report.xlsx',
                 error: '',
@@ -1456,7 +1463,83 @@ describe('CustomChartContext', () => {
                 eventType: TSToChartEvent.DownloadExcelTrigger,
             });
 
-            expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
+            expect(mockDownloadHandler).toHaveBeenCalledWith(
+                testPayload,
+                undefined,
+            );
+        });
+
+        test('should chain responses through multiple handlers in LIFO order', async () => {
+            const firstHandler = jest
+                .fn()
+                .mockImplementation(
+                    async (
+                        testPayload: DownloadExcelTriggerPayload,
+                        response?: DownloadExcelTriggerResponse,
+                    ) => {
+                        if (response) {
+                            return response;
+                        }
+                        return {
+                            fileName: 'first.xlsx',
+                            error: '',
+                            message: 'First handler response',
+                            customField: 'first',
+                        };
+                    },
+                );
+
+            const secondHandler = jest.fn().mockReturnValue({
+                fileName: 'second.xlsx',
+                error: '',
+                message: 'Second handler response',
+                customField: 'second',
+            });
+
+            // Create new context with custom handlers
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+
+            // Register handlers - second will execute first (LIFO)
+            customChartContext.on(
+                TSToChartEvent.DownloadExcelTrigger,
+                firstHandler,
+            );
+            customChartContext.on(
+                TSToChartEvent.DownloadExcelTrigger,
+                secondHandler,
+            );
+
+            const testPayload = {
+                format: 'xlsx',
+                filters: ['test1', 'test2'],
+            };
+
+            const result = await eventProcessor({
+                payload: testPayload,
+                eventType: TSToChartEvent.DownloadExcelTrigger,
+            });
+
+            // Verify handlers were called in correct order
+            expect(secondHandler).toHaveBeenCalledWith(testPayload, undefined);
+            expect(firstHandler).toHaveBeenCalledWith(testPayload, {
+                fileName: 'second.xlsx',
+                error: '',
+                message: 'Second handler response',
+                customField: 'second',
+            });
+
+            // Verify final result comes from first handler's return value
+            // (last custom handler to execute)
+            expect(result).toEqual({
+                fileName: 'second.xlsx',
+                error: '',
+                message: 'Second handler response',
+                customField: 'second',
+            });
         });
     });
 });
