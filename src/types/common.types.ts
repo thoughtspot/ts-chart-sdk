@@ -21,6 +21,13 @@ import type { VisualPropEditorDefinition } from './visual-prop.types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 
+export enum SortCategory {
+    DEFAULT = 'DEFAULT',
+    NONE = 'NONE',
+    ALPHA = 'ALPHA',
+    CUSTOM = 'CUSTOM',
+}
+
 export type Scalars = {
     ID: string;
     String: string;
@@ -175,7 +182,12 @@ export interface ChartModel {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     data?: QueryData[];
-    sortInfo?: any; // TODO(chetan):
+    /**
+     * Sort info for the chart
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    sortInfo?: SortInfo[];
     visualProps?: VisualProps;
     config: {
         // chart config stored by chart developer
@@ -236,6 +248,43 @@ export type ValidationResponse = {
  * @version SDK: 0.1 | ThoughtSpot:
  */
 export type VisualProps = unknown;
+
+/**
+ * Sort info for the chart
+ *
+ * @version SDK: 2.2.1 | ThoughtSpot:
+ */
+export type SortInfo = {
+    /**
+     * Category of the sort
+     * DEFAULT: Order defined in the worksheet
+     * NONE: No sort
+     * ALPHA: Alpha sort
+     * CUSTOM: Order defined at answer level by the user
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    category: SortCategory;
+    /**
+     * Column id
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    columnId: string;
+    /**
+     * Sort ascending
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    sortAscending: boolean;
+    /**
+     * Custom order
+     * When category is CUSTOM, this will be the custom order of the column
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    customOrder?: string[];
+};
 
 /**
  *  Font Faces type from TS.
