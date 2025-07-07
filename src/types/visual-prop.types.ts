@@ -34,6 +34,8 @@ export type TSTooltipConfig = {
  */
 export type TranslatedValue = { valueTranslation: string; value: string };
 
+export type OrientationType = 'list' | 'tray';
+
 type Value = string | boolean | number | object | any[];
 
 type ElementProperties = {
@@ -680,6 +682,33 @@ export interface NativeEditToolTip {
 }
 
 /**
+ * Native edit custom sort component defined for custom sort in TS Advance Chart Settings
+ *
+ * @group Visual Properties Editor
+ */
+export interface NativeEditCustomSort {
+    type: 'customsort';
+    /**
+     * Key to store the value
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * Column id
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    columnId: string;
+    /**
+     * Orientation of the chart
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    orientation?: OrientationType;
+}
+
+/**
  * Common type placeholder for all the input element types
  *
  * @group Visual Properties Editor
@@ -693,7 +722,8 @@ export type PropElement =
     | CheckboxFormDetail
     | RadioButtonFormDetail
     | DropDownFormDetail
-    | NativeEditToolTip;
+    | NativeEditToolTip
+    | NativeEditCustomSort;
 
 /**
  * Define Column settings, based on column type, settings needs to be defined in
