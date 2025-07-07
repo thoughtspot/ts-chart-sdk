@@ -278,6 +278,18 @@ export type SortInfo = {
      */
     sortAscending: boolean;
     /**
+     * Whether the sort is user sorted
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    isUserSorted?: boolean;
+    /**
+     * Order of the column
+     *
+     * @version SDK: 2.2.1 | ThoughtSpot:
+     */
+    order?: number;
+    /**
      * Custom order
      * When category is CUSTOM, this will be the custom order of the column
      *
