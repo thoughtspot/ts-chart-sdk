@@ -691,19 +691,19 @@ export interface NativeEditCustomSort {
     /**
      * Key to store the value
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     key: string;
     /**
      * Column id
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     columnId: string;
     /**
      * Orientation of the chart
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     orientation?: OrientationType;
 }
