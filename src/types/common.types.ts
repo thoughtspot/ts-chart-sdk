@@ -185,7 +185,7 @@ export interface ChartModel {
     /**
      * Sort info for the chart
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     sortInfo?: SortInfo[];
     visualProps?: VisualProps;
@@ -252,7 +252,7 @@ export type VisualProps = unknown;
 /**
  * Sort info for the chart
  *
- * @version SDK: 2.2.1 | ThoughtSpot:
+ * @version SDK: 2.3.0 | ThoughtSpot:
  */
 export type SortInfo = {
     /**
@@ -262,38 +262,38 @@ export type SortInfo = {
      * ALPHA: Alpha sort
      * CUSTOM: Order defined at answer level by the user
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     category: SortCategory;
     /**
      * Column id
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     columnId: string;
     /**
      * Sort ascending
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     sortAscending: boolean;
     /**
      * Whether the sort is user sorted
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     isUserSorted?: boolean;
     /**
      * Order of the column
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     order?: number;
     /**
      * Custom order
      * When category is CUSTOM, this will be the custom order of the column
      *
-     * @version SDK: 2.2.1 | ThoughtSpot:
+     * @version SDK: 2.3.0 | ThoughtSpot:
      */
     customOrder?: string[];
 };
