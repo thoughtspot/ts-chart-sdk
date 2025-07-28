@@ -24,6 +24,11 @@ export enum ChartToTSEvent {
     CloseAxisMenu = 'CloseAxisMenu',
 
     /**
+     * Action Handle events
+     */
+    ActionHandler = 'ActionHandler',
+
+    /**
      * Render life cycle events
      */
     InitStart = 'InitStart',
@@ -154,6 +159,13 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 0.0.1-alpha.7 | ThoughtSpot:
      */
     [ChartToTSEvent.CloseAxisMenu]: [];
+
+    /**
+     * Trigger to handle the action
+     *
+     * @version SDK: 2.4.0 | ThoughtSpot:
+     */
+    [ChartToTSEvent.ActionHandler]: [ActionHandlerEventPayload];
     /**
      * Trigger this event to get the locale translated msg values based on the msgId provided.
      * These msgIds corresponds to the msgIds defined in string.po file of ThoughtSpot.
@@ -402,6 +414,23 @@ export interface OpenAxisMenuEventPayload {
      * */
     customActions?: AxisMenuCustomAction[];
 }
+
+export enum ActionEventType {
+    ColumnSort = 'ColumnSort',
+}
+
+export interface ColumnSortActionHandler {
+    eventType: ActionEventType.ColumnSort;
+    /**
+     * This payload is used to sort the column in ascending or descending order.
+     * */
+    payload: {
+        columnId: string;
+        isAscending: boolean;
+    };
+}
+
+export type ActionHandlerEventPayload = ColumnSortActionHandler;
 
 /**
  *
