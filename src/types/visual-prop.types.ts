@@ -706,6 +706,24 @@ export interface NativeEditCustomSort {
      * @version SDK: 2.3.0 | ThoughtSpot:
      */
     orientation?: OrientationType;
+    /**
+     * I18n'ed string to show on the form label
+     *
+     * @version SDK: 2.3.0 | ThoughtSpot:
+     */
+    label?: string;
+    /**
+     * Translation key for the label
+     *
+     * @version SDK: 2.3.0 | ThoughtSpot:
+     */
+    labelTranslation?: VisualPropComponentTranslationKeys | string;
+    /**
+     * Default value
+     *
+     * @version SDK: 2.3.0 | ThoughtSpot:
+     */
+    defaultValue?: string;
 }
 
 /**
