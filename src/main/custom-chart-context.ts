@@ -13,6 +13,7 @@ import {
     ChartToTSEventsPayloadMap,
     ContextMenuActionHandler,
     CustomAction,
+    CustomActionMenuItemGroup,
     ErrorType,
     OpenAxisMenuEventPayload,
     OpenContextMenuEventPayload,
@@ -633,15 +634,29 @@ export class CustomChartContext {
         if (_.isEmpty(eventPayload?.[0]?.customActions)) {
             return eventPayload;
         }
-        eventPayload[0].customActions?.forEach((action: CustomAction) => {
-            this.axisMenuActionHandler[action.id] = action.onClick;
-        });
         const processedCustomActions = eventPayload?.[0].customActions?.map(
             (action: CustomAction) => {
+                this.axisMenuActionHandler[action.id] = action.onClick;
                 return {
                     id: action.id,
                     label: action.label,
                     icon: action.icon,
+                    cascadingItems: action.cascadingItems?.map(
+                        (item: CustomActionMenuItemGroup) => {
+                            return {
+                                title: item.title,
+                                items: item.items.map((item: CustomAction) => {
+                                    this.axisMenuActionHandler[item.id] =
+                                        item.onClick;
+                                    return {
+                                        id: item.id,
+                                        label: item.label,
+                                        icon: action.icon,
+                                    };
+                                }),
+                            };
+                        },
+                    ),
                 };
             },
         );
