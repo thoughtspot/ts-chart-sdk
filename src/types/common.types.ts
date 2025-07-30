@@ -487,6 +487,15 @@ export interface AppConfig {
      * }
      */
     initFlags?: Record<string, { flagId: string; flagValue: boolean }>;
+    /**
+     * Object containing the placeholders for invalid data in TS.
+     * This can be used to replace invalid value in TS with custom values in charts vizualization
+     * Currently we support it for null and empty
+     */
+    invalidValuePlaceholders?: {
+        nullPlaceholder: string;
+        emptyPlaceholder: string;
+    };
 }
 
 /**
