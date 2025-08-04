@@ -13,6 +13,7 @@ import {
     ChartToTSEventsPayloadMap,
     ContextMenuActionHandler,
     CustomAction,
+    CustomActionMenuItemGroup,
     ErrorType,
     OpenAxisMenuEventPayload,
     OpenContextMenuEventPayload,
@@ -37,7 +38,6 @@ import {
     ContextMenuCustomActionPayload,
     DataUpdateEventPayload,
     DownloadExcelTriggerPayload,
-    DownloadExcelTriggerResponse,
     GetColumnDataPayload,
     GetColumnDataResponsePayload,
     GetDataQueryPayload,
@@ -555,7 +555,7 @@ export class CustomChartContext {
             return eventPayload;
         }
         eventPayload?.[0]?.customActions?.forEach((action: CustomAction) => {
-            this.contextMenuActionHandler[action.id] = action.onClick;
+            this.contextMenuActionHandler[action.id] = action.onClick ?? _.noop;
         });
         const processedCustomActions = eventPayload[0]?.customActions?.map(
             (action: CustomAction) => {
@@ -633,15 +633,36 @@ export class CustomChartContext {
         if (_.isEmpty(eventPayload?.[0]?.customActions)) {
             return eventPayload;
         }
-        eventPayload[0].customActions?.forEach((action: CustomAction) => {
-            this.axisMenuActionHandler[action.id] = action.onClick;
-        });
         const processedCustomActions = eventPayload?.[0].customActions?.map(
             (action: CustomAction) => {
+                this.axisMenuActionHandler[action.id] =
+                    action.onClick ?? _.noop;
                 return {
                     id: action.id,
                     label: action.label,
                     icon: action.icon,
+                    itemDisabled: action.itemDisabled,
+                    itemDisabledTooltip: action.itemDisabledTooltip,
+                    cascadingItems: action.cascadingItems?.map(
+                        (item: CustomActionMenuItemGroup) => {
+                            return {
+                                title: item.title,
+                                items: item.items.map((item: CustomAction) => {
+                                    this.axisMenuActionHandler[item.id] =
+                                        item.onClick ?? _.noop;
+                                    return {
+                                        id: item.id,
+                                        label: item.label,
+                                        icon: item.icon,
+                                        itemDisabled: item.itemDisabled,
+                                        itemDisabledTooltip:
+                                            item.itemDisabledTooltip,
+                                        isSelected: item.isSelected,
+                                    };
+                                }),
+                            };
+                        },
+                    ),
                 };
             },
         );

@@ -890,6 +890,437 @@ describe('CustomChartContext', () => {
                 error: `Event type not recognised or processed: ${TEST_EVENT_TYPE}`,
             });
         });
+
+        describe('axisMenuCustomActionPreProcessor', () => {
+            let customChartContext: CustomChartContext;
+
+            beforeEach(() => {
+                customChartContext = new CustomChartContext({
+                    getDefaultChartConfig,
+                    getQueriesFromChartConfig,
+                    renderChart,
+                });
+            });
+
+            afterEach(() => {
+                customChartContext.destroy();
+                eventProcessor = null;
+                jest.resetAllMocks();
+            });
+
+            test('should return original payload when customActions is empty', () => {
+                const eventPayload = [
+                    {
+                        customActions: [],
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                expect(result).toEqual(eventPayload);
+            });
+
+            test('should return original payload when customActions is undefined', () => {
+                const eventPayload = [
+                    {
+                        customActions: undefined,
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                expect(result).toEqual(eventPayload);
+            });
+
+            test('should process basic custom actions correctly', () => {
+                const mockOnClick = jest.fn();
+                const eventPayload = [
+                    {
+                        customActions: [
+                            {
+                                id: 'action-1',
+                                label: 'Action 1',
+                                icon: 'icon-1',
+                                onClick: mockOnClick,
+                                itemDisabled: false,
+                                itemDisabledTooltip: 'Tooltip 1',
+                            },
+                            {
+                                id: 'action-2',
+                                label: 'Action 2',
+                                icon: 'icon-2',
+                                onClick: undefined,
+                                itemDisabled: true,
+                                itemDisabledTooltip: 'Tooltip 2',
+                            },
+                        ],
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                // Verify the processed payload structure
+                expect(result[0].customActions).toHaveLength(2);
+                expect(result[0].customActions?.[0]).toEqual({
+                    id: 'action-1',
+                    label: 'Action 1',
+                    icon: 'icon-1',
+                    itemDisabled: false,
+                    itemDisabledTooltip: 'Tooltip 1',
+                    cascadingItems: undefined,
+                });
+                expect(result[0].customActions?.[1]).toEqual({
+                    id: 'action-2',
+                    label: 'Action 2',
+                    icon: 'icon-2',
+                    itemDisabled: true,
+                    itemDisabledTooltip: 'Tooltip 2',
+                    cascadingItems: undefined,
+                });
+
+                // Verify callbacks are stored in handler
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'action-1'
+                    ],
+                ).toBe(mockOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'action-2'
+                    ],
+                ).toBe(_.noop);
+            });
+
+            test('should process cascading items correctly', () => {
+                const mockParentOnClick = jest.fn();
+                const mockChildOnClick = jest.fn();
+                const eventPayload = [
+                    {
+                        customActions: [
+                            {
+                                id: 'parent-action',
+                                label: 'Parent Action',
+                                icon: 'parent-icon',
+                                onClick: mockParentOnClick,
+                                cascadingItems: [
+                                    {
+                                        title: 'Submenu 1',
+                                        items: [
+                                            {
+                                                id: 'child-action-1',
+                                                label: 'Child Action 1',
+                                                icon: 'child-icon-1',
+                                                onClick: mockChildOnClick,
+                                                itemDisabled: false,
+                                                itemDisabledTooltip:
+                                                    'Child Tooltip 1',
+                                                isSelected: true,
+                                            },
+                                            {
+                                                id: 'child-action-2',
+                                                label: 'Child Action 2',
+                                                icon: 'child-icon-2',
+                                                onClick: undefined,
+                                                itemDisabled: true,
+                                                itemDisabledTooltip:
+                                                    'Child Tooltip 2',
+                                                isSelected: false,
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                // Verify the processed payload structure
+                expect(result[0].customActions).toHaveLength(1);
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems,
+                ).toHaveLength(1);
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems?.[0],
+                ).toEqual({
+                    title: 'Submenu 1',
+                    items: [
+                        {
+                            id: 'child-action-1',
+                            label: 'Child Action 1',
+                            icon: 'child-icon-1',
+                            itemDisabled: false,
+                            itemDisabledTooltip: 'Child Tooltip 1',
+                            isSelected: true,
+                        },
+                        {
+                            id: 'child-action-2',
+                            label: 'Child Action 2',
+                            icon: 'child-icon-2',
+                            itemDisabled: true,
+                            itemDisabledTooltip: 'Child Tooltip 2',
+                            isSelected: false,
+                        },
+                    ],
+                });
+
+                // Verify callbacks are stored in handler
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'parent-action'
+                    ],
+                ).toBe(mockParentOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'child-action-1'
+                    ],
+                ).toBe(mockChildOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'child-action-2'
+                    ],
+                ).toBe(_.noop);
+            });
+
+            test('should handle multiple cascading items', () => {
+                const mockOnClick = jest.fn();
+                const eventPayload = [
+                    {
+                        customActions: [
+                            {
+                                id: 'parent-action',
+                                label: 'Parent Action',
+                                icon: 'parent-icon',
+                                onClick: mockOnClick,
+                                cascadingItems: [
+                                    {
+                                        title: 'Submenu 1',
+                                        items: [
+                                            {
+                                                id: 'child-1-1',
+                                                label: 'Child 1-1',
+                                                icon: 'child-icon-1-1',
+                                                onClick: mockOnClick,
+                                            },
+                                            {
+                                                id: 'child-1-2',
+                                                label: 'Child 1-2',
+                                                icon: 'child-icon-1-2',
+                                                onClick: mockOnClick,
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        title: 'Submenu 2',
+                                        items: [
+                                            {
+                                                id: 'child-2-1',
+                                                label: 'Child 2-1',
+                                                icon: 'child-icon-2-1',
+                                                onClick: mockOnClick,
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                // Verify the processed payload structure
+                expect(result[0].customActions).toHaveLength(1);
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems,
+                ).toHaveLength(2);
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems?.[0]?.title,
+                ).toBe('Submenu 1');
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems?.[0]?.items,
+                ).toHaveLength(2);
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems?.[1]?.title,
+                ).toBe('Submenu 2');
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems?.[1]?.items,
+                ).toHaveLength(1);
+
+                // Verify callbacks are stored in handler
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'parent-action'
+                    ],
+                ).toBe(mockOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'child-1-1'
+                    ],
+                ).toBe(mockOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'child-1-2'
+                    ],
+                ).toBe(mockOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'child-2-1'
+                    ],
+                ).toBe(mockOnClick);
+            });
+
+            test('should clear existing axisMenuActionHandler before processing', () => {
+                // First, add some existing handlers
+                (customChartContext as any).axisMenuActionHandler = {
+                    'existing-action': jest.fn(),
+                };
+
+                const eventPayload = [
+                    {
+                        customActions: [
+                            {
+                                id: 'new-action',
+                                label: 'New Action',
+                                icon: 'new-icon',
+                                onClick: jest.fn(),
+                            },
+                        ],
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                customChartContext.axisMenuCustomActionPreProcessor(
+                    eventPayload as any,
+                );
+
+                // Verify that only the new action handler exists
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'existing-action'
+                    ],
+                ).toBeUndefined();
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'new-action'
+                    ],
+                ).toBeDefined();
+            });
+
+            test('should handle mixed actions with and without cascading items', () => {
+                const mockOnClick = jest.fn();
+                const eventPayload = [
+                    {
+                        customActions: [
+                            {
+                                id: 'simple-action',
+                                label: 'Simple Action',
+                                icon: 'simple-icon',
+                                onClick: mockOnClick,
+                            },
+                            {
+                                id: 'complex-action',
+                                label: 'Complex Action',
+                                icon: 'complex-icon',
+                                onClick: mockOnClick,
+                                cascadingItems: [
+                                    {
+                                        title: 'Submenu',
+                                        items: [
+                                            {
+                                                id: 'nested-action',
+                                                label: 'Nested Action',
+                                                icon: 'nested-icon',
+                                                onClick: mockOnClick,
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                        event: { clientX: 100, clientY: 200 },
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                // Verify the processed payload structure
+                expect(result[0].customActions).toHaveLength(2);
+                expect(
+                    result[0].customActions?.[0]?.cascadingItems,
+                ).toBeUndefined();
+                expect(
+                    result[0].customActions?.[1]?.cascadingItems,
+                ).toBeDefined();
+
+                // Verify callbacks are stored in handler
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'simple-action'
+                    ],
+                ).toBe(mockOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'complex-action'
+                    ],
+                ).toBe(mockOnClick);
+                expect(
+                    (customChartContext as any).axisMenuActionHandler[
+                        'nested-action'
+                    ],
+                ).toBe(mockOnClick);
+            });
+
+            test('should preserve original event and other properties', () => {
+                const eventPayload = [
+                    {
+                        customActions: [
+                            {
+                                id: 'action-1',
+                                label: 'Action 1',
+                                icon: 'icon-1',
+                                onClick: jest.fn(),
+                            },
+                        ],
+                        event: { clientX: 100, clientY: 200 },
+                        otherProperty: 'other-value',
+                    },
+                ];
+
+                const result =
+                    customChartContext.axisMenuCustomActionPreProcessor(
+                        eventPayload as any,
+                    );
+
+                // Verify original properties are preserved
+                expect(result[0].event).toEqual({ clientX: 100, clientY: 200 });
+                expect((result[0] as any).otherProperty).toBe('other-value');
+            });
+        });
     });
 
     describe('off', () => {
