@@ -1,4 +1,4 @@
-import { VisualProps } from './common.types';
+import { ChartConfig, VisualProps } from './common.types';
 import {
     CustomAxisMenuAction,
     CustomContextMenuAction,
@@ -65,6 +65,10 @@ export enum ChartToTSEvent {
      * Update visual prop editor definition
      */
     UpdateVisualPropEditorDefinition = 'UpdateVisualPropEditorDefinition',
+    /**
+     * Update chart config
+     */
+    UpdateChartConfig = 'UpdateChartConfig',
 }
 
 /**
@@ -182,6 +186,11 @@ export interface ChartToTSEventsPayloadMap {
     [ChartToTSEvent.UpdateVisualPropEditorDefinition]: [
         UpdateVisualPropEditorDefinitionEventPayload,
     ];
+    /**
+     * Trigger this event when you want to update the chart config.
+     * This event takes the updated chart config as payload.
+     */
+    [ChartToTSEvent.UpdateChartConfig]: [UpdateChartConfigEventPayload];
 }
 
 /**
@@ -230,6 +239,22 @@ export interface Point {
 }
 
 /**
+ * This interface is used to define the custom action menu item group for cascading menu items.
+ *
+ * @group Chart to ThoughtSpot Events / Context Menu
+ */
+export interface CustomActionMenuItemGroup {
+    /**
+     * Title of the custom action menu item group.
+     * */
+    title: string;
+    /**
+     * Items of the custom action menu item group.
+     * */
+    items: CustomAction[];
+}
+
+/**
  *
  * @group Chart to ThoughtSpot Events / Context Menu
  */
@@ -245,7 +270,24 @@ export interface CustomAction {
      *
      * Callback will be triggered via postMessage API contract.
      */
-    onClick: (...args: any[]) => void;
+    onClick?: (...args: any[]) => void;
+    /**
+     * flag to disable MenuItem
+     */
+    itemDisabled?: boolean;
+    /**
+     * Tooltip when MenuItem is disabled
+     */
+    itemDisabledTooltip?: string;
+    /**
+     * This is used to check if the custom action is selected.
+     * This is used to show the custom action as selected in the axis menu.
+     */
+    isSelected?: boolean;
+    /**
+     * This is used to add cascading items to the custom action.
+     * */
+    cascadingItems?: CustomActionMenuItemGroup[];
 }
 
 /**
@@ -304,6 +346,14 @@ export interface UpdateVisualPropEditorDefinitionEventPayload {
      * This is used to update the visual prop editor in the chart.
      */
     visualPropEditorDefinition: VisualPropEditorDefinition;
+}
+
+export interface UpdateChartConfigEventPayload {
+    /**
+     * The updated chart config.
+     * This is used to update the chart config in the chart.
+     */
+    chartConfig: ChartConfig[];
 }
 
 /**
@@ -369,24 +419,7 @@ export enum AxisMenuActions {
     SEPARATOR = 'SEPARATOR',
 }
 
-export interface AxisMenuCustomAction {
-    /**
-     * ID of the custom action.
-     * */
-    id: string;
-    /**
-     * Label of the custom action.
-     * */
-    label: string;
-    /**
-     * Icon of the custom action.
-     * */
-    icon?: string;
-    /**
-     * Callback function that will be triggered when the custom action is clicked.
-     * */
-    onClick: (...args: any[]) => void;
-}
+export type AxisMenuCustomAction = CustomAction;
 
 export interface OpenAxisMenuEventPayload {
     /**
