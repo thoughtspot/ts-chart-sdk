@@ -926,28 +926,6 @@ export class CustomChartContext {
         );
 
         /**
-         * This event is triggered when the TS app asks for data in a specific columns
-         * for certain validations for settings and drop down options related to Conditional
-         * formatting and other advanced settings
-         */
-        this.onInternal(
-            TSToChartEvent.GetColumnData,
-            (payload: GetColumnDataPayload): GetColumnDataResponsePayload => {
-                const parsedData = this.chartModel.data?.[0].data;
-                const dataIdx = parsedData?.columns.findIndex(
-                    (columnId) => columnId === payload.columnId,
-                );
-                const dataArray =
-                    !_.isNil(dataIdx) && dataIdx > -1
-                        ? parsedData?.dataValue.map((it) => it[dataIdx])
-                        : [];
-                return {
-                    data: dataArray,
-                };
-            },
-        );
-
-        /**
          * This event is triggered when the TS app re-renders the chart
          */
         this.onInternal(TSToChartEvent.TriggerRenderChart, () => {
@@ -1135,6 +1113,34 @@ export class CustomChartContext {
                     error: '',
                     message: 'Download Excel not implemented.',
                 });
+            },
+        );
+
+        /**
+         * This event is triggered when the TS app asks for data in a specific columns
+         * for certain validations for settings and drop down options related to Conditional
+         * formatting and other advanced settings
+         */
+        this.on(
+            TSToChartEvent.GetColumnData,
+            (
+                payload: GetColumnDataPayload,
+                response?: any,
+            ): GetColumnDataResponsePayload => {
+                if (response) {
+                    return response;
+                }
+                const parsedData = this.chartModel.data?.[0].data;
+                const dataIdx = parsedData?.columns.findIndex(
+                    columnId => columnId === payload.columnId,
+                );
+                const dataArray =
+                    !_.isNil(dataIdx) && dataIdx > -1
+                        ? parsedData?.dataValue.map(it => it[dataIdx])
+                        : [];
+                return {
+                    data: dataArray,
+                };
             },
         );
     };
