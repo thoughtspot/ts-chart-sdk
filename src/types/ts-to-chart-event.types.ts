@@ -111,6 +111,9 @@ export interface TSToChartEventsPayloadMap {
     [TSToChartEvent.DownloadExcelTrigger]: (
         payload: DownloadExcelTriggerPayload,
     ) => Promise<DownloadExcelTriggerResponse>;
+    [TSToChartEvent.GetColumnData]: (
+        payload: GetColumnDataPayload,
+    ) => GetColumnDataResponsePayload;
 }
 
 /**
@@ -132,10 +135,6 @@ export interface TSToChartInternalEventsPayloadMap {
     [TSToChartEvent.GetDataQuery]: (
         payload: GetDataQueryPayload,
     ) => GetDataQueryResponsePayload;
-
-    [TSToChartEvent.GetColumnData]: (
-        payload: GetColumnDataPayload,
-    ) => GetColumnDataResponsePayload;
 
     [TSToChartEvent.ChartConfigValidate]: (
         payload: ChartConfigValidateEventPayload,
