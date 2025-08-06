@@ -1132,11 +1132,11 @@ export class CustomChartContext {
                 }
                 const parsedData = this.chartModel.data?.[0].data;
                 const dataIdx = parsedData?.columns.findIndex(
-                    columnId => columnId === payload.columnId,
+                    (columnId) => columnId === payload.columnId,
                 );
                 const dataArray =
                     !_.isNil(dataIdx) && dataIdx > -1
-                        ? parsedData?.dataValue.map(it => it[dataIdx])
+                        ? parsedData?.dataValue.map((it) => it[dataIdx])
                         : [];
                 return {
                     data: dataArray,
