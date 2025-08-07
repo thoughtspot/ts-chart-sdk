@@ -444,6 +444,7 @@ export interface AppConfig {
     // locale related settings
     localeOptions?: {
         locale: string;
+        currencyLocale: string;
         quarterStartMonth: string;
         sessionTimezone: string;
     };
