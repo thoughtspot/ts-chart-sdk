@@ -53,6 +53,7 @@ import {
     VisualPropsValidateEventPayload,
 } from '../types/ts-to-chart-event.types';
 import {
+    TranslatedValue,
     VisualEditorDefinitionSetter,
     VisualPropEditorDefinition,
 } from '../types/visual-prop.types';
@@ -157,7 +158,7 @@ export type ChartConfigParameters = {
          * @default 'Measure Name'
          * @version SDK: 0.1 | ThoughtSpot:
          */
-        measureNameColumnAlias?: string;
+        measureNameColumnAlias?: string | TranslatedValue;
 
         /**
          * Alias for the measure_value column.
@@ -166,7 +167,7 @@ export type ChartConfigParameters = {
          * @default 'Measure Value'
          * @version SDK: 0.1 | ThoughtSpot:
          */
-        measureValueColumnAlias?: string;
+        measureValueColumnAlias?: string | TranslatedValue;
     };
 
     /**
