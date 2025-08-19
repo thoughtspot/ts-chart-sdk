@@ -102,7 +102,7 @@ export interface ChartToTSEventsPayloadMap {
      *
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    [ChartToTSEvent.RenderStart]: [RenderStartEventPayload];
+    [ChartToTSEvent.RenderStart]: [RenderStartEventPayload?]; // The payload for this event is optional.
     /**
      * Trigger to notify the render completion
      *
@@ -207,8 +207,9 @@ export interface UpdateVisualPropsEventPayload {
  */
 export interface RenderStartEventPayload {
     // A custom message displayed while the chart is loading.
-    // This message typically appears if the chart takes longer than 30 seconds to load,
-    // but the exact display logic is determined by the ts-chart-app package.
+    // This message typically appears if the chart takes longer than 30 seconds
+    // to load, but the exact display logic is determined by the ts-chart-app
+    // package.
     loadingMessage?: string;
 }
 
