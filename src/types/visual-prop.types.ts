@@ -261,7 +261,7 @@ export interface InputValidation {
      *
      * @version SDK: 0.0.1-alpha.3 | ThoughtSpot:
      */
-    rangeError?: string;
+    rangeError?: string | TranslatedValue;
 }
 
 /**
