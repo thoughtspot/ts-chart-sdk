@@ -150,6 +150,7 @@ export enum SettingsElementType {
     NUMERIC_FILTER_INPUT = 'NumericFilterInput',
     COLOR_PICKER_V2 = 'ColorPickerV2',
     COLUMN_RENAME_INPUT = 'ColumnRenameInput',
+    SORT_FORMAT = 'SortFormat',
 }
 
 /**
