@@ -927,6 +927,7 @@ export class CustomChartContext {
                     this.chartContextProps.getQueriesFromChartConfig(
                         payload.config,
                         this.chartModel,
+                        this.appConfig,
                     );
                 return {
                     queries,
@@ -1205,6 +1206,7 @@ export class CustomChartContext {
                 defaultChartConfig =
                     this.chartContextProps.getDefaultChartConfig(
                         this.chartModel,
+                        this.appConfig,
                     );
             }
             return {
