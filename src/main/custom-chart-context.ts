@@ -192,20 +192,26 @@ export type CustomChartContextProps = {
      * Generate the default axis configuration for rendering the chart on first load.
      *
      * @param chartModel
+     * @param appConfig
      * @returns {@link ChartConfig[]}
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    getDefaultChartConfig: (chartModel: ChartModel) => ChartConfig[];
+    getDefaultChartConfig: (
+        chartModel: ChartModel,
+        appConfig?: AppConfig,
+    ) => ChartConfig[];
     /**
      * Generate query in the form of array of chart columns to fetch the data.
      *
      * @param  ChartConfig[] chartConfig
+     * @param appConfig
      * @returns {@link Array<Query>}
      * @version SDK: 0.1 | ThoughtSpot:
      */
     getQueriesFromChartConfig: (
         chartConfig: ChartConfig[],
         chartModel: ChartModel,
+        appConfig?: AppConfig,
     ) => Query[];
     /**
      * Main Render function that will render the chart based on the chart context provided
@@ -222,6 +228,7 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      * @param updatedConfig
      * @param chartModel
+     * @param appConfig
      * @returns {@link ValidationResponse}
      */
     validateConfig?: (
@@ -236,6 +243,7 @@ export type CustomChartContextProps = {
      *
      * @param updatedVisualProps
      * @param chartModel
+     * @param appConfig
      * @returns {@link ValidationResponse}
      * @version SDK: 0.1 | ThoughtSpot:
      */
