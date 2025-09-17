@@ -89,6 +89,7 @@ export interface DownloadExcelTriggerPayload {
     answerTitle: string;
 }
 export interface DownloadExcelTriggerResponse {
+    isDownloadHandled: boolean;
     fileName: string;
     error: string;
     message: string;
