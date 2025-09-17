@@ -199,6 +199,11 @@ export interface ChartToTSEventsPayloadMap {
  */
 export interface UpdateVisualPropsEventPayload {
     visualProps: VisualProps;
+    /**
+     * If passed true, the action is a system action
+     * and will not be considered in the history context
+     * */
+    isSystemAction?: boolean;
 }
 
 /**
