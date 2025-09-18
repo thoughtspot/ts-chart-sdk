@@ -346,7 +346,11 @@ export interface ShowToolTipEventPayload {
     point?: Point;
 }
 
-export type ButtonType = 'primary' | 'secondary' | 'tertiary';
+export enum ButtonType {
+    PRIMARY = 'primary',
+    SECONDARY = 'secondary',
+    TERTIARY = 'tertiary',
+}
 
 export interface AlertActionButton {
     /*

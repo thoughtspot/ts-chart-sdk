@@ -10,6 +10,7 @@
 
 import {
     AppConfig,
+    ButtonType,
     ChartColumn,
     ChartConfig,
     ChartModel,
@@ -450,7 +451,7 @@ function render(ctx: CustomChartContext) {
                                                 },
                                                 tooltip:
                                                     'this is primary action button',
-                                                type: 'secondary',
+                                                type: ButtonType.PRIMARY,
                                             },
                                         },
                                     );
