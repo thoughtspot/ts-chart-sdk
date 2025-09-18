@@ -58,6 +58,10 @@ export enum ChartToTSEvent {
     ShowToolTip = 'ShowToolTip',
     HideToolTip = 'HideToolTip',
     /**
+     * Global toast alert event
+     */
+    ShowGlobalAlertToast = 'ShowGlobalAlertToast',
+    /**
      * Label translation events.
      */
     GetLabelTranslation = 'GetLabelTranslation',
@@ -140,11 +144,17 @@ export interface ChartToTSEventsPayloadMap {
      */
     [ChartToTSEvent.GetDataForQuery]: [GetDataForQueryEventPayload];
     /**
-     * Trigger to update the visual props
+     * Trigger to update the show tooltips
      *
      * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
      */
     [ChartToTSEvent.ShowToolTip]: [ShowToolTipEventPayload];
+    /**
+     * Trigger to update the show toast alerts
+     *
+     * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
+     */
+    [ChartToTSEvent.ShowGlobalAlertToast]: [ShowGlobalAlertToastEventPayload];
     /**
      * Trigger to update the visual props
      *
@@ -340,7 +350,72 @@ export interface ShowToolTipEventPayload {
      */
     point?: Point;
 }
-// end - tooltip payload
+
+export enum ButtonType {
+    PRIMARY = 'primary',
+    SECONDARY = 'secondary',
+    TERTIARY = 'tertiary',
+}
+
+export interface AlertActionButton {
+    /*
+     * ID of the user-defined action
+     */
+    id: string;
+    /**
+     * Label for action button
+     */
+    label: string;
+    /**
+     * Callback for when the user clicks on action button
+     */
+    onClick?: () => any;
+    /**
+     * If the action button is disabled
+     */
+    isDisabled?: boolean;
+    /**
+     * i18ned Tooltip to show on the button
+     */
+    tooltip?: string;
+    /**
+     * Type of button
+     * @default 'primary'
+     */
+    type?: ButtonType;
+}
+
+export interface ShowGlobalAlertToastEventPayload {
+    /**
+     * i18n message that will be shown.
+     *
+     */
+    alertMessage: string;
+    /**
+     * label translation id's defined in thoughtspot
+     */
+    labelTranslation?: string;
+    /**
+     * enable close button in toast alert component.
+     * @default true
+     */
+    showCloseButton?: boolean;
+    /**
+     * want to show checkmark icon in Toast by default set to `true`.
+     * @default true
+     */
+    showCheckmarkIcon?: boolean;
+    /**
+     * Whether or not to auto hide the alert after a delay (4.8s)
+     *
+     * @default true
+     */
+    autoHide?: boolean;
+    /**
+     * Show a primary button with callback
+     */
+    primaryActionButton?: AlertActionButton;
+}
 
 /**
  * @group Chart to ThoughtSpot Events
@@ -496,4 +571,8 @@ export interface ContextMenuActionHandler {
  */
 export interface AxisMenuActionHandler {
     [key: string]: (args: CustomAxisMenuAction) => void;
+}
+
+export interface GlobalToastActionHandler {
+    [key: string]: (args: any) => void;
 }
