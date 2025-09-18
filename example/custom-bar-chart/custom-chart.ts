@@ -427,6 +427,36 @@ function render(ctx: CustomChartContext) {
                                 },
                             },
                             {
+                                id: 'show global toast',
+                                label: 'show global toast',
+                                icon: '',
+                                onClick: () => {
+                                    ctx.emitEvent(
+                                        ChartToTSEvent.ShowGlobalAlertToast,
+                                        {
+                                            alertMessage: 'alert Message',
+                                            labelTranslation:
+                                                'label Translation',
+                                            showCloseButton: true,
+                                            showCheckmarkIcon: true,
+                                            autoHide: true,
+                                            primaryActionButton: {
+                                                id: 'primary action button',
+                                                label: 'labels',
+                                                onClick: () => {
+                                                    console.log(
+                                                        'clicked on the primary action button',
+                                                    );
+                                                },
+                                                tooltip:
+                                                    'this is primary action button',
+                                                type: 'secondary',
+                                            },
+                                        },
+                                    );
+                                },
+                            },
+                            {
                                 id: 'download-chart',
                                 label: 'Download chart',
                                 icon: '',

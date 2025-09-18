@@ -15,8 +15,10 @@ import {
     CustomAction,
     CustomActionMenuItemGroup,
     ErrorType,
+    GlobalToastActionHandler,
     OpenAxisMenuEventPayload,
     OpenContextMenuEventPayload,
+    ShowGlobalAlertToastEventPayload,
 } from '../types/chart-to-ts-event.types';
 import {
     AppConfig,
@@ -66,6 +68,8 @@ import {
 } from './post-message-event-bridge';
 
 const logger = create('TsChartSDKContext');
+
+console.log('sdk linked');
 /**
  * Configuration for allowing or disallowing specific TS UI features.
  *
@@ -438,6 +442,8 @@ export class CustomChartContext {
      */
     private axisMenuActionHandler: AxisMenuActionHandler = {};
 
+    private globalToastActionHandler: GlobalToastActionHandler = {};
+
     public containerEl: HTMLElement | null = null;
 
     /**
@@ -685,11 +691,40 @@ export class CustomChartContext {
     }
 
     /**
+     * Function to store the global toast primary action mapped with action id
+     * @param  {[ShowGlobalAlertToastEventPayload]} eventPayload Event payload bound
+     *          to the type of the event
+     * @returns payload
+     */
+    public showGlobalAlertToastPreProcessor(
+        eventPayload: [ShowGlobalAlertToastEventPayload],
+    ): [ShowGlobalAlertToastEventPayload] {
+        this.globalToastActionHandler = {};
+        if (!eventPayload?.[0]?.primaryActionButton) {
+            return eventPayload;
+        }
+        const primaryActionButtonProp = eventPayload?.[0]?.primaryActionButton;
+        this.globalToastActionHandler[primaryActionButtonProp.id] =
+            primaryActionButtonProp.onClick ?? _.noop;
+        return [
+            {
+                ...eventPayload[0],
+                primaryActionButton: {
+                    id: primaryActionButtonProp.id,
+                    label: primaryActionButtonProp.label,
+                    tooltip: primaryActionButtonProp.tooltip,
+                    type: primaryActionButtonProp.type,
+                },
+            },
+        ];
+    }
+    /**
      * Function to process the event payload based on event type
      * @param  {ChartToTSEventsPayloadMap[T]} eventPayload Event payload bound
      *          to the type of the event
      * @returns payload
      */
+
     private eventPayloadPreProcessor<T extends keyof ChartToTSEventsPayloadMap>(
         eventType: T,
         eventPayload: ChartToTSEventsPayloadMap[T],
@@ -702,6 +737,10 @@ export class CustomChartContext {
             case ChartToTSEvent.OpenAxisMenu:
                 return this.axisMenuCustomActionPreProcessor(
                     eventPayload as [OpenAxisMenuEventPayload],
+                ) as ChartToTSEventsPayloadMap[T];
+            case ChartToTSEvent.ShowGlobalAlertToast:
+                return this.showGlobalAlertToastPreProcessor(
+                    eventPayload as [ShowGlobalAlertToastEventPayload],
                 ) as ChartToTSEventsPayloadMap[T];
             default:
                 return eventPayload;
@@ -977,7 +1016,35 @@ export class CustomChartContext {
                         'ContextMenuCustomAction: payload recieved:',
                         payload,
                         'CustomActionCallbackStore:',
-                        this.axisMenuActionHandler,
+                        this.contextMenuActionHandler,
+                    );
+                    return {
+                        isValid: false,
+                        error,
+                    };
+                }
+            },
+        );
+        this.onInternal(
+            TSToChartEvent.GlobalToastActionClick,
+            (payload): { isValid: boolean; error?: unknown } => {
+                try {
+                    const { id: customActionCallback } = payload.alertAction;
+                    const customActionCallbackArgs = {
+                        id: customActionCallback,
+                    };
+                    this.globalToastActionHandler[customActionCallback](
+                        customActionCallbackArgs,
+                    );
+                    return {
+                        isValid: true,
+                    };
+                } catch (error: unknown) {
+                    logger.log(
+                        'GlobalToastActionClick: payload recieved:',
+                        payload,
+                        'GlobalToastActionClick:',
+                        this.globalToastActionHandler,
                     );
                     return {
                         isValid: false,
