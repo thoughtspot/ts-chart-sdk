@@ -69,7 +69,6 @@ import {
 
 const logger = create('TsChartSDKContext');
 
-console.log('sdk linked');
 /**
  * Configuration for allowing or disallowing specific TS UI features.
  *
