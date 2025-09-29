@@ -34,6 +34,7 @@ export type GradientBackgroundAttrs = {
     backgroundFormatMidpoint?: Maybe<Scalars['Float']>;
     backgroundFormatRange?: Maybe<Array<Maybe<Scalars['Float']>>>;
     colors?: Maybe<Array<Maybe<Scalars['String']>>>;
+    isAutoScaled?: Maybe<Scalars['Boolean']>;
 };
 export enum Operators {
     Contains = 'CONTAINS',
