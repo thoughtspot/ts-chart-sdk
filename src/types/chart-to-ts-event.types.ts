@@ -210,6 +210,14 @@ export interface ChartToTSEventsPayloadMap {
 export interface UpdateVisualPropsEventPayload {
     visualProps: VisualProps;
     /**
+     * Keys in visual prop to update.
+     * If it is a nested object, the format is 'a.b.c' with '.'
+     * being the delimiter for nested key value.
+     * If keys is not given the new visual prop will be overwritten by the old one.
+     * use loadash path specification.
+     */
+    keys?: string[];
+    /**
      * If passed true, the action is a system action
      * and will not be considered in the history context
      * */
