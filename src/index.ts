@@ -8,6 +8,7 @@ export * from './main/custom-chart-context';
 export * from './react/use-custom-chart-context';
 export * from './types/conditional-formatting.types';
 export * from './types/number-formatting.types';
+export * from './utils/chart-config';
 export * from './utils/date-formatting';
 export * from './utils/conditional-formatting/conditional-formatting';
 export * from './utils/number-formatting/number-formatting';

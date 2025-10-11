@@ -1,8 +1,13 @@
 import _ from 'lodash';
 import { CustomChartContextProps } from '../../main/custom-chart-context';
 import { ColumnType } from '../../types/answer-column.types';
-import { ChartConfig, ChartModel } from '../../types/common.types';
+import {
+    ChartConfig,
+    ChartConfigMode,
+    ChartModel,
+} from '../../types/common.types';
 import { Query } from '../../types/ts-to-chart-event.types';
+import { fetchQueryColumns } from '../../utils/chart-config';
 
 export const contextChartProps: CustomChartContextProps = {
     getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
@@ -23,10 +28,12 @@ export const contextChartProps: CustomChartContextProps = {
             dimensions: [
                 {
                     key: 'x',
+                    mode: ChartConfigMode.COLUMN_DRIVEN,
                     columns: [attributeColumns[0]],
                 },
                 {
                     key: 'y',
+                    mode: ChartConfigMode.COLUMN_DRIVEN,
                     columns: measureColumns.slice(0, 2),
                 },
             ],
@@ -41,7 +48,7 @@ export const contextChartProps: CustomChartContextProps = {
                     (acc: Query, dimension) => ({
                         queryColumns: [
                             ...acc.queryColumns,
-                            ...dimension.columns,
+                            ...fetchQueryColumns(dimension),
                         ],
                     }),
                     {
