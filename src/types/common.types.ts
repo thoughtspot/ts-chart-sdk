@@ -59,27 +59,151 @@ export enum CustomizableChartFeature {
 }
 
 /**
+ * Enum to indicate the type of dimension config
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export enum DimensionType {
+    FLAT = 'flat',
+    MERGED = 'merged',
+    DUAL = 'dual',
+}
+
+/**
+ * Flat axis config: single column, unmodified.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface FlatDimension {
+    type: DimensionType.FLAT;
+    /** Single column for this axis slot */
+    column: ChartColumn;
+}
+
+/**
+ * Merged axis config: multiple columns combined into one logical series.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface MergedDimension {
+    type: DimensionType.MERGED;
+    /** Columns that are merged into one axis slot */
+    columns: ChartColumn[];
+}
+
+/**
+ * Dual axis config: primary and secondary axis, each can be flat or merged.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface DualDimension {
+    type: DimensionType.DUAL;
+    /** Primary axis config (flat or merged) */
+    primary: FlatDimension | MergedDimension;
+    /** Secondary axis config (flat or merged) */
+    secondary: FlatDimension | MergedDimension;
+}
+
+/**
+ * Union of all supported axis types for a dimension.
+ */
+export type DimensionConfig = FlatDimension | MergedDimension | DualDimension;
+
+/**
+ * Enum to indicate whether dimension config uses columns or structured config
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export enum ChartConfigMode {
+    COLUMN_DRIVEN = 'COLUMN_DRIVEN',
+    CONFIG_DRIVEN = 'CONFIG_DRIVEN',
+}
+
+/**
+ * Column-driven dimension (explicit)
+ * Uses the legacy columns array approach
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface ColumnDrivenDimension {
+    /**
+     * Key for the dimension in the chart config
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    key: string;
+
+    /**
+     * Mode indicator for discriminated union
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    mode: ChartConfigMode.COLUMN_DRIVEN;
+
+    /**
+     * List of columns added for the dimension (required when mode is COLUMN_DRIVEN)
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    columns: ChartColumn[];
+}
+
+/**
+ * Config-driven dimension (new preferred approach)
+ * Uses the new structured DimensionConfig with full type safety
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface ConfigDrivenDimension {
+    /**
+     * Key for the dimension in the chart config
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    key: string;
+
+    /**
+     * Mode indicator for discriminated union
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    mode: ChartConfigMode.CONFIG_DRIVEN;
+
+    /**
+     * New preferred configuration using discriminated union (required when mode is CONFIG_DRIVEN)
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    config: DimensionConfig[];
+}
+
+/**
  * List of Columns for a dimension in the Custom Chart Config.
  * Associated with the key defined in the chart config editor definition
  * Relates to ChartConfigSection
  *
- * @version SDK: 0.1 | ThoughtSpot:
+ * Discriminated union that ensures type safety:
+ * - LegacyDimension: For backward compatibility, defaults to COLUMN_DRIVEN behavior
+ * - ColumnDrivenDimension: Explicit column-driven mode with required columns
+ * - ConfigDrivenDimension: New config-driven mode with required config
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
  * @group Chart Model
+ * @remarks
+ * - `config` is the new preferred field with full type safety.
+ * - `columns` is the legacy field and is kept for backward compatibility.
+ * - When `mode` is not specified, the dimension defaults to COLUMN_DRIVEN behavior.
  */
-export interface ChartConfigDimension {
-    /**
-     * Key for the dimension in the chart config
-     *
-     * @version SDK: 0.1 | ThoughtSpot:
-     */
-    key: string;
-    /**
-     * List of columns added for the dimension
-     *
-     * @version SDK: 0.1 | ThoughtSpot:
-     */
-    columns: ChartColumn[];
-}
+export type ChartConfigDimension =
+    | ColumnDrivenDimension
+    | ConfigDrivenDimension;
 
 /**
  * Custom Chart Config values stored in the metadata
