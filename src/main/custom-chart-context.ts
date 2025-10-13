@@ -59,6 +59,7 @@ import {
     VisualEditorDefinitionSetter,
     VisualPropEditorDefinition,
 } from '../types/visual-prop.types';
+import { validateAllChartConfigs } from '../utils/chart-config';
 import { setLocaleBasedStringFormats } from '../utils/number-formatting/number-formatting-utils';
 import { create } from './logger';
 import {
@@ -1275,6 +1276,7 @@ export class CustomChartContext {
                         this.appConfig,
                     );
             }
+            validateAllChartConfigs(defaultChartConfig);
             return {
                 isConfigValid: isValid,
                 defaultChartConfig,
