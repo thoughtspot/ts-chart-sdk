@@ -1186,6 +1186,7 @@ export class CustomChartContext {
                     return response;
                 }
                 return Promise.resolve({
+                    isDownloadHandled: true,
                     fileName: '',
                     error: '',
                     message: 'Download Excel not implemented.',
