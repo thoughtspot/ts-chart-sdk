@@ -13,7 +13,7 @@ import enNumbers from 'cldr-data/main/en/numbers.json';
 import currencyData from 'cldr-data/supplemental/currencyData.json';
 import supplemental from 'cldr-data/supplemental/likelySubtags.json';
 import enpluralJson from 'cldr-data/supplemental/plurals.json';
-import Globalize from 'globalize';
+import Globalize from 'globalize/dist/globalize-runtime';
 import _ from 'lodash';
 import { create } from '../../main/logger';
 
