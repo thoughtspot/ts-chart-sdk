@@ -93,13 +93,14 @@ export interface DownloadExcelTriggerPayload {
     answerTitle: string;
 }
 export interface DownloadExcelTriggerResponse {
-    // This `isDownloadHandled` flag indicates whether the custom chart has handled the XLSX download.
-    // If true, the custom chart managed the download.
-    // If false, the ThoughtSpot default XLSX downloader will be used instead.
-    // For example, in Muze Studio, only pivot tables support XLSX export.
-    // For other chart types like bar or line charts, this flag should be set to false
-    // to signal that the download could not be processed by the custom chart,
-    // allowing the default ThoughtSpot downloader to handle the export.
+    // This `isDownloadHandled` flag indicates whether the custom chart has
+    // handled the XLSX download. If true, the custom chart managed the
+    // download. If false, the ThoughtSpot default XLSX downloader will be used
+    // instead. For example, in Muze Studio, only pivot tables support XLSX
+    // export. For other chart types like bar or line charts, this flag should
+    // be set to false to signal that the download could not be processed by the
+    // custom chart, allowing the default ThoughtSpot downloader to handle the
+    // export.
     isDownloadHandled: boolean;
     fileName: string;
     error: string;

@@ -113,6 +113,7 @@ export const useChartContext = (
         ) => {
             setChartModel(context.getChartModel());
             return Promise.resolve({
+                isDownloadHandled: true,
                 fileName: '',
                 error: '',
                 message: 'Download Excel not implemented.',

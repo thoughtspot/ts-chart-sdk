@@ -1788,6 +1788,7 @@ describe('CustomChartContext', () => {
             });
 
             expect(response).toEqual({
+                isDownloadHandled: true,
                 fileName: '',
                 error: '',
                 message: 'Download Excel not implemented.',
@@ -1796,6 +1797,7 @@ describe('CustomChartContext', () => {
 
         test('should use custom handler when provided', async () => {
             const mockDownloadHandler = jest.fn().mockReturnValue({
+                isDownloadHandled: true,
                 fileName: 'custom-report.xlsx',
                 error: '',
                 message: 'Success',
@@ -1825,6 +1827,7 @@ describe('CustomChartContext', () => {
 
             expect(mockDownloadHandler).toHaveBeenCalledWith(testPayload);
             expect(response).toEqual({
+                isDownloadHandled: true,
                 fileName: 'custom-report.xlsx',
                 error: '',
                 message: 'Success',
@@ -1833,6 +1836,7 @@ describe('CustomChartContext', () => {
 
         test('should handle errors in custom handler', async () => {
             const mockDownloadHandler = jest.fn().mockReturnValue({
+                isDownloadHandled: true,
                 fileName: '',
                 error: 'Failed to generate excel',
                 message: 'Error occurred',
@@ -1858,6 +1862,7 @@ describe('CustomChartContext', () => {
 
             expect(mockDownloadHandler).toHaveBeenCalled();
             expect(response).toEqual({
+                isDownloadHandled: true,
                 fileName: '',
                 error: 'Failed to generate excel',
                 message: 'Error occurred',
@@ -1866,6 +1871,7 @@ describe('CustomChartContext', () => {
 
         test('should pass through payload to custom handler', async () => {
             const mockDownloadHandler = jest.fn().mockReturnValue({
+                isDownloadHandled: true,
                 fileName: 'test.xlsx',
                 error: '',
                 message: 'Success',
@@ -1912,6 +1918,7 @@ describe('CustomChartContext', () => {
                             return response;
                         }
                         return {
+                            isDownloadHandled: true,
                             fileName: 'first.xlsx',
                             error: '',
                             message: 'First handler response',
@@ -1921,6 +1928,7 @@ describe('CustomChartContext', () => {
                 );
 
             const secondHandler = jest.fn().mockReturnValue({
+                isDownloadHandled: true,
                 fileName: 'second.xlsx',
                 error: '',
                 message: 'Second handler response',
@@ -1958,6 +1966,7 @@ describe('CustomChartContext', () => {
             // Verify handlers were called in correct order
             expect(secondHandler).toHaveBeenCalledWith(testPayload, undefined);
             expect(firstHandler).toHaveBeenCalledWith(testPayload, {
+                isDownloadHandled: true,
                 fileName: 'second.xlsx',
                 error: '',
                 message: 'Second handler response',
@@ -1967,6 +1976,7 @@ describe('CustomChartContext', () => {
             // Verify final result comes from first handler's return value
             // (last custom handler to execute)
             expect(result).toEqual({
+                isDownloadHandled: true,
                 fileName: 'second.xlsx',
                 error: '',
                 message: 'Second handler response',

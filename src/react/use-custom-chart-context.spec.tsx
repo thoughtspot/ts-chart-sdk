@@ -629,6 +629,7 @@ describe('useChartContext DownloadExcelTrigger event handler', () => {
 
         await waitFor(() => {
             expect(response).toEqual({
+                isDownloadHandled: true,
                 fileName: '',
                 error: '',
                 message: 'Download Excel not implemented.',
