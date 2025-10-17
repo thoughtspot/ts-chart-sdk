@@ -4,7 +4,7 @@ import type {
     PersistedVisualPropKeys,
 } from '../main/custom-chart-context';
 import { ChartColumn } from './answer-column.types';
-import type { Point } from './chart-to-ts-event.types';
+import type { AlertActionButton, Point } from './chart-to-ts-event.types';
 import {
     AppConfig,
     ChartConfig,
@@ -75,6 +75,10 @@ export enum TSToChartEvent {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     AxisMenuActionClick = 'AxisMenuActionClick',
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    GlobalToastActionClick = 'GlobalToastActionClick',
     /**
      * @version SDK: 0.2 | ThoughtSpot:
      */
@@ -160,6 +164,9 @@ export interface TSToChartInternalEventsPayloadMap {
 
     [TSToChartEvent.AxisMenuActionClick]: (
         payload: AxisMenuCustomActionPayload,
+    ) => void;
+    [TSToChartEvent.GlobalToastActionClick]: (
+        payload: GlobalToastActionClickPayload,
     ) => void;
 }
 
@@ -442,4 +449,12 @@ export interface AxisMenuCustomActionPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     customAction: CustomAxisMenuAction;
+}
+export interface GlobalToastActionClickPayload {
+    /**
+     * Dispatched custom action from context menu
+     *
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    alertAction: AlertActionButton;
 }

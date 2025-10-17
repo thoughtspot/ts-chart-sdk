@@ -59,14 +59,78 @@ export enum CustomizableChartFeature {
 }
 
 /**
- * List of Columns for a dimension in the Custom Chart Config.
- * Associated with the key defined in the chart config editor definition
- * Relates to ChartConfigSection
+ * Enum to indicate the type of dimension config
  *
- * @version SDK: 0.1 | ThoughtSpot:
+ * @version SDK: 2.6.0 | ThoughtSpot:
  * @group Chart Model
  */
-export interface ChartConfigDimension {
+export enum AxisType {
+    FLAT = 'flat',
+    MERGED = 'merged',
+    DUAL = 'dual',
+}
+
+/**
+ * Flat axis config: single column, unmodified.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface FlatAxis {
+    type: AxisType.FLAT;
+    /** Single column for this axis slot */
+    column: ChartColumn;
+}
+
+/**
+ * Merged axis config: multiple columns combined into one logical series.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface MergedAxis {
+    type: AxisType.MERGED;
+    /** Columns that are merged into one axis slot */
+    columns: ChartColumn[];
+}
+
+/**
+ * Dual axis config: primary and secondary axis, each can be flat or merged.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface DualAxis {
+    type: AxisType.DUAL;
+    /** Primary axis config (flat or merged) */
+    primary: FlatAxis | MergedAxis;
+    /** Secondary axis config (flat or merged) */
+    secondary: FlatAxis | MergedAxis;
+}
+
+/**
+ * Union of all supported axis types for a dimension.
+ */
+export type AxisConfig = FlatAxis | MergedAxis | DualAxis;
+
+/**
+ * Enum to indicate whether dimension config uses columns or structured config
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export enum ChartConfigMode {
+    COLUMN_DRIVEN = 'COLUMN_DRIVEN',
+    AXIS_DRIVEN = 'AXIS_DRIVEN',
+}
+
+/**
+ * Column driven dimension config: single column or multiple columns.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface ColumnDrivenChartConfigDimension {
     /**
      * Key for the dimension in the chart config
      *
@@ -74,12 +138,57 @@ export interface ChartConfigDimension {
      */
     key: string;
     /**
-     * List of columns added for the dimension
+     * Mode of the chart config
      *
-     * @version SDK: 0.1 | ThoughtSpot:
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    mode?: ChartConfigMode.COLUMN_DRIVEN;
+    /**
+     * List of columns added for the dimension
+     * If chart config mode is COLUMN_DRIVEN, this is required
+     * @version SDK: 2.6.0 | ThoughtSpot:
      */
     columns: ChartColumn[];
 }
+
+/**
+ * Axis driven dimension config: multiple axes, each can be flat or merged.
+ *
+ * @version SDK: 2.6.0 | ThoughtSpot:
+ * @group Chart Model
+ */
+export interface AxisDrivenChartConfigDimension {
+    /**
+     * Key for the dimension in the chart config
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    key: string;
+    /**
+     * Mode of the chart config
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    mode: ChartConfigMode.AXIS_DRIVEN;
+    /**
+     * Axis config of the dimension
+     *
+     * @version SDK: 2.6.0 | ThoughtSpot:
+     */
+    axes: AxisConfig[];
+}
+
+/**
+ * List of Columns for a dimension in the Custom Chart Config.
+ * Associated with the key defined in the chart config editor definition
+ * Relates to ChartConfigSection
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ * @group Chart Model
+ */
+export type ChartConfigDimension =
+    | ColumnDrivenChartConfigDimension
+    | AxisDrivenChartConfigDimension;
 
 /**
  * Custom Chart Config values stored in the metadata

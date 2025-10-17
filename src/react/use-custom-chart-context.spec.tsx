@@ -5,6 +5,7 @@ import * as PostMessageEventBridge from '../main/post-message-event-bridge';
 import { mockInitializeContextPayload } from '../test/test-utils';
 import { ColumnType } from '../types/answer-column.types';
 import { ChartToTSEvent } from '../types/chart-to-ts-event.types';
+import { AxisType, ChartConfigMode } from '../types/common.types';
 import { TSToChartEvent } from '../types/ts-to-chart-event.types';
 import { contextChartProps } from './mocks/custom-chart-context-mock';
 import { useChartContext } from './use-custom-chart-context';
@@ -71,7 +72,7 @@ describe('useChartContext initialization', () => {
         });
     });
 
-    test('should trigger getDataQuery and fetch correct query response', async () => {
+    test('should trigger getDataQuery and fetch correct query response for column driven dimension config', async () => {
         // Render the hook with the custom chart context props
         const { result, waitFor } = renderHook(() =>
             useChartContext(contextChartProps),
@@ -126,6 +127,85 @@ describe('useChartContext initialization', () => {
             );
             expect(response.queries[0].queryColumns[1]).toBe(
                 mockedChartModel.columns[1],
+            );
+            expect(result.current.hasInitialized).toBeTruthy();
+        });
+    });
+
+    test('should trigger getDataQuery and fetch correct query response for config driven dimension config', async () => {
+        // Render the hook with the custom chart context props
+        const { result, waitFor } = renderHook(() =>
+            useChartContext(contextChartProps),
+        );
+
+        // Assert that the context is not initialized initially
+        expect(result.current.hasInitialized).toBe(false);
+        expect(result.current.chartModel).toBeUndefined();
+        await eventProcessor({
+            payload: {
+                componentId: 'COMPONENT_ID',
+                hostUrl: 'https://some.chart.app',
+                chartModel: mockedChartModel,
+            },
+            eventType: TSToChartEvent.Initialize,
+        });
+
+        const response = await eventProcessor({
+            payload: {
+                config: [
+                    {
+                        key: 'column',
+                        dimensions: [
+                            {
+                                key: 'x',
+                                mode: ChartConfigMode.AXIS_DRIVEN,
+                                axes: [
+                                    {
+                                        type: AxisType.FLAT,
+                                        column: mockedChartModel.columns[0],
+                                    },
+                                ],
+                            },
+                            {
+                                key: 'y',
+                                mode: ChartConfigMode.AXIS_DRIVEN,
+                                axes: [
+                                    {
+                                        type: AxisType.MERGED,
+                                        columns: [
+                                            mockedChartModel.columns[1],
+                                            mockedChartModel.columns[2],
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+            eventType: TSToChartEvent.GetDataQuery,
+            source: 'ts-host-app',
+        });
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.TriggerRenderChart,
+            source: 'ts-host-app',
+        });
+        await eventProcessor({
+            payload: {},
+            eventType: TSToChartEvent.InitializeComplete,
+            source: 'ts-host-app',
+        });
+
+        await waitFor(() => {
+            expect(response.queries[0].queryColumns[0]).toBe(
+                mockedChartModel.columns[0],
+            );
+            expect(response.queries[0].queryColumns[1]).toBe(
+                mockedChartModel.columns[1],
+            );
+            expect(response.queries[0].queryColumns[2]).toBe(
+                mockedChartModel.columns[2],
             );
             expect(result.current.hasInitialized).toBeTruthy();
         });

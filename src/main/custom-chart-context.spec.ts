@@ -7,7 +7,12 @@
 import _ from 'lodash';
 import { mockInitializeContextPayload } from '../test/test-utils';
 import { ColumnType } from '../types/answer-column.types';
-import { ChartToTSEvent, ErrorType } from '../types/chart-to-ts-event.types';
+import {
+    ActionEventType,
+    ChartToTSEvent,
+    ErrorType,
+    OpenContextMenuEventPayload,
+} from '../types/chart-to-ts-event.types';
 import {
     DownloadExcelTriggerPayload,
     DownloadExcelTriggerResponse,
@@ -1595,6 +1600,7 @@ describe('CustomChartContext', () => {
                 selectedPoints: [{}],
             });
         });
+
         test('should process the event payload for axis menu custom actions', async () => {
             const mockCustomAction = jest.fn();
             let resolve: any;
@@ -1966,6 +1972,105 @@ describe('CustomChartContext', () => {
                 message: 'Second handler response',
                 customField: 'second',
             });
+        });
+    });
+
+    describe('showGlobalAlertToast', () => {
+        let customChartContext: CustomChartContext;
+
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+            eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
+            });
+            eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            customChartContext.initialize();
+        });
+
+        afterEach(() => {
+            customChartContext.destroy();
+            eventProcessor = null;
+            jest.resetAllMocks();
+        });
+
+        test('should process ShowGlobalAlertToast event and handle action click', async () => {
+            const mockOnClick = jest.fn();
+            const toastPayload = {
+                alertMessage: 'Test message',
+                primaryActionButton: {
+                    id: 'test-action',
+                    label: 'Test Action',
+                    onClick: mockOnClick,
+                },
+            };
+
+            customChartContext.emitEvent(
+                ChartToTSEvent.ShowGlobalAlertToast,
+                toastPayload,
+            );
+
+            expect(mockPostMessageToHost).toHaveBeenCalledWith(
+                mockInitializeContextPayload.componentId,
+                mockInitializeContextPayload.hostUrl,
+                {
+                    alertMessage: 'Test message',
+                    primaryActionButton: {
+                        id: 'test-action',
+                        label: 'Test Action',
+                        tooltip: undefined,
+                        type: undefined,
+                    },
+                },
+                ChartToTSEvent.ShowGlobalAlertToast,
+            );
+
+            // Check if the handler is stored
+            expect(
+                (customChartContext as any).globalToastActionHandler[
+                    'test-action'
+                ],
+            ).toBe(mockOnClick);
+
+            // Simulate the action click from host
+            await eventProcessor({
+                eventType: TSToChartEvent.GlobalToastActionClick,
+                payload: {
+                    alertAction: {
+                        id: 'test-action',
+                    },
+                },
+            });
+
+            expect(mockOnClick).toHaveBeenCalled();
+        });
+
+        test('should process ShowGlobalAlertToast without primary action', () => {
+            const toastPayload = {
+                alertMessage: 'Test message without action',
+            };
+
+            customChartContext.emitEvent(
+                ChartToTSEvent.ShowGlobalAlertToast,
+                toastPayload,
+            );
+
+            expect(mockPostMessageToHost).toHaveBeenCalledWith(
+                mockInitializeContextPayload.componentId,
+                mockInitializeContextPayload.hostUrl,
+                toastPayload,
+                ChartToTSEvent.ShowGlobalAlertToast,
+            );
+            expect(
+                (customChartContext as any).globalToastActionHandler,
+            ).toEqual({});
         });
     });
 });

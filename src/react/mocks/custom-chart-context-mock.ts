@@ -3,6 +3,7 @@ import { CustomChartContextProps } from '../../main/custom-chart-context';
 import { ColumnType } from '../../types/answer-column.types';
 import { ChartConfig, ChartModel } from '../../types/common.types';
 import { Query } from '../../types/ts-to-chart-event.types';
+import { fetchQueryColumns } from '../../utils/chart-config';
 
 export const contextChartProps: CustomChartContextProps = {
     getDefaultChartConfig: (chartModel: ChartModel): ChartConfig[] => {
@@ -35,19 +36,9 @@ export const contextChartProps: CustomChartContextProps = {
     },
     getQueriesFromChartConfig: (chartConfig: ChartConfig[]): Array<Query> => {
         const queries = chartConfig.map(
-            (config: ChartConfig): Query =>
-                _.reduce(
-                    config.dimensions,
-                    (acc: Query, dimension) => ({
-                        queryColumns: [
-                            ...acc.queryColumns,
-                            ...dimension.columns,
-                        ],
-                    }),
-                    {
-                        queryColumns: [],
-                    } as Query,
-                ),
+            (config: ChartConfig): Query => ({
+                queryColumns: fetchQueryColumns(config),
+            }),
         );
         return queries;
     },
