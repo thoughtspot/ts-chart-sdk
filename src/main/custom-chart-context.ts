@@ -262,11 +262,19 @@ export type CustomChartContextProps = {
 
     /**
      * Function to sync the custom visual props with the chart model.
+     * This callback is invoked whenever a visual property changes, allowing you to
+     * maintain consistency across related properties or apply business logic.
      *
-     * @param chartContext
-     * @param visualProps
-     * @param changeInfo
-     * @returns {@link VisualProps}
+     * @param chartContext - The current chart context instance
+     * @param visualProps - The current visual properties object
+     * @param changeInfo - Information about the property that changed (path and new value)
+     * @returns {@link VisualProps} - The modified visual props object
+     *
+     * @example
+     * Use case: Sync master dataLabelVisualProps checkbox with field-level checkboxes.
+     * When user toggles the master checkbox, all field-level checkboxes should follow.
+     * When user checks all field-level checkboxes individually, master should auto-check.
+     *
      * @version SDK: 2.7.0 | ThoughtSpot:
      */
     syncCustomVisualProps?: (
