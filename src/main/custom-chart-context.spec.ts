@@ -3,19 +3,12 @@
  *
  *  @author Chetan Agrawal <chetan.agrawal@thoughtspot.com>
  */
-
 import _ from 'lodash';
 import { mockInitializeContextPayload } from '../test/test-utils';
 import { ColumnType } from '../types/answer-column.types';
-import {
-    ActionEventType,
-    ChartToTSEvent,
-    ErrorType,
-    OpenContextMenuEventPayload,
-} from '../types/chart-to-ts-event.types';
+import { ChartToTSEvent, ErrorType } from '../types/chart-to-ts-event.types';
 import {
     DownloadExcelTriggerPayload,
-    DownloadExcelTriggerResponse,
     TSToChartEvent,
 } from '../types/ts-to-chart-event.types';
 import { PropElement } from '../types/visual-prop.types';
@@ -326,6 +319,7 @@ describe('CustomChartContext', () => {
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [],
+                customVisualProps: undefined,
             });
 
             // Redefine context with function-returned definitions
@@ -361,6 +355,7 @@ describe('CustomChartContext', () => {
                         columnSections: [{ label: 'x-axis', key: 'x' }],
                     },
                 ],
+                customVisualProps: undefined,
             });
         });
         test('TSToChartEvent.ChartConfigValidate validation response for invalid config', async () => {
@@ -432,6 +427,7 @@ describe('CustomChartContext', () => {
                 isValid: true,
                 visualPropEditorDefinition: { elements: [] },
                 chartConfigEditorDefinition: [],
+                customVisualProps: undefined,
             });
             // Redefine context with function-returned definitions
             customChartContext = new CustomChartContext({
@@ -466,6 +462,7 @@ describe('CustomChartContext', () => {
                         columnSections: [{ label: 'x-axis', key: 'x' }],
                     },
                 ],
+                customVisualProps: undefined,
             });
         });
 
@@ -513,6 +510,7 @@ describe('CustomChartContext', () => {
                     ],
                 },
                 chartConfigEditorDefinition: [],
+                customVisualProps: undefined,
             });
         });
 
@@ -622,6 +620,7 @@ describe('CustomChartContext', () => {
                 {},
                 'column-id',
                 {},
+                undefined,
             );
             const validationResponse = eventProcessor({
                 payload: {

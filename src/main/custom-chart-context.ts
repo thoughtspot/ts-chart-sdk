@@ -28,6 +28,7 @@ import {
     ValidationResponse,
     VisualConfig,
     VisualProps,
+    VisualPropsChangeInfo,
 } from '../types/common.types';
 import {
     ChartConfigEditorDefinition,
@@ -256,7 +257,31 @@ export type CustomChartContextProps = {
         chartModel: ChartModel,
         activeColumnId?: string,
         appConfig?: AppConfig,
+        changeInfo?: VisualPropsChangeInfo,
     ) => ValidationResponse;
+
+    /**
+     * Function to sync the custom visual props with the chart model.
+     * This callback is invoked whenever a visual property changes, allowing you to
+     * maintain consistency across related properties or apply business logic.
+     *
+     * @param chartContext - The current chart context instance
+     * @param visualProps - The current visual properties object
+     * @param changeInfo - Information about the property that changed (path and new value)
+     * @returns {@link VisualProps} - The modified visual props object
+     *
+     * @example
+     * Use case: Sync master dataLabelVisualProps checkbox with field-level checkboxes.
+     * When user toggles the master checkbox, all field-level checkboxes should follow.
+     * When user checks all field-level checkboxes individually, master should auto-check.
+     *
+     * @version SDK: 2.7.0 | ThoughtSpot:
+     */
+    syncCustomVisualProps?: (
+        chartContext: CustomChartContext,
+        visualProps: VisualProps,
+        changeInfo?: VisualPropsChangeInfo,
+    ) => VisualProps;
 
     /**
      * Definition to help edit/customize the chart config from chart config editor on the
@@ -634,6 +659,23 @@ export class CustomChartContext {
         return this.chartContextProps.visualPropEditorDefinition;
     };
 
+    private syncCustomVisualProps(
+        visualProps: VisualProps,
+        changeInfo?: VisualPropsChangeInfo,
+    ): VisualProps {
+        if (_.isNil(changeInfo)) {
+            return visualProps as VisualProps;
+        }
+        if (_.isFunction(this.chartContextProps.syncCustomVisualProps)) {
+            return this.chartContextProps.syncCustomVisualProps(
+                this,
+                visualProps,
+                changeInfo,
+            );
+        }
+        return visualProps as VisualProps;
+    }
+
     /**
      * Function to store the axis menu custom action callback mapped with action id
      * @param  {[OpenAxisMenuEventPayload]} eventPayload Event payload bound
@@ -777,6 +819,7 @@ export class CustomChartContext {
         currentValidationState: Partial<ChartModel>,
         validationResponse: ValidationResponse,
         activeColumnId?: string,
+        changeInfo?: VisualPropsChangeInfo,
     ) {
         const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
             activeColumnId,
@@ -785,11 +828,16 @@ export class CustomChartContext {
         const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
             currentValidationState,
         );
+        const syncedCustomVisualProps = this.syncCustomVisualProps(
+            currentValidationState.visualProps,
+            changeInfo,
+        );
 
         return {
             ...validationResponse,
             visualPropEditorDefinition,
             chartConfigEditorDefinition,
+            customVisualProps: syncedCustomVisualProps,
         };
     }
 
@@ -898,6 +946,7 @@ export class CustomChartContext {
                             this.chartModel,
                             payload?.activeColumnId,
                             this.appConfig,
+                            payload?.changeInfo,
                         );
                     if (validationResponse.isValid) {
                         const currentVisualState = {
@@ -908,6 +957,7 @@ export class CustomChartContext {
                             currentVisualState,
                             validationResponse,
                             activeColumnId,
+                            payload?.changeInfo,
                         );
                     }
                     return validationResponse;

@@ -14,6 +14,7 @@ import {
     ValidationResponse,
     VisualConfig,
     VisualProps,
+    VisualPropsChangeInfo,
 } from './common.types';
 import type { ChartConfigEditorDefinition } from './configurator.types';
 import type { VisualPropEditorDefinition } from './visual-prop.types';
@@ -386,6 +387,13 @@ export interface VisualPropsValidateEventPayload {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     activeColumnId?: string;
+
+    /**
+     * change info for the visual props
+     *
+     * @version SDK: 2.7.0 | ThoughtSpot:
+     */
+    changeInfo?: VisualPropsChangeInfo;
 }
 
 /**

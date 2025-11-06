@@ -308,6 +308,7 @@ export interface ChartModel {
 export type SuccessValidationResponse = {
     chartConfigEditorDefinition: ChartConfigEditorDefinition[];
     visualPropEditorDefinition: VisualPropEditorDefinition;
+    customVisualProps?: VisualProps;
 };
 
 export type VisualPropError = {
@@ -641,4 +642,9 @@ export interface VisualConfig {
      * Actions
      */
     customChartVisibleActions?: Action[];
+}
+
+export interface VisualPropsChangeInfo {
+    path: string;
+    value: unknown;
 }
