@@ -151,6 +151,7 @@ export enum SettingsElementType {
     COLOR_PICKER_V2 = 'ColorPickerV2',
     COLUMN_RENAME_INPUT = 'ColumnRenameInput',
     SORT_FORMAT = 'SortFormat',
+    AXIS_RENAME_INPUT = 'AxisRenameInput',
 }
 
 /**

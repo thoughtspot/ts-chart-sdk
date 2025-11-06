@@ -287,4 +287,12 @@ export interface ChartColumn {
      *
      */
     displayName?: string;
+
+    /**
+     * Column title with dynamic values included.
+     * Unlike displayName, this includes runtime values that change based on context.
+     * For example: "Sales for Q1 2024" where "Q1 2024" is the dynamic part.
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
+    dynamicTitle?: string;
 }
