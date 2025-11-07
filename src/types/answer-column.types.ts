@@ -291,7 +291,7 @@ export interface ChartColumn {
     /**
      * Column title with dynamic values included.
      * it contains column's name with unresolved dynamic values.
-     * @version SDK: 2.8.0 | ThoughtSpot:
+     * @version SDK: 2.7.1 | ThoughtSpot:
      */
     dynamicTitle?: string;
 }
