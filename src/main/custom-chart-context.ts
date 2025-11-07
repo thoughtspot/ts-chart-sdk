@@ -663,9 +663,6 @@ export class CustomChartContext {
         visualProps: VisualProps,
         changeInfo?: VisualPropsChangeInfo,
     ): VisualProps {
-        if (_.isNil(changeInfo)) {
-            return visualProps as VisualProps;
-        }
         if (_.isFunction(this.chartContextProps.syncCustomVisualProps)) {
             return this.chartContextProps.syncCustomVisualProps(
                 this,
