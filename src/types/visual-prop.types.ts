@@ -151,6 +151,20 @@ export enum SettingsElementType {
     COLOR_PICKER_V2 = 'ColorPickerV2',
     COLUMN_RENAME_INPUT = 'ColumnRenameInput',
     SORT_FORMAT = 'SortFormat',
+    /**
+     * Input control for renaming chart axes with support for dynamic parameters.
+     * This is specifically used for axis names.
+     *
+     * Key features:
+     * - Allows users to customize axis labels in chart settings
+     * - Supports dynamic parameter values in axis names (e.g., "Sales for [${PARAMETER:...}]")
+     * - Uses ChartColumn.dynamicTitle as the default value when available
+     *
+     * When users input dynamic parameters, the resolved values appear in the axis labels
+     *
+     * @version SDK: 2.7.1 | ThoughtSpot:
+     */
+    AXIS_RENAME_INPUT = 'AxisRenameInput',
 }
 
 /**
