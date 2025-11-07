@@ -91,6 +91,55 @@ export interface ChartConfigSection {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     allowMeasureValueColumn?: boolean;
+    /**
+     * Allow flat items on the Section
+     *
+     * @default true
+     * @version SDK: 2.7.1
+     */
+    allowFlatItems?: boolean;
+    /**
+     * Allow merged items on the Section
+     *
+     * @default false
+     * @version SDK: 2.7.1
+     */
+    allowMergedItems?: boolean;
+    /**
+     * Allow dual items on the Section
+     *
+     * @default false
+     * @version SDK: 2.7.1
+     */
+    allowDualItems?: boolean;
+    /**
+     * Minimum number of merge items
+     *
+     * @default 0
+     * @version SDK: 2.7.1
+     */
+    minMergeItems?: number;
+    /**
+     * Maximum number of merge items
+     *
+     * @default Number.POSITIVE_INFINITY
+     * @version SDK: 2.7.1
+     */
+    maxMergeItems?: number;
+    /**
+     * Minimum number of dual items
+     *
+     * @default 0
+     * @version SDK: 2.7.1
+     */
+    minDualItems?: number;
+    /**
+     * Maximum number of dual items
+     *
+     * @default Number.POSITIVE_INFINITY
+     * @version SDK: 2.7.1
+     */
+    maxDualItems?: number;
 }
 
 /**
