@@ -292,21 +292,21 @@ export interface ChartColumn {
 
     /**
      * Column title with unresolved parameter placeholders.
-     * Unlike displayName which shows resolved values (e.g., "Sales for Q1 2024"), 
+     * Unlike displayName which shows resolved values (e.g., "Sales for Q1 2024"),
      * this contains the raw parameter tokens with their identifiers.
-     * 
+     *
      * Key uses:
      * - Serves as the default value for AXIS_RENAME_INPUT in VisualPropEditorDefinition
      * - Required by backend to determine which parameter is being used
      * - Used by components to preserve the template structure before parameter substitution
-     * 
+     *
      * @example
      * // dynamicTitle contains the unresolved placeholder:
      * "Sales for [${PARAMETER:491b359d-4282-4c66-8829-b24b05571098}]"
-     * 
+     *
      * // displayName contains the resolved value:
      * "Sales for Q1 2024"
-     * 
+     *
      * @version SDK: 2.7.1 | ThoughtSpot:
      */
     dynamicTitle?: string;
