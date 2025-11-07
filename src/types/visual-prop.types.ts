@@ -151,6 +151,13 @@ export enum SettingsElementType {
     COLOR_PICKER_V2 = 'ColorPickerV2',
     COLUMN_RENAME_INPUT = 'ColumnRenameInput',
     SORT_FORMAT = 'SortFormat',
+    /**
+     * Input control for renaming chart axes.
+     * Allows users to customize axis labels in chart settings.
+     * Supports dynamic parameter values in axis names.
+     * 
+     * @version SDK: 2.7.1 | ThoughtSpot:
+     */
     AXIS_RENAME_INPUT = 'AxisRenameInput',
 }
 
