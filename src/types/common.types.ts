@@ -279,6 +279,12 @@ export type QueryData = {
  */
 export interface ChartModel {
     /**
+     * Unique identifier for the chart
+     *
+     * @version SDK: 2.7.2 | ThoughtSpot:
+     */
+    id?: string;
+    /**
      * List of columns in the search query
      * They may or may not be part of the data query or chart config
      *
