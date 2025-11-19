@@ -516,6 +516,33 @@ export type ChartSdkDateFormatsConfig = {
     defaultDataSourceId?: string;
 };
 
+/**
+ * Query performance metrics passed from the host application (blink-v2)
+ * to custom charts for observability and monitoring purposes.
+ */
+export interface QueryMetrics {
+    /**
+     * Query execution time in milliseconds
+     */
+    queryTimingMs?: number;
+    /**
+     * Whether the query result was served from cache
+     */
+    isCacheHit?: boolean;
+    /**
+     * Total number of rows returned by the query
+     */
+    totalRowCount?: number;
+    /**
+     * Number of queries executed
+     */
+    queriesCount?: number;
+    /**
+     * Timestamp when metrics were captured
+     */
+    timestamp?: number;
+}
+
 export interface AppConfig {
     styleConfig?: ChartSdkCustomStylingConfig;
     dateFormatsConfig?: ChartSdkDateFormatsConfig;
@@ -552,6 +579,12 @@ export interface AppConfig {
         isLiveboardContext?: boolean; // if chart renders in liveboard context
         // runtime configurations
         isDebugMode?: boolean; // enables debug mode for logging
+        /**
+         * Query performance metrics for observability
+         * Passed from blink-v2 to track query execution timing and caching.
+         * @version SDK: 2.7.3 | ThoughtSpot:
+         */
+        queryMetrics?: QueryMetrics;
     };
     /**
      * Release version of ThoughtSpot custom chart is getting rendered upon.
