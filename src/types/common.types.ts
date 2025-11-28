@@ -597,6 +597,7 @@ export interface AppConfig {
         quarterStartMonth: string;
         sessionTimezone: string;
         numberLocale: string;
+        dateLocale: string;
     };
 
     /**
