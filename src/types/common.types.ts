@@ -325,15 +325,13 @@ export type VisualPropError = {
 
 /**
  * User properties have some extra information about the user such as source, persona, teamId and companyName.
- * @type {UserProperties}
  */
 export type UserProperties = {
     persona?: string;
 };
 
 /**
- * contains user info type. contians user guid, user name, user email, user type and user properties.
- * @type {UserInfo}
+ * contains user info type. can contian user guid, user name, user email, user type and user properties.
  */
 export type UserInfo = {
     userGuid?: string;
