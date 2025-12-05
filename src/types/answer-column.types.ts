@@ -310,4 +310,22 @@ export interface ChartColumn {
      * @version SDK: 2.7.1 | ThoughtSpot:
      */
     dynamicTitle?: string;
+
+    /**
+     * Whether this column shows growth percentage instead of actual values.
+     * When true, the column displays percentage growth of the measure value.
+     * Only applicable to measure columns.
+     *
+     * @version SDK: 2.7.5 | ThoughtSpot:
+     */
+    showGrowth?: boolean;
+
+    /**
+     * Whether aggregation is applied to this column.
+     * Used to determine if the column supports aggregation type changes.
+     * Only applicable to measure columns.
+     *
+     * @version SDK: 2.7.5 | ThoughtSpot:
+     */
+    isAggregateApplied?: boolean;
 }
