@@ -324,6 +324,21 @@ export type VisualPropError = {
 };
 
 /**
+ * User properties have some extra information about the user such as source, persona, teamId and companyName.
+ */
+export type UserProperties = {
+    persona?: string;
+};
+
+/**
+ * contains user info type. can contian user guid, user name, user email, user type and user properties.
+ */
+export type UserInfo = {
+    userGuid?: string;
+    userProperties?: UserProperties;
+};
+
+/**
  * Represents a validation error message with its translation key.
  * This type is used to provide localized error messages for validation failures.
  *
@@ -586,6 +601,16 @@ export interface AppConfig {
          */
         queryMetrics?: QueryMetrics;
     };
+    /**
+     * @type {UserInfo}
+     * Contains user info from the ThoughtSpot instance. This can be used custom chart developers
+     * to know information about which client is accessing the chart.
+     * This cantains information about user guid, user name, user email, user type and
+     * user properties.
+     * #example: collecting matrics for about rendering of the chart with respect
+     * to different user using the developer custom chart.
+     */
+    userInfo?: UserInfo;
     /**
      * Release version of ThoughtSpot custom chart is getting rendered upon.
      */
