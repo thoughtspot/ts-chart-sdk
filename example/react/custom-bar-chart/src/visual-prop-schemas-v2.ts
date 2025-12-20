@@ -61,6 +61,7 @@ export const getDisplayVizPropDefinition = () => {
                         key: 'color',
                         properties: {
                             label: 'Line Band Color',
+                            value: 'red',
                             defaultValue: 'red',
                         },
                         children: [

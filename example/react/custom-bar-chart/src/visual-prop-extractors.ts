@@ -38,7 +38,16 @@ export const getVisualPropColor = (
     );
 
     if (useV1) {
-        return _.get(visualProps, 'displaySettings.color', defaultValue);
+        const result = _.get(
+            visualProps,
+            'displaySettings.color',
+            defaultValue,
+        );
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
     console.log('displayVisualProps', visualProps);
     console.log(
@@ -50,11 +59,16 @@ export const getVisualPropColor = (
             defaultValue,
         ),
     );
-    return _.get(
+    const result = _.get(
         visualProps,
         'displayVisualProps.displayAccordion.color.color',
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };
 
 /**
@@ -81,13 +95,27 @@ export const getVisualPropDataLabels = (
     );
 
     if (useV1) {
-        return _.get(visualProps, 'dataLabels.datalabels', defaultValue);
+        const result = _.get(
+            visualProps,
+            'dataLabels.datalabels',
+            defaultValue,
+        );
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
-    return _.get(
+    const result = _.get(
         visualProps,
         'dataLabelVisualProps.dataLabelAccordion.datalabels.datalabels',
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };
 
 /**
@@ -114,13 +142,23 @@ export const getVisualPropShowTooltip = (
     );
 
     if (useV1) {
-        return _.get(visualProps, 'tooltip.showTooltip', defaultValue);
+        const result = _.get(visualProps, 'tooltip.showTooltip', defaultValue);
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
-    return _.get(
+    const result = _.get(
         visualProps,
         'tooltipVisualProps.tooltipAccordion.showTooltip.showTooltip',
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };
 
 /**
@@ -147,13 +185,27 @@ export const getVisualPropXAxisName = (
     );
 
     if (useV1) {
-        return _.get(visualProps, 'axisSettings.xAxisName', defaultValue);
+        const result = _.get(
+            visualProps,
+            'axisSettings.xAxisName',
+            defaultValue,
+        );
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
-    return _.get(
+    const result = _.get(
         visualProps,
         'axisVisualProps.axisAccordion.xAxisName.xAxisName',
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };
 
 /**
@@ -180,13 +232,27 @@ export const getVisualPropYAxisName = (
     );
 
     if (useV1) {
-        return _.get(visualProps, 'axisSettings.yAxisName', defaultValue);
+        const result = _.get(
+            visualProps,
+            'axisSettings.yAxisName',
+            defaultValue,
+        );
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
-    return _.get(
+    const result = _.get(
         visualProps,
         'axisVisualProps.axisAccordion.yAxisName.yAxisName',
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };
 
 /**
@@ -213,17 +279,27 @@ export const getVisualPropLegendPosition = (
     );
 
     if (useV1) {
-        return _.get(
+        const result = _.get(
             visualProps,
             'legendSettings.legendPosition',
             defaultValue,
         );
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
-    return _.get(
+    const result = _.get(
         visualProps,
         'legendVisualProps.legendAccordion.legendPosition.legendPosition',
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };
 
 /**
@@ -252,11 +328,16 @@ export const getVisualPropColumnOpacity = (
     );
 
     if (useV1) {
-        return _.get(
+        const result = _.get(
             visualProps,
             `columnVisualProps.${columnId}.opacity`,
             defaultValue,
         );
+        // If the result is an empty object, return the default value instead
+        if (_.isObject(result) && _.isEmpty(result)) {
+            return defaultValue;
+        }
+        return result;
     }
     // For v2, column opacity is in
     // columnVisualProps[columnId].columnOpacityAccordion.opacity
@@ -269,9 +350,14 @@ export const getVisualPropColumnOpacity = (
             defaultValue,
         ),
     );
-    return _.get(
+    const result = _.get(
         visualProps,
         `columnVisualProps.${columnId}.columnOpacityAccordion.opacity.opacity`,
         defaultValue,
     );
+    // If the result is an empty object, return the default value instead
+    if (_.isObject(result) && _.isEmpty(result)) {
+        return defaultValue;
+    }
+    return result;
 };

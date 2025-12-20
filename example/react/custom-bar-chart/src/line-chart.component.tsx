@@ -170,7 +170,7 @@ const getColumnDataModel = (
 ) => {
     // Extract chart settings v2 flag from appConfig
     const isChartSettingsV2Enabled =
-        appConfig?.initFlags?.isChartSettingsV2Enabled?.flagValue || false;
+        appConfig?.initFlags?.isChartSettingsV2Enabled?.flagValue || true;
     // this should be handled in a better way
     const xAxisDimension = configDimensions?.[0];
     const yAxisDimension = configDimensions?.[1];
