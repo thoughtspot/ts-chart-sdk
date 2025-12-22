@@ -14,7 +14,7 @@ import {
     CustomChartContextProps,
 } from '../main/custom-chart-context';
 import { create } from '../main/logger';
-import { ChartModel } from '../types/common.types';
+import { AppConfig, ChartModel } from '../types/common.types';
 import {
     ChartModelUpdateEventPayload,
     DataUpdateEventPayload,
@@ -66,6 +66,11 @@ export const useChartContext = (
      * @type {ChartModel}
      */
     const [chartModel, setChartModel] = useState<ChartModel>();
+    /**
+     * State to manage the app config.
+     * @type {AppConfig}
+     */
+    const [appConfig, setAppConfig] = useState<AppConfig>();
 
     /**
      * Retrieves the chart context values.
@@ -79,6 +84,7 @@ export const useChartContext = (
             return {
                 hasInitialized,
                 chartModel,
+                appConfig,
                 destroy: () => ctx?.destroy(),
                 ...emitter(ctx),
                 ...eventListener(ctx),
@@ -90,7 +96,7 @@ export const useChartContext = (
                 },
             };
         },
-        [chartModel, key, hasInitialized, ctx],
+        [chartModel, appConfig, key, hasInitialized, ctx],
     );
 
     /**
@@ -104,6 +110,7 @@ export const useChartContext = (
                 | DataUpdateEventPayload,
         ) => {
             setChartModel(context.getChartModel());
+            setAppConfig(context.getAppConfig());
             return {
                 triggerRenderChart: true,
             };
@@ -112,6 +119,7 @@ export const useChartContext = (
             payload: DownloadExcelTriggerPayload,
         ) => {
             setChartModel(context.getChartModel());
+            setAppConfig(context.getAppConfig());
             return Promise.resolve({
                 isDownloadHandled: true,
                 fileName: '',
@@ -158,6 +166,7 @@ export const useChartContext = (
                 setHasInitialized(true);
                 setContextState(context);
                 setChartModel(context.getChartModel());
+                setAppConfig(context.getAppConfig());
                 return true;
             })
             .catch((e) => {

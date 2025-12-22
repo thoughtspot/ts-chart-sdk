@@ -1,4 +1,5 @@
 import {
+    AppConfig,
     ChartColumn,
     ChartConfigDimension,
     ChartModel,
@@ -24,6 +25,17 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import {
+    getVisualPropColor,
+    getVisualPropColumnOpacity,
+    getVisualPropDataLabels,
+    getVisualPropLegendPosition,
+    getVisualPropShowTooltip,
+    getVisualPropXAxisName,
+    getVisualPropYAxisName,
+} from './visual-prop-extractors';
+
+const logger = console;
 
 ChartJS.register(
     CategoryScale,
@@ -36,15 +48,15 @@ ChartJS.register(
     Legend,
 );
 
-const numberFormatter = value => {
+const numberFormatter = (value) => {
     if (value > 1000000000) {
-        return (value / 1000000000).toFixed(2) + 'B';
+        return `${(value / 1000000000).toFixed(2)}B`;
     }
     if (value > 1000000) {
-        return (value / 1000000).toFixed(2) + 'M';
+        return `${(value / 1000000).toFixed(2)}M`;
     }
     if (value > 1000) {
-        return (value / 1000).toFixed(2) + 'K';
+        return `${(value / 1000).toFixed(2)}K`;
     }
     return value;
 };
@@ -59,6 +71,8 @@ interface LineChartProps {
         args: (payload: VisualPropsUpdateEventPayload) => void,
     ) => Promise<void>;
     chartRef: React.ForwardedRef<any>;
+    appConfig?: AppConfig;
+    wantToSeeV1ToV2Conversion: boolean;
 }
 
 interface RenderChartProps {
@@ -75,6 +89,8 @@ interface RenderChartProps {
     chartRef: React.MutableRefObject<null>;
     emitShowToolTip: (args_0: ShowToolTipEventPayload) => Promise<void>;
     emitHideToolTip: () => Promise<void>;
+    appConfig?: AppConfig;
+    wantToSeeV1ToV2Conversion: boolean;
 }
 
 /**
@@ -84,8 +100,8 @@ interface RenderChartProps {
  * @returns {any[]} An array containing the data for the specified column.
  */
 const getDataForColumn = (column: ChartColumn, dataArr: DataPointsArray) => {
-    const idx = _.findIndex(dataArr.columns, colId => column.id === colId);
-    return _.map(dataArr.dataValue, row => row[idx]);
+    const idx = _.findIndex(dataArr.columns, (colId) => column.id === colId);
+    return _.map(dataArr.dataValue, (row) => row[idx]);
 };
 
 /**
@@ -95,13 +111,43 @@ const getDataForColumn = (column: ChartColumn, dataArr: DataPointsArray) => {
 const availableColor = ['red', 'blue', 'green'];
 
 /**
- * A mapping of index to visual property key.
- * @type {Object}
+ * Converts a color string to rgba format with the specified opacity.
+ * Supports named colors (red, blue, green, etc.) and hex/rgb formats.
+ *
+ * @param color - Color string (named color, hex, or rgb)
+ * @param opacity - Opacity value between 0 and 1
+ * @returns RGBA color string
  */
-const visualPropKeyMap = {
-    0: 'color',
-    1: 'accordion.Color2',
-    2: 'accordion.datalabels',
+const colorToRgba = (color: string, opacity: number): string => {
+    // Fallback: try to parse common named colors
+    const colorMap: { [key: string]: string } = {
+        red: `rgba(255, 0, 0, ${opacity})`,
+        green: `rgba(0, 128, 0, ${opacity})`,
+        blue: `rgba(0, 0, 255, ${opacity})`,
+        yellow: `rgba(255, 255, 0, ${opacity})`,
+        orange: `rgba(255, 165, 0, ${opacity})`,
+        purple: `rgba(128, 0, 128, ${opacity})`,
+        pink: `rgba(255, 192, 203, ${opacity})`,
+        black: `rgba(0, 0, 0, ${opacity})`,
+        white: `rgba(255, 255, 255, ${opacity})`,
+    };
+
+    const lowerColor = color.toLowerCase();
+    if (colorMap[lowerColor]) {
+        return colorMap[lowerColor];
+    }
+
+    // If hex color, convert to rgba
+    if (color.startsWith('#')) {
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+    // Default fallback
+    return `rgba(0, 0, 0, ${opacity})`;
 };
 
 /**
@@ -110,6 +156,8 @@ const visualPropKeyMap = {
  * @param {DataPointsArray} dataArr - The array of data points.
  * @param {string} type - The type of the chart.
  * @param {VisualProps|undefined} visualProps - The visual properties of the chart.
+ * @param {AppConfig|undefined} appConfig - The app configuration.
+ * @param {boolean} wantToSeeV1ToV2Conversion - Flag to control v1/v2 schema visibility.
  * @returns {Object} An object containing various data model functions for the chart.
  */
 const getColumnDataModel = (
@@ -117,37 +165,127 @@ const getColumnDataModel = (
     dataArr: DataPointsArray,
     type: string,
     visualProps: VisualProps | undefined,
+    appConfig: AppConfig | undefined,
+    wantToSeeV1ToV2Conversion: boolean,
 ) => {
+    // Extract chart settings v2 flag from appConfig
+    const isChartSettingsV2Enabled =
+        appConfig?.initFlags?.isChartSettingsV2Enabled?.flagValue || true;
     // this should be handled in a better way
-    const xAxisColumns = configDimensions?.[0].columns ?? [];
-    const yAxisColumns = configDimensions?.[1].columns ?? [];
-    const allowLabels = _.get(visualProps, visualPropKeyMap[2], false);
+    const xAxisDimension = configDimensions?.[0];
+    const yAxisDimension = configDimensions?.[1];
+    const xAxisColumns =
+        xAxisDimension && 'columns' in xAxisDimension
+            ? xAxisDimension.columns ?? []
+            : [];
+    const yAxisColumns =
+        yAxisDimension && 'columns' in yAxisDimension
+            ? yAxisDimension.columns ?? []
+            : [];
+    // Extract default axis names from column names
+    const defaultXAxisName =
+        xAxisColumns.length > 0 ? xAxisColumns[0].name : '';
+    const defaultYAxisName =
+        yAxisColumns.length > 0 ? yAxisColumns[0].name : '';
+
+    // Extract visual props using helper functions based on v1/v2 schema
+    const allowLabels = getVisualPropDataLabels(
+        visualProps,
+        isChartSettingsV2Enabled,
+        wantToSeeV1ToV2Conversion,
+        false,
+    );
+    const showTooltip = getVisualPropShowTooltip(
+        visualProps,
+        isChartSettingsV2Enabled,
+        wantToSeeV1ToV2Conversion,
+        true,
+    );
+    const xAxisName = getVisualPropXAxisName(
+        visualProps,
+        isChartSettingsV2Enabled,
+        wantToSeeV1ToV2Conversion,
+        defaultXAxisName,
+    );
+    const yAxisName = getVisualPropYAxisName(
+        visualProps,
+        isChartSettingsV2Enabled,
+        wantToSeeV1ToV2Conversion,
+        defaultYAxisName,
+    );
+    const legendPosition = getVisualPropLegendPosition(
+        visualProps,
+        isChartSettingsV2Enabled,
+        wantToSeeV1ToV2Conversion,
+        'top',
+    );
 
     return {
         getAllowLabels: () => allowLabels,
+        getShowTooltip: () => showTooltip,
+        getXAxisName: () => xAxisName,
+        getYAxisName: () => yAxisName,
+        getLegendPosition: () => legendPosition,
         getLabels: () => getDataForColumn(xAxisColumns[0], dataArr),
         getDatasets: () =>
-            _.map(yAxisColumns, (col, idx: number) => ({
-                label: col.name,
-                data: getDataForColumn(col, dataArr),
-                yAxisID: `${type}-y${idx.toString()}`,
-                type: `${type}`,
-                backgroundColor: _.get(
+            _.map(yAxisColumns, (col, idx: number) => {
+                // Extract base color using helper function
+                const baseColor = getVisualPropColor(
                     visualProps,
-                    visualPropKeyMap?.[idx],
+                    isChartSettingsV2Enabled,
+                    wantToSeeV1ToV2Conversion,
                     availableColor[idx],
-                ),
-                borderColor: _.get(
+                );
+
+                // Extract opacity from column visual props using helper
+                // function
+                const columnOpacity = getVisualPropColumnOpacity(
                     visualProps,
-                    visualPropKeyMap?.[idx],
-                    availableColor[idx],
-                ),
-                datalabels: {
-                    anchor: 'end',
+                    col.id,
+                    isChartSettingsV2Enabled,
+                    wantToSeeV1ToV2Conversion,
+                    1, // Default opacity is 1 (fully opaque)
+                );
+                console.log('columnOpacity', columnOpacity);
+
+                // Convert color to rgba format with opacity applied
+                const borderColorWithOpacity = colorToRgba(
+                    baseColor,
+                    columnOpacity,
+                );
+                const backgroundColorWithOpacity = colorToRgba(
+                    baseColor,
+                    columnOpacity * 0.2, // Lighter background for fill areas
+                );
+                console.log(
+                    'backgroundColorWithOpacity',
+                    backgroundColorWithOpacity,
+                );
+
+                return {
+                    label: col.name,
+                    data: getDataForColumn(col, dataArr),
+                    yAxisID: `${type}-y${idx.toString()}`,
+                    type: `${type}`,
+                    backgroundColor: backgroundColorWithOpacity,
+                    borderColor: borderColorWithOpacity,
+                    datalabels: {
+                        anchor: 'end',
+                    },
+                };
+            }),
+        getScales: () => {
+            const scales: any = {
+                // Configure x-axis with custom name
+                x: {
+                    title: {
+                        display: true,
+                        text: xAxisName || xAxisColumns[0]?.name || '',
+                    },
                 },
-            })),
-        getScales: () =>
-            _.reduce(
+            };
+            // Configure y-axes with custom name
+            return _.reduce(
                 yAxisColumns,
                 (obj: any, _val, idx: number) => {
                     // eslint-disable-next-line no-param-reassign
@@ -158,13 +296,15 @@ const getColumnDataModel = (
                         position: idx === 0 ? 'left' : 'right',
                         title: {
                             display: true,
-                            text: `${_val.name}`,
+                            // Use custom y-axis name or fallback to column name
+                            text: yAxisName || _val.name,
                         },
                     };
                     return obj;
                 },
-                {},
-            ),
+                scales,
+            );
+        },
         getPointDetails: (xPos: number, yPos: number): PointVal[] => [
             {
                 columnId: xAxisColumns[0].id,
@@ -200,7 +340,15 @@ export const LineChart = ({
     emitOpenContextMenu,
     setOnVisualPropsUpdate,
     setOffVisualPropsUpdate,
+    appConfig,
+    wantToSeeV1ToV2Conversion,
 }: LineChartProps) => {
+    // Log appConfig when it's available
+    useEffect(() => {
+        if (appConfig) {
+            logger.log('AppConfig in LineChart:', appConfig);
+        }
+    }, [appConfig]);
     const [visualProp, setVisualProp] = useState(chartModel?.visualProps);
     const dataModel = useMemo(() => {
         const columnChartModel = getColumnDataModel(
@@ -208,10 +356,18 @@ export const LineChart = ({
             chartModel.data?.[0].data as DataPointsArray,
             'line',
             visualProp,
+            appConfig,
+            wantToSeeV1ToV2Conversion,
         );
 
         return columnChartModel;
-    }, [chartModel.config, chartModel.data, visualProp]);
+    }, [
+        chartModel.config,
+        chartModel.data,
+        visualProp,
+        appConfig,
+        wantToSeeV1ToV2Conversion,
+    ]);
 
     useEffect(() => {
         setOnVisualPropsUpdate(({ visualProps }) => {
@@ -233,14 +389,17 @@ export const LineChart = ({
                 const dataX = activeElement?.index;
                 const dataY = activeElement?.datasetIndex;
                 if (!_.isNil(dataX) && !_.isNil(dataY)) {
-                    const point = dataModel.getPointDetails(dataX, dataY);
-                    emitShowToolTip({
-                        event: getParsedEvent(e),
-                        point: {
-                            tuple: point,
-                        },
-                        customTooltipContent: [],
-                    });
+                    // Only show tooltip if the setting is enabled
+                    if (dataModel.getShowTooltip()) {
+                        const point = dataModel.getPointDetails(dataX, dataY);
+                        emitShowToolTip({
+                            event: getParsedEvent(e),
+                            point: {
+                                tuple: point,
+                            },
+                            customTooltipContent: [],
+                        });
+                    }
                 }
             } else {
                 emitHideToolTip();
@@ -248,14 +407,20 @@ export const LineChart = ({
         },
         [dataModel],
     );
-    const onHoverLegend = useCallback((e, item, legend) => {
-        emitShowToolTip({
-            event: getParsedEvent(e),
-            customTooltipContent: [
-                `<div><h3><a href="http://google.com">google</a>${item.text}</h3></div>`,
-            ],
-        });
-    }, []);
+    const onHoverLegend = useCallback(
+        (e, item, legend) => {
+            // Only show tooltip if the setting is enabled
+            if (dataModel.getShowTooltip()) {
+                emitShowToolTip({
+                    event: getParsedEvent(e),
+                    customTooltipContent: [
+                        `<div><h3><a href="http://google.com">google</a>${item.text}</h3></div>`,
+                    ],
+                });
+            }
+        },
+        [dataModel],
+    );
     return (
         <Line
             data={{
@@ -273,6 +438,11 @@ export const LineChart = ({
                         enabled: false,
                     },
                     legend: {
+                        position: dataModel.getLegendPosition() as
+                            | 'top'
+                            | 'bottom'
+                            | 'left'
+                            | 'right',
                         onHover: onHoverLegend,
                         onLeave: () => {
                             emitHideToolTip();
@@ -281,7 +451,7 @@ export const LineChart = ({
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
                         display: dataModel.getAllowLabels() ? 'auto' : false,
-                        formatter: value => numberFormatter(value),
+                        formatter: (value) => numberFormatter(value),
                         color: 'blue',
                         textStrokeColor: 'white',
                         textStrokeWidth: 5,
@@ -308,7 +478,7 @@ export const LineChart = ({
                     const dataX = activeElement?.index;
                     const dataY = activeElement.datasetIndex;
 
-                    console.log(
+                    logger.info(
                         'ChartPoint',
                         dataX,
                         dataY,
@@ -321,7 +491,7 @@ export const LineChart = ({
                         },
                     });
                 },
-                onHover: event => {
+                onHover: (event) => {
                     if (event.type === 'mousemove') {
                         handleMouseOver(event);
                     }
@@ -345,12 +515,15 @@ export const RenderChart = ({
     hasInitialized,
     chartModel,
     emitRenderStart,
+    emitRenderError,
     emitRenderComplete,
     emitOpenContextMenu,
     emitShowToolTip,
     emitHideToolTip,
     setOffVisualPropsUpdate,
     setOnVisualPropsUpdate,
+    appConfig,
+    wantToSeeV1ToV2Conversion,
 }: RenderChartProps) => {
     useEffect(() => {
         if (hasInitialized) {
@@ -379,6 +552,8 @@ export const RenderChart = ({
             setOnVisualPropsUpdate={setOnVisualPropsUpdate}
             emitShowToolTip={emitShowToolTip}
             emitHideToolTip={emitHideToolTip}
+            appConfig={appConfig}
+            wantToSeeV1ToV2Conversion={wantToSeeV1ToV2Conversion}
         />
     );
 };

@@ -509,7 +509,7 @@ describe('useChartContext on React Wrapper component', () => {
         const updatedChildElement = getByTestId('child-element');
         await waitFor(() => {
             expect(updatedChildElement.textContent).toBe(
-                'Child Element counter: 1red',
+                'Child Element counter: 2red',
             );
         });
     });
