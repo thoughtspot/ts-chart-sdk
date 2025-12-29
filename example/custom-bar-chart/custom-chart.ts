@@ -52,6 +52,15 @@ import {
     createPlotbandPlugin,
     createPlotlinePlugin,
 } from './custom-chart-plugins';
+import {
+    getAxisVizPropDefinition,
+    getColumnSettingsDefinition,
+    getDataLabelVizPropDefinition,
+    getDisplayVizPropDefinition,
+    getLegendVizPropDefinition,
+    getTooltipVizPropDefinition,
+} from './visual-prop-schemas-v2';
+import { extractV2VisualProps } from './visual-prop-utils-v2';
 
 Chart.register(ChartDataLabels);
 
@@ -240,16 +249,45 @@ function render(ctx: CustomChartContext) {
 
     const appColor = appConfig?.styleConfig?.appPanelColor?.color || '';
     const dataModel = getDataModel(chartModel, appConfig?.styleConfig);
-    const allowLabels = _.get(
-        chartModel.visualProps,
-        visualPropKeyMap[2],
-        false,
-    );
-    const labelColor = _.get(
-        chartModel.visualProps,
-        visualPropKeyMap[1],
-        availableColor[0],
-    );
+
+    // Check if V2 is enabled
+    const isChartSettingsV2Enabled =
+        appConfig?.initFlags?.isChartSettingsV2Enabled?.flagValue || false;
+
+    let allowLabels: boolean;
+    let labelColor: string;
+    let barColor: string;
+    let legendPosition: string;
+    let xAxisName: string;
+    let yAxisName: string;
+
+    if (isChartSettingsV2Enabled) {
+        // Extract V2 visual props
+        const v2Props = extractV2VisualProps(chartModel.visualProps);
+        allowLabels = v2Props.datalabels;
+        labelColor = availableColor[0]; // Default label color
+        barColor = v2Props.color;
+        legendPosition = v2Props.legendPosition;
+        xAxisName = v2Props.xAxisName;
+        yAxisName = v2Props.yAxisName;
+    } else {
+        // Extract V1 visual props
+        allowLabels = _.get(chartModel.visualProps, visualPropKeyMap[2], false);
+        labelColor = _.get(
+            chartModel.visualProps,
+            visualPropKeyMap[1],
+            availableColor[0],
+        );
+        barColor = _.get(
+            chartModel.visualProps,
+            visualPropKeyMap[0],
+            availableColor[0],
+        );
+        legendPosition = 'top';
+        xAxisName = '';
+        yAxisName = '';
+    }
+
     if (!dataModel) {
         return;
     }
@@ -258,6 +296,32 @@ function render(ctx: CustomChartContext) {
         const canvas = document.getElementById('chart') as any;
         // clear canvas.
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+
+        // Get base scales and update with custom axis names if provided
+        const scales = dataModel.getScales();
+        if (xAxisName) {
+            scales.x = {
+                ...scales.x,
+                title: {
+                    display: true,
+                    text: xAxisName,
+                },
+            };
+        }
+        // Update Y axis names for all Y axes
+        if (yAxisName) {
+            Object.keys(scales).forEach((key) => {
+                if (key.startsWith('bar-y')) {
+                    scales[key] = {
+                        ...scales[key],
+                        title: {
+                            ...scales[key].title,
+                            text: yAxisName,
+                        },
+                    };
+                }
+            });
+        }
 
         globalChartReference = new Chart(canvas as any, {
             type: 'bar',
@@ -269,8 +333,12 @@ function render(ctx: CustomChartContext) {
                 animation: {
                     duration: 0,
                 },
-                scales: dataModel.getScales(),
+                scales,
                 plugins: {
+                    legend: {
+                        display: true,
+                        position: legendPosition as any,
+                    },
                     // Change options for ALL labels of THIS CHART
                     datalabels: {
                         display: allowLabels,
@@ -623,10 +691,109 @@ const renderChart = async (ctx: CustomChartContext): Promise<void> => {
             return configDefinition;
         },
         visualPropEditorDefinition: (
-            currentVisualProps: ChartModel,
+            chartModel: ChartModel,
             ctx: CustomChartContext,
         ): VisualPropEditorDefinition => {
-            const { visualProps } = currentVisualProps;
+            const { visualProps } = chartModel;
+
+            // Extract appConfig from the context
+            const appConfig = ctx.getAppConfig();
+
+            // Extract chart settings v2 flag
+            // to make this true/false pass isChartSettingsV2Enabled
+            // in the query params.
+            const isChartSettingsV2Enabled =
+                appConfig?.initFlags?.isChartSettingsV2Enabled?.flagValue ||
+                false;
+
+            // Return V2 schema if flag is enabled
+            if (isChartSettingsV2Enabled) {
+                // Build column settings definition for attributes
+                const attributeColumnSettingsV2: {
+                    [columnId: string]: { elements: any[] };
+                } = {};
+
+                // Build column settings definition for measures
+                const measureColumnSettingsV2: {
+                    [columnId: string]: { elements: any[] };
+                } = {};
+
+                // Get X axis columns (attribute columns)
+                const xColumns =
+                    chartModel.config?.chartConfig?.[0]?.dimensions.find(
+                        (dimension) =>
+                            dimension.key === 'x' &&
+                            'columns' in dimension &&
+                            dimension.columns,
+                    );
+
+                const xAxisColumns =
+                    xColumns && 'columns' in xColumns && xColumns.columns
+                        ? xColumns.columns
+                        : [];
+
+                // Build column settings for X axis columns
+                if (xAxisColumns.length > 0) {
+                    xAxisColumns.forEach((column) => {
+                        attributeColumnSettingsV2[column.id] = {
+                            elements: [getColumnSettingsDefinition(column)],
+                        };
+                    });
+                }
+
+                // Get Y axis columns (measure columns)
+                const yColumns =
+                    chartModel.config?.chartConfig?.[0]?.dimensions.find(
+                        (dimension) =>
+                            dimension.key === 'y' &&
+                            'columns' in dimension &&
+                            dimension.columns,
+                    );
+
+                const yAxisColumns =
+                    yColumns && 'columns' in yColumns && yColumns.columns
+                        ? yColumns.columns
+                        : [];
+
+                // Build column settings for Y axis columns
+                if (yAxisColumns.length > 0) {
+                    yAxisColumns.forEach((column) => {
+                        measureColumnSettingsV2[column.id] = {
+                            elements: [getColumnSettingsDefinition(column)],
+                        };
+                    });
+                }
+
+                return {
+                    // Display Settings: color radio button
+                    // inside accordion
+                    displayVizPropDefinition: getDisplayVizPropDefinition(),
+                    // Data Labels: checkbox inside accordion
+                    dataLabelVizPropDefinition: getDataLabelVizPropDefinition(),
+                    // Tooltip: tooltipconfig for tooltip customization
+                    tooltipVizPropDefinition: getTooltipVizPropDefinition(),
+                    // Axis Settings: tab-based UI for X and Y axes
+                    axisVizPropDefinition: getAxisVizPropDefinition(
+                        xAxisColumns,
+                        yAxisColumns,
+                    ),
+                    // Legend Settings: dropdown for legend position
+                    legendVizPropDefinition: getLegendVizPropDefinition(),
+                    // Column level settings (v2 format)
+                    columnsVizPropDefinition: [
+                        {
+                            type: ColumnType.ATTRIBUTE,
+                            columnSettingsDefinition: attributeColumnSettingsV2,
+                        },
+                        {
+                            type: ColumnType.MEASURE,
+                            columnSettingsDefinition: measureColumnSettingsV2,
+                        },
+                    ],
+                };
+            }
+
+            // Return V1 schema (existing implementation)
             const elements = [
                 {
                     key: 'color',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChartToTSEventsPayloadMap } from '../types/chart-to-ts-event.types';
-import { ChartModel } from '../types/common.types';
+import { AppConfig, ChartModel } from '../types/common.types';
 import { TSToChartEventsPayloadMap } from '../types/ts-to-chart-event.types';
 
 /**
@@ -55,6 +55,11 @@ export interface ChartContextProps
      * config, data and visual props
      */
     chartModel: ChartModel | undefined;
+    /**
+     * app config to be used by client having
+     * app state like locale and timezones
+     */
+    appConfig: AppConfig | undefined;
     /**
      * For destroying current chart context
      * @returns void
