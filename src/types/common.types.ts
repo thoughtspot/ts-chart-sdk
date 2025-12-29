@@ -600,6 +600,11 @@ export interface AppConfig {
          * @version SDK: 2.7.3 | ThoughtSpot:
          */
         queryMetrics?: QueryMetrics;
+        /*
+         * Flag set to true when chart is rendered in a Embedded Frame
+         * @version SDK: 2.7.8 | Thoughtspot;
+         */
+        isEmbedded?: boolean;
     };
     /**
      * @type {UserInfo}
