@@ -54,6 +54,7 @@ import {
     VisualPropsUpdateEventPayload,
     VisualPropsUpdateEventResponse,
     VisualPropsValidateEventPayload,
+    CustomChartMixpanelEventPayload,
 } from '../types/ts-to-chart-event.types';
 import {
     TranslatedValue,
@@ -259,6 +260,17 @@ export type CustomChartContextProps = {
         appConfig?: AppConfig,
         changeInfo?: VisualPropsChangeInfo,
     ) => ValidationResponse;
+
+    /**
+     * Optional handler to send custom analytics events to Mixpanel
+     * whenever the TS host triggers the CustomChartMixpanelEvent.
+     *
+     * This can be used to forward detailed interaction data to any analytics
+     * provider without affecting the chart rendering flow.
+     */
+    trackCustomChartMixpanelEvent?: (
+        payload: CustomChartMixpanelEventPayload,
+    ) => any;
 
     /**
      * Function to sync the custom visual props with the chart model.
@@ -961,6 +973,25 @@ export class CustomChartContext {
                 }
                 // this will never be true
                 return { isValid: false };
+            },
+        );
+
+        /**
+         * This internal event is triggered when the TS app sends a custom
+         * analytics payload (for example, Mixpanel event data) for the current
+         * custom chart.
+         */
+        this.onInternal(
+            TSToChartEvent.CustomChartMixpanelEvent,
+            (payload: CustomChartMixpanelEventPayload): any => {
+                if (this.chartContextProps.trackCustomChartMixpanelEvent) {
+                    // Delegate to the chart developer's analytics handler.
+                    return this.chartContextProps.trackCustomChartMixpanelEvent(
+                        payload,
+                    );
+                }
+                // If no handler is provided, this is a no-op.
+                return undefined;
             },
         );
 

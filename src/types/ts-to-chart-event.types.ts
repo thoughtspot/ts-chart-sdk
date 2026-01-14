@@ -69,6 +69,10 @@ export enum TSToChartEvent {
     /**
      * @version SDK: 0.1 | ThoughtSpot:
      */
+    CustomChartMixpanelEvent = 'CustomChartMixpanelEvent',
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
 
     ContextMenuActionClick = 'ContextMenuActionClick',
 
@@ -157,6 +161,10 @@ export interface TSToChartInternalEventsPayloadMap {
     [TSToChartEvent.VisualPropsValidate]: (
         payload: VisualPropsValidateEventPayload,
     ) => ValidationResponse;
+
+    [TSToChartEvent.CustomChartMixpanelEvent]: (
+        payload: CustomChartMixpanelEventPayload,
+    ) => any;
 
     [TSToChartEvent.TriggerRenderChart]: () => void;
 
@@ -367,6 +375,29 @@ export interface VisualPropsUpdateEventPayload {
 export interface VisualPropsUpdateEventResponse {
     triggerRenderChart?: boolean;
     triggerUpdateChartModel?: boolean;
+}
+
+export interface CustomChartMixpanelEventPayload {
+    /**
+     * The latest custom visual props after the user interaction.
+     */
+    updatedCustomVisualProps: VisualProps;
+
+    /**
+     * The column on which the change happened (if applicable).
+     */
+    columnId?: string;
+
+    /**
+     * Detailed change information coming from the visual props editor.
+     */
+    changeInfo?: VisualPropsChangeInfo;
+
+    /**
+     * Any additional host-specific context that might be useful for analytics.
+     * Example: chartType, answerId, answerSessionId, pageContext, etc.
+     */
+    context?: Record<string, unknown>;
 }
 
 /**
