@@ -39,6 +39,7 @@ import {
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
+    CustomChartMixpanelEventPayload,
     DataUpdateEventPayload,
     DownloadExcelTriggerPayload,
     GetColumnDataPayload,
@@ -54,7 +55,6 @@ import {
     VisualPropsUpdateEventPayload,
     VisualPropsUpdateEventResponse,
     VisualPropsValidateEventPayload,
-    CustomChartMixpanelEventPayload,
 } from '../types/ts-to-chart-event.types';
 import {
     TranslatedValue,
