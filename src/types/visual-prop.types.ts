@@ -190,6 +190,24 @@ export interface SettingsElement {
      */
     properties?: ElementProperties;
     /**
+     * Keys to translate using strings.po file IDs.
+     *
+     * @remarks
+     * Specify an array of keys from ElementProperties that you want to translate.
+     * The values for these keys should be IDs from the TS strings.po file.
+     *
+     * @example
+     * ```typescript
+     * translate: ['label', 'tooltipContent']
+     * properties: {
+     *   label: 'LABEL_ID',
+     *   tooltipContent: 'TOOLTIP_CONTENT_ID'
+     * }
+     * ```
+     * @version SDK: 2.7.9 | Thoughtspot;
+     */
+    translate?: string[];
+    /**
      * Class name of the element
      */
     className?: string;
