@@ -73,6 +73,15 @@ export enum ChartToTSEvent {
      * Update chart config
      */
     UpdateChartConfig = 'UpdateChartConfig',
+
+    /**
+     * Track chart interactions for Mixpanel analytics.
+     * Emitted when trackable interactions (expand-all, collapse-all, merge-with, etc.)
+     * are triggered from the chart.
+     *
+     * @version SDK: 2.8.0 | ThoughtSpot:
+     */
+    TrackChartInteraction = 'TrackChartInteraction',
 }
 
 /**
@@ -201,6 +210,14 @@ export interface ChartToTSEventsPayloadMap {
      * This event takes the updated chart config as payload.
      */
     [ChartToTSEvent.UpdateChartConfig]: [UpdateChartConfigEventPayload];
+
+    /**
+     * Trigger this event when a trackable chart interaction occurs.
+     * The chart provides the event name and payload for Mixpanel tracking.
+     *
+     * @version SDK: 2.8.0 | ThoughtSpot:
+     */
+    [ChartToTSEvent.TrackChartInteraction]: [TrackChartInteractionEventPayload];
 }
 
 /**
@@ -575,4 +592,25 @@ export interface AxisMenuActionHandler {
 
 export interface GlobalToastActionHandler {
     [key: string]: (args: any) => void;
+}
+
+/**
+ * Payload for tracking chart interactions in Mixpanel.
+ * Contains the pre-computed event name and payload from the chart.
+ *
+ * @group Chart to ThoughtSpot Events
+ * @version SDK: 2.8.0 | ThoughtSpot:
+ */
+export interface TrackChartInteractionEventPayload {
+    /**
+     * The Mixpanel event name (e.g., 'pivot.context-expand-all', 'chart.axis-group-clicked').
+     * This is computed by the chart based on the interaction type.
+     */
+    eventName: string;
+
+    /**
+     * The payload to send to Mixpanel.
+     * Contains interaction-specific details like actionId, columnIds, chartType, etc.
+     */
+    mixpanelPayload: Record<string, any>;
 }
