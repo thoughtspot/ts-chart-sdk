@@ -40,6 +40,7 @@ import {
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
     CustomChartMixpanelEventPayload,
+    CustomChartMixpanelEventResponse,
     DataUpdateEventPayload,
     DownloadExcelTriggerPayload,
     GetColumnDataPayload,
@@ -262,15 +263,18 @@ export type CustomChartContextProps = {
     ) => ValidationResponse;
 
     /**
-     * Optional handler to send custom analytics events to Mixpanel
+     * Optional handler to process custom analytics events for Mixpanel
      * whenever the TS host triggers the CustomChartMixpanelEvent.
      *
-     * This can be used to forward detailed interaction data to any analytics
-     * provider without affecting the chart rendering flow.
+     * This handler receives the event payload and should return the
+     * processed event name and mixpanel payload for the TS side to send.
+     *
+     * @param payload - The event payload containing visual props, change info, and context
+     * @returns The event name and mixpanel payload, or undefined if no event should be sent
      */
     trackCustomChartMixpanelEvent?: (
         payload: CustomChartMixpanelEventPayload,
-    ) => any;
+    ) => CustomChartMixpanelEventResponse | undefined;
 
     /**
      * Function to sync the custom visual props with the chart model.
@@ -983,14 +987,15 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.CustomChartMixpanelEvent,
-            (payload: CustomChartMixpanelEventPayload): any => {
+            (payload: CustomChartMixpanelEventPayload): CustomChartMixpanelEventResponse | undefined => {
                 if (this.chartContextProps.trackCustomChartMixpanelEvent) {
                     // Delegate to the chart developer's analytics handler.
+                    // Returns the event name and payload for TS to send to Mixpanel.
                     return this.chartContextProps.trackCustomChartMixpanelEvent(
                         payload,
                     );
                 }
-                // If no handler is provided, this is a no-op.
+                // If no handler is provided, return undefined (no event sent).
                 return undefined;
             },
         );
