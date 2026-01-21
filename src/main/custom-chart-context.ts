@@ -39,8 +39,8 @@ import {
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
-    CustomChartMixpanelEventPayload,
-    CustomChartMixpanelEventResponse,
+    MixpanelEventPayload,
+    MixpanelEventResponse,
     DataUpdateEventPayload,
     DownloadExcelTriggerPayload,
     GetColumnDataPayload,
@@ -264,7 +264,7 @@ export type CustomChartContextProps = {
 
     /**
      * Optional handler to process custom analytics events for Mixpanel
-     * whenever the TS host triggers the CustomChartMixpanelEvent.
+     * whenever the TS host triggers the MixpanelEvent.
      *
      * This handler receives the event payload and should return the
      * processed event name and mixpanel payload for the TS side to send.
@@ -273,8 +273,8 @@ export type CustomChartContextProps = {
      * @returns The event name and mixpanel payload, or undefined if no event should be sent
      */
     trackMixpanelEvent?: (
-        payload: CustomChartMixpanelEventPayload,
-    ) => CustomChartMixpanelEventResponse | undefined;
+        payload: MixpanelEventPayload,
+    ) => MixpanelEventResponse | undefined;
 
     /**
      * Function to sync the custom visual props with the chart model.
@@ -986,8 +986,8 @@ export class CustomChartContext {
          * custom chart.
          */
         this.onInternal(
-            TSToChartEvent.CustomChartMixpanelEvent,
-            (payload: CustomChartMixpanelEventPayload): CustomChartMixpanelEventResponse | undefined => {
+            TSToChartEvent.MixpanelEvent,
+            (payload: MixpanelEventPayload): MixpanelEventResponse | undefined => {
                 if (this.chartContextProps.trackMixpanelEvent) {
                     // Delegate to the chart developer's analytics handler.
                     // Returns the event name and payload for TS to send to Mixpanel.

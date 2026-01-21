@@ -69,7 +69,7 @@ export enum TSToChartEvent {
     /**
      * @version SDK: 0.1 | ThoughtSpot:
      */
-    CustomChartMixpanelEvent = 'CustomChartMixpanelEvent',
+    MixpanelEvent = 'MixpanelEvent',
     /**
      * @version SDK: 0.1 | ThoughtSpot:
      */
@@ -162,9 +162,9 @@ export interface TSToChartInternalEventsPayloadMap {
         payload: VisualPropsValidateEventPayload,
     ) => ValidationResponse;
 
-    [TSToChartEvent.CustomChartMixpanelEvent]: (
-        payload: CustomChartMixpanelEventPayload,
-    ) => CustomChartMixpanelEventResponse | undefined;
+    [TSToChartEvent.MixpanelEvent]: (
+        payload: MixpanelEventPayload,
+    ) => MixpanelEventResponse | undefined;
 
     [TSToChartEvent.TriggerRenderChart]: () => void;
 
@@ -377,7 +377,7 @@ export interface VisualPropsUpdateEventResponse {
     triggerUpdateChartModel?: boolean;
 }
 
-export interface CustomChartMixpanelEventPayload {
+export interface MixpanelEventPayload {
     /**
      * The previous value before the change (for tracking deltas).
      */
@@ -412,7 +412,7 @@ export interface CustomChartMixpanelEventPayload {
  *
  * @group ThoughtSpot to Chart Events
  */
-export interface CustomChartMixpanelEventResponse {
+export interface MixpanelEventResponse {
     /**
      * The event name for Mixpanel.
      */
