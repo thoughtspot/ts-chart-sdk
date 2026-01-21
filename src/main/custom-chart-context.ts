@@ -47,6 +47,8 @@ import {
     GetDataQueryResponsePayload,
     InitializeEventPayload,
     InitializeEventResponsePayload,
+    MixpanelEventPayload,
+    MixpanelEventResponse,
     Query,
     TSToChartEvent,
     TSToChartEventsPayloadMap,
@@ -259,6 +261,20 @@ export type CustomChartContextProps = {
         appConfig?: AppConfig,
         changeInfo?: VisualPropsChangeInfo,
     ) => ValidationResponse;
+
+    /**
+     * Optional handler to process custom analytics events for Mixpanel
+     * whenever the TS host triggers the MixpanelEvent.
+     *
+     * This handler receives the event payload and should return the
+     * processed event name and mixpanel payload for the TS side to send.
+     *
+     * @param payload - The event payload containing visual props, change info, and context
+     * @returns The event name and mixpanel payload, or undefined if no event should be sent
+     */
+    trackMixpanelEvent?: (
+        payload: MixpanelEventPayload,
+    ) => MixpanelEventResponse | undefined;
 
     /**
      * Function to sync the custom visual props with the chart model.
@@ -961,6 +977,27 @@ export class CustomChartContext {
                 }
                 // this will never be true
                 return { isValid: false };
+            },
+        );
+
+        /**
+         * This internal event is triggered when the TS app sends a custom
+         * analytics payload (for example, Mixpanel event data) for the current
+         * custom chart.
+         */
+        this.onInternal(
+            TSToChartEvent.MixpanelEvent,
+            (
+                payload: MixpanelEventPayload,
+            ): MixpanelEventResponse | undefined => {
+                if (this.chartContextProps.trackMixpanelEvent) {
+                    // Delegate to the chart developer's analytics handler.
+                    // Returns the event name and payload for TS to send to
+                    // Mixpanel.
+                    return this.chartContextProps.trackMixpanelEvent(payload);
+                }
+                // If no handler is provided, return undefined (no event sent).
+                return undefined;
             },
         );
 

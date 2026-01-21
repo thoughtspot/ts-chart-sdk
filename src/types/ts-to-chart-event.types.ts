@@ -69,6 +69,10 @@ export enum TSToChartEvent {
     /**
      * @version SDK: 0.1 | ThoughtSpot:
      */
+    MixpanelEvent = 'MixpanelEvent',
+    /**
+     * @version SDK: 0.1 | ThoughtSpot:
+     */
 
     ContextMenuActionClick = 'ContextMenuActionClick',
 
@@ -157,6 +161,10 @@ export interface TSToChartInternalEventsPayloadMap {
     [TSToChartEvent.VisualPropsValidate]: (
         payload: VisualPropsValidateEventPayload,
     ) => ValidationResponse;
+
+    [TSToChartEvent.MixpanelEvent]: (
+        payload: MixpanelEventPayload,
+    ) => MixpanelEventResponse | undefined;
 
     [TSToChartEvent.TriggerRenderChart]: () => void;
 
@@ -369,6 +377,52 @@ export interface VisualPropsUpdateEventResponse {
     triggerUpdateChartModel?: boolean;
 }
 
+export interface MixpanelEventPayload {
+    /**
+     * The previous value before the change (for tracking deltas).
+     */
+    previousValue?: any;
+
+    /**
+     * The column on which the change happened (if applicable).
+     */
+    columnId?: string;
+
+    /**
+     * Detailed change information coming from the visual props editor.
+     * Contains path (setting path) and value (new value).
+     */
+    changeInfo?: VisualPropsChangeInfo;
+
+    /**
+     * Host-specific context for analytics.
+     */
+    context?: {
+        chartType?: string;
+        answerId?: string;
+        answerSessionId?: string;
+        pageContext?: string;
+        answerCommonProperties?: Record<string, any>;
+    };
+}
+
+/**
+ * Response from the custom chart's trackMixpanelEvent handler.
+ * Contains the event name and payload to send to Mixpanel.
+ *
+ * @group ThoughtSpot to Chart Events
+ */
+export interface MixpanelEventResponse {
+    /**
+     * The event name for Mixpanel.
+     */
+    eventName: string;
+
+    /**
+     * The payload to send to Mixpanel.
+     */
+    mixpanelPayload: Record<string, any>;
+}
 /**
  *
  * @group ThoughtSpot to Chart Events

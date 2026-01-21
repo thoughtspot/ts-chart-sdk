@@ -708,6 +708,116 @@ describe('CustomChartContext', () => {
             );
         });
 
+        test('TSToChartEvent.MixpanelEvent should call trackMixpanelEvent handler when provided', () => {
+            // Create a mock handler that returns event name and payload
+            const mockTrackMixpanelEvent = jest.fn().mockReturnValue({
+                eventName: 'custom.visual-prop-changed',
+                mixpanelPayload: {
+                    settingPath: 'color',
+                    newValue: 'blue',
+                    chartType: 'bar',
+                },
+            });
+
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                trackMixpanelEvent: mockTrackMixpanelEvent,
+            });
+
+            const mockPayload = {
+                previousValue: 'red',
+                columnId: 'col-123',
+                changeInfo: {
+                    path: 'color',
+                    value: 'blue',
+                },
+                context: {
+                    chartType: 'bar',
+                    answerId: 'answer-456',
+                },
+            };
+
+            // Trigger the MixpanelEvent
+            const response = eventProcessor({
+                payload: mockPayload,
+                eventType: TSToChartEvent.MixpanelEvent,
+                source: 'ts-host-app',
+            });
+
+            // Verify handler was called with correct payload
+            expect(mockTrackMixpanelEvent).toHaveBeenCalledWith(mockPayload);
+
+            // Verify response contains event name and mixpanel payload
+            expect(response).toEqual({
+                eventName: 'custom.visual-prop-changed',
+                mixpanelPayload: {
+                    settingPath: 'color',
+                    newValue: 'blue',
+                    chartType: 'bar',
+                },
+            });
+        });
+
+        test('TSToChartEvent.MixpanelEvent should return empty object when no handler is provided', () => {
+            // Create context without trackMixpanelEvent handler
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+
+            const mockPayload = {
+                previousValue: 'red',
+                changeInfo: {
+                    path: 'color',
+                    value: 'blue',
+                },
+            };
+
+            // Trigger the MixpanelEvent
+            const response = eventProcessor({
+                payload: mockPayload,
+                eventType: TSToChartEvent.MixpanelEvent,
+                source: 'ts-host-app',
+            });
+
+            // eventProcessor returns {} as fallback when handler returns
+            // undefined
+            expect(response).toEqual({});
+        });
+
+        test('TSToChartEvent.MixpanelEvent handler can return undefined to skip event', () => {
+            // Create a handler that conditionally returns undefined
+            const mockTrackMixpanelEvent = jest.fn().mockReturnValue(undefined);
+
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+                trackMixpanelEvent: mockTrackMixpanelEvent,
+            });
+
+            const mockPayload = {
+                changeInfo: {
+                    path: 'internalSetting',
+                    value: 'someValue',
+                },
+            };
+
+            const response = eventProcessor({
+                payload: mockPayload,
+                eventType: TSToChartEvent.MixpanelEvent,
+                source: 'ts-host-app',
+            });
+
+            expect(mockTrackMixpanelEvent).toHaveBeenCalledWith(mockPayload);
+            // eventProcessor returns {} as fallback when handler returns
+            // undefined
+            expect(response).toEqual({});
+        });
+
         test('should not trigger post message if host is not accurate', async () => {
             expect(mockInitMessage).toHaveBeenCalled();
 
@@ -2080,6 +2190,75 @@ describe('CustomChartContext', () => {
             expect(
                 (customChartContext as any).globalToastActionHandler,
             ).toEqual({});
+        });
+    });
+
+    describe('TrackChartInteraction', () => {
+        let customChartContext: CustomChartContext;
+
+        beforeEach(() => {
+            customChartContext = new CustomChartContext({
+                getDefaultChartConfig,
+                getQueriesFromChartConfig,
+                renderChart,
+            });
+            eventProcessor({
+                payload: mockInitializeContextPayload,
+                eventType: TSToChartEvent.Initialize,
+            });
+            eventProcessor({
+                payload: {},
+                eventType: TSToChartEvent.InitializeComplete,
+            });
+            customChartContext.initialize();
+        });
+
+        afterEach(() => {
+            customChartContext.destroy();
+            eventProcessor = null;
+            jest.resetAllMocks();
+        });
+
+        test('should emit TrackChartInteraction event with correct payload', () => {
+            const interactionPayload = {
+                eventName: 'pivot.context-expand-all',
+                mixpanelPayload: {
+                    actionId: 'expand-all',
+                    chartType: 'pivot',
+                    columnIds: ['col-1', 'col-2'],
+                },
+            };
+
+            customChartContext.emitEvent(
+                ChartToTSEvent.TrackChartInteraction,
+                interactionPayload,
+            );
+
+            expect(mockPostMessageToHost).toHaveBeenCalledWith(
+                mockInitializeContextPayload.componentId,
+                mockInitializeContextPayload.hostUrl,
+                interactionPayload,
+                ChartToTSEvent.TrackChartInteraction,
+            );
+        });
+
+        test('should emit TrackChartInteraction with minimal payload', () => {
+            const minimalPayload = {
+                eventName: 'chart.render-complete',
+                mixpanelPayload: {},
+            };
+
+            customChartContext.emitEvent(
+                ChartToTSEvent.TrackChartInteraction,
+                minimalPayload,
+            );
+
+            expect(mockPostMessageToHost).toHaveBeenCalledWith(
+                mockInitializeContextPayload.componentId,
+                mockInitializeContextPayload.hostUrl,
+                minimalPayload,
+                ChartToTSEvent.TrackChartInteraction,
+            );
         });
     });
 });
