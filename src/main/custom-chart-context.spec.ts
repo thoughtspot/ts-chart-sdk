@@ -1105,12 +1105,12 @@ describe('CustomChartContext', () => {
                 // Verify callbacks are stored in handler
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'action-1'
+                    'action-1'
                     ],
                 ).toBe(mockOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'action-2'
+                    'action-2'
                     ],
                 ).toBe(_.noop);
             });
@@ -1196,17 +1196,17 @@ describe('CustomChartContext', () => {
                 // Verify callbacks are stored in handler
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'parent-action'
+                    'parent-action'
                     ],
                 ).toBe(mockParentOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'child-action-1'
+                    'child-action-1'
                     ],
                 ).toBe(mockChildOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'child-action-2'
+                    'child-action-2'
                     ],
                 ).toBe(_.noop);
             });
@@ -1283,22 +1283,22 @@ describe('CustomChartContext', () => {
                 // Verify callbacks are stored in handler
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'parent-action'
+                    'parent-action'
                     ],
                 ).toBe(mockOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'child-1-1'
+                    'child-1-1'
                     ],
                 ).toBe(mockOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'child-1-2'
+                    'child-1-2'
                     ],
                 ).toBe(mockOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'child-2-1'
+                    'child-2-1'
                     ],
                 ).toBe(mockOnClick);
             });
@@ -1330,12 +1330,12 @@ describe('CustomChartContext', () => {
                 // Verify that only the new action handler exists
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'existing-action'
+                    'existing-action'
                     ],
                 ).toBeUndefined();
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'new-action'
+                    'new-action'
                     ],
                 ).toBeDefined();
             });
@@ -1392,17 +1392,17 @@ describe('CustomChartContext', () => {
                 // Verify callbacks are stored in handler
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'simple-action'
+                    'simple-action'
                     ],
                 ).toBe(mockOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'complex-action'
+                    'complex-action'
                     ],
                 ).toBe(mockOnClick);
                 expect(
                     (customChartContext as any).axisMenuActionHandler[
-                        'nested-action'
+                    'nested-action'
                     ],
                 ).toBe(mockOnClick);
             });
@@ -2152,7 +2152,7 @@ describe('CustomChartContext', () => {
             // Check if the handler is stored
             expect(
                 (customChartContext as any).globalToastActionHandler[
-                    'test-action'
+                'test-action'
                 ],
             ).toBe(mockOnClick);
 
