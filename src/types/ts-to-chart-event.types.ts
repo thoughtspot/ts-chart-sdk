@@ -163,8 +163,8 @@ export interface TSToChartInternalEventsPayloadMap {
     ) => ValidationResponse;
 
     [TSToChartEvent.CustomChartMixpanelEvent]: (
-    payload: CustomChartMixpanelEventPayload,
-) => CustomChartMixpanelEventResponse | undefined;
+        payload: CustomChartMixpanelEventPayload,
+    ) => CustomChartMixpanelEventResponse | undefined;
 
     [TSToChartEvent.TriggerRenderChart]: () => void;
 
@@ -407,7 +407,7 @@ export interface CustomChartMixpanelEventPayload {
 }
 
 /**
- * Response from the custom chart's trackCustomChartMixpanelEvent handler.
+ * Response from the custom chart's trackMixpanelEvent handler.
  * Contains the event name and payload to send to Mixpanel.
  *
  * @group ThoughtSpot to Chart Events

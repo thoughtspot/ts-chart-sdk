@@ -272,7 +272,7 @@ export type CustomChartContextProps = {
      * @param payload - The event payload containing visual props, change info, and context
      * @returns The event name and mixpanel payload, or undefined if no event should be sent
      */
-    trackCustomChartMixpanelEvent?: (
+    trackMixpanelEvent?: (
         payload: CustomChartMixpanelEventPayload,
     ) => CustomChartMixpanelEventResponse | undefined;
 
@@ -306,8 +306,8 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfigEditorDefinition?:
-        | ConfigEditorDefinitionSetter
-        | ChartConfigEditorDefinition[];
+    | ConfigEditorDefinitionSetter
+    | ChartConfigEditorDefinition[];
 
     /**
      * Definition to help edit/customize the visual properties from chart settings editor
@@ -319,8 +319,8 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?:
-        | VisualEditorDefinitionSetter
-        | VisualPropEditorDefinition;
+    | VisualEditorDefinitionSetter
+    | VisualPropEditorDefinition;
 
     /**
      * Optional configuration to toggle native TS UI configurations, such as column number
@@ -988,10 +988,10 @@ export class CustomChartContext {
         this.onInternal(
             TSToChartEvent.CustomChartMixpanelEvent,
             (payload: CustomChartMixpanelEventPayload): CustomChartMixpanelEventResponse | undefined => {
-                if (this.chartContextProps.trackCustomChartMixpanelEvent) {
+                if (this.chartContextProps.trackMixpanelEvent) {
                     // Delegate to the chart developer's analytics handler.
                     // Returns the event name and payload for TS to send to Mixpanel.
-                    return this.chartContextProps.trackCustomChartMixpanelEvent(
+                    return this.chartContextProps.trackMixpanelEvent(
                         payload,
                     );
                 }
@@ -1346,10 +1346,10 @@ export class CustomChartContext {
             const { isValid } =
                 hasChartConfig && this.chartContextProps.validateConfig
                     ? this.chartContextProps.validateConfig(
-                          this.chartModel.config.chartConfig ?? [],
-                          this.chartModel,
-                          this.appConfig,
-                      )
+                        this.chartModel.config.chartConfig ?? [],
+                        this.chartModel,
+                        this.appConfig,
+                    )
                     : { isValid: false };
 
             let defaultChartConfig: ChartConfig[] = [];
