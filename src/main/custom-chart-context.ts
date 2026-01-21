@@ -39,8 +39,6 @@ import {
     ChartConfigValidateEventPayload,
     ChartModelUpdateEventPayload,
     ContextMenuCustomActionPayload,
-    MixpanelEventPayload,
-    MixpanelEventResponse,
     DataUpdateEventPayload,
     DownloadExcelTriggerPayload,
     GetColumnDataPayload,
@@ -49,6 +47,8 @@ import {
     GetDataQueryResponsePayload,
     InitializeEventPayload,
     InitializeEventResponsePayload,
+    MixpanelEventPayload,
+    MixpanelEventResponse,
     Query,
     TSToChartEvent,
     TSToChartEventsPayloadMap,
@@ -306,8 +306,8 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     chartConfigEditorDefinition?:
-    | ConfigEditorDefinitionSetter
-    | ChartConfigEditorDefinition[];
+        | ConfigEditorDefinitionSetter
+        | ChartConfigEditorDefinition[];
 
     /**
      * Definition to help edit/customize the visual properties from chart settings editor
@@ -319,8 +319,8 @@ export type CustomChartContextProps = {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     visualPropEditorDefinition?:
-    | VisualEditorDefinitionSetter
-    | VisualPropEditorDefinition;
+        | VisualEditorDefinitionSetter
+        | VisualPropEditorDefinition;
 
     /**
      * Optional configuration to toggle native TS UI configurations, such as column number
@@ -987,13 +987,14 @@ export class CustomChartContext {
          */
         this.onInternal(
             TSToChartEvent.MixpanelEvent,
-            (payload: MixpanelEventPayload): MixpanelEventResponse | undefined => {
+            (
+                payload: MixpanelEventPayload,
+            ): MixpanelEventResponse | undefined => {
                 if (this.chartContextProps.trackMixpanelEvent) {
                     // Delegate to the chart developer's analytics handler.
-                    // Returns the event name and payload for TS to send to Mixpanel.
-                    return this.chartContextProps.trackMixpanelEvent(
-                        payload,
-                    );
+                    // Returns the event name and payload for TS to send to
+                    // Mixpanel.
+                    return this.chartContextProps.trackMixpanelEvent(payload);
                 }
                 // If no handler is provided, return undefined (no event sent).
                 return undefined;
@@ -1346,10 +1347,10 @@ export class CustomChartContext {
             const { isValid } =
                 hasChartConfig && this.chartContextProps.validateConfig
                     ? this.chartContextProps.validateConfig(
-                        this.chartModel.config.chartConfig ?? [],
-                        this.chartModel,
-                        this.appConfig,
-                    )
+                          this.chartModel.config.chartConfig ?? [],
+                          this.chartModel,
+                          this.appConfig,
+                      )
                     : { isValid: false };
 
             let defaultChartConfig: ChartConfig[] = [];
