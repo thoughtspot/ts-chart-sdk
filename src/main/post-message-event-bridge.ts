@@ -61,6 +61,9 @@ const postMessageToHostApp = async (
             {
                 origin: hostUrl,
                 endpoint: 'child',
+                isValidResponse(data) {
+                    return !!data && typeof data === 'object' && 'hasError' in data;
+                },
             },
         ),
         TIMEOUT_THRESHOLD,
