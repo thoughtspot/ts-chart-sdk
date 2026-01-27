@@ -11,9 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@thoughtspot/ts-chart-sdk": "0.0.1-alpha.7",
+    "@thoughtspot/ts-chart-sdk": "1.0.0",
     "highcharts": "^11.0.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "vite": "^4.3.9"
