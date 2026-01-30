@@ -746,8 +746,11 @@ describe('CustomChartContext', () => {
                 source: 'ts-host-app',
             });
 
-            // Verify handler was called with correct payload
-            expect(mockTrackMixpanelEvent).toHaveBeenCalledWith(mockPayload);
+            // Verify handler was called with correct payload and visualProps
+            expect(mockTrackMixpanelEvent).toHaveBeenCalledWith(
+                mockPayload,
+                undefined, // visualProps is undefined since chartModel not initialized
+            );
 
             // Verify response contains event name and mixpanel payload
             expect(response).toEqual({
@@ -812,7 +815,10 @@ describe('CustomChartContext', () => {
                 source: 'ts-host-app',
             });
 
-            expect(mockTrackMixpanelEvent).toHaveBeenCalledWith(mockPayload);
+            expect(mockTrackMixpanelEvent).toHaveBeenCalledWith(
+                mockPayload,
+                undefined, // visualProps is undefined since chartModel not initialized
+            );
             // eventProcessor returns {} as fallback when handler returns
             // undefined
             expect(response).toEqual({});
