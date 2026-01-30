@@ -266,17 +266,17 @@ export type CustomChartContextProps = {
      * Optional handler to process custom analytics events for Mixpanel
      * whenever the TS host triggers the MixpanelEvent.
      *
-     * This handler receives the event payload and the current chart state,
+     * This handler receives the event payload and the current visual props,
      * and should return the processed event name and mixpanel payload for
      * the TS side to send.
      *
      * @param payload - The event payload containing change info and context
-     * @param chartState - Current chart state including visualProps
+     * @param visualProps - Current visual properties from the chart model
      * @returns The event name and mixpanel payload, or undefined if no event should be sent
      */
     trackMixpanelEvent?: (
         payload: MixpanelEventPayload,
-        chartState: { visualProps: VisualProps },
+        visualProps?: VisualProps,
     ) => MixpanelEventResponse | undefined;
 
     /**
@@ -998,9 +998,10 @@ export class CustomChartContext {
                     // Returns the event name and payload for TS to send to
                     // Mixpanel.
                     // Include current visualProps from chartModel for context.
-                    return this.chartContextProps.trackMixpanelEvent(payload, {
-                        visualProps: this.chartModel.visualProps,
-                    });
+                    return this.chartContextProps.trackMixpanelEvent(
+                        payload,
+                        this.chartModel.visualProps,
+                    );
                 }
                 // If no handler is provided, return undefined (no event sent).
                 return undefined;
