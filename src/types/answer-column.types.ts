@@ -239,6 +239,11 @@ export interface ChartColumn {
      * @version SDK: 0.0.2-alpha.15 | ThoughtSpot:
      */
     columnProperties?: {
+        /**
+         * @deprecated Since SDK 2.9.0. conditionalFormatting is being moved from
+         * columnProperties to visualProps.columnVisualProps[columnId].conditionalFormatting.
+         * Please use visualProps.columnVisualProps for conditional formatting configuration.
+         */
         conditionalFormatting?: Maybe<ConditionalFormatting>;
         numberFormatting?: Maybe<FormatConfig>;
     };

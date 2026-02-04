@@ -369,16 +369,36 @@ export type ValidationResponse = {
 
 /**
  * Custom Visual props is the stored metadata for the visual props definition
- * configured by the user in the visual prop editor
+ * configured by the user in the visual prop editor.
  * The object is defined by the visual prop types. See VisualPropEditorDefinition.
  * If there is any local state specific to charts needs to be maintained on save answer, store it
  * in VisualProps, with visualProps.clientState variable. The clientState variable should be a
  * string, preferrably a result of JSON.stringify(<yourlocalClientState>).
+ *
+ * @version SDK: 2.0.0 | ThoughtSpot:
+ * After migrating to new settings (SDK >= 2.0.0), visualProps structure will be:
+ * {
+ *   clientState,
+ *   columnVisualProps,
+ *   axisVisualProps,
+ *   dataLabelsVisualProps,
+ *   tooltipVisualProps,
+ *   legendVisualProps,
+ *   dataLabelVisualProps,
+ *   displayVisualProps
+ * }
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * conditionalFormatting will be inside columnVisualProps:
+ * columnVisualProps[columnId] = {
+ *   ...otherSettings,
+ *   conditionalFormatting
+ * }
+ *
  * @remark
- * only values stored in clientSate variable will be preserved on changing the
- * visualPropeditorDefinition, any other variable store would not be preserved
+ * only values stored in clientState variable will be preserved on changing the
+ * visualPropEditorDefinition, any other variable stored would not be preserved
  * @group Chart Model
- * @version SDK: 0.1 | ThoughtSpot:
  */
 export type VisualProps = unknown;
 
