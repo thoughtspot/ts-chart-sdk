@@ -61,7 +61,7 @@ export enum AccordionVariant {
  */
 export enum AnswerPropertyKeys {
     /** The name of the property */
-    NAME = 'name',
+    COLUMN_NAME = 'columnName',
     /** Sort configuration */
     SORT_CONFIG = 'sortConfig',
     /** Number formatter */
