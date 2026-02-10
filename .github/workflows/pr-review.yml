@@ -1,0 +1,90 @@
+name: Claude Code Review
+
+on:
+    # Trigger 1: Run on normal PR activity
+    pull_request:
+        types: [opened, synchronize, ready_for_review, reopened]
+    issue_comment:
+        types: [created]
+
+jobs:
+    claude:
+        # Only run if:
+        # 1. It is a Pull Request event
+        # 2. OR it is a comment on a PR (not an issue) AND the comment contains "@claude"
+        if: |
+            github.event_name == 'pull_request' || 
+            (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude'))
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            issues: write
+            id-token: write
+            actions: read # Required for Claude to read CI results on PRs
+        steps:
+            - name: Setup Context
+              id: context
+              run: |
+                  # Initialize variables
+                  body="${{ github.event.comment.body }}"
+                  if [[ "${{ github.event_name }}" == "issue_comment" && ${#body} -ge 8 ]]; then
+                    echo "Detected ChatOps command via comment."
+
+                    # 1. Set PR Number from issue object
+                    echo "PR_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+
+                    # 2. Set checkout ref to the PR head (so we see the code)
+                    echo "CHECKOUT_REF=refs/pull/${{ github.event.issue.number }}/head" >> $GITHUB_ENV
+
+                    # 3. Set Prompt to the user's comment (e.g., "@claude fix the naming")
+                    echo "CLAUDE_PROMPT<<EOF"
+                    echo "${{ github.event.comment.body }}"
+                    echo "Reply to above comment in context of PR_NUMBER: ${{ github.event.issue.number }}"
+                    echo "EOF" >> $GITHUB_ENV
+                  else
+                    echo "Detected standard PR event."
+
+                    # 1. Set PR Number from PR object
+                    echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+                    # 2. Set checkout ref to the PR head
+                    echo "CHECKOUT_REF=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+
+                    # 3. Set Prompt to the Standard Review Template
+                    # We use EOF delimiter for multi-line strings in GITHUB_ENV
+                    {
+                      echo "CLAUDE_PROMPT<<EOF"
+                      echo "/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}"
+                      echo "EOF"
+                    } >> $GITHUB_ENV
+                  fi
+
+            - name: Checkout repository
+              uses: actions/checkout@v5
+              with:
+                  ref: ${{ env.CHECKOUT_REF }}
+                  fetch-depth: 2
+
+            - name: Check for merge commit
+              id: merge_check
+              run: |
+                  # A merge commit has 2+ parents. Count them.
+                  PARENT_COUNT=$(git log -1 --format='%P' | wc -w | tr -d ' ')
+                  echo "parent_count=$PARENT_COUNT"
+                  if [ "$PARENT_COUNT" -gt 1 ]; then
+                    echo "is_merge=true" >> $GITHUB_OUTPUT
+                    echo "Skipping review: HEAD is a merge commit."
+                  else
+                    echo "is_merge=false" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Run Claude Code
+              if: steps.merge_check.outputs.is_merge != 'true'
+              id: claude
+              uses: anthropics/claude-code-action@v1
+              with:
+                  anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+                  prompt: ${{ env.CLAUDE_PROMPT }}
+                  claude_args: |
+                      --verbose --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git*),Bash(sed),Bash(echo),Bash(cat),Bash(ls)"
