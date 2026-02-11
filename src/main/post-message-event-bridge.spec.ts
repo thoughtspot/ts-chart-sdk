@@ -10,6 +10,7 @@ import {
 } from 'promise-postmessage';
 import {
     initMessageListener,
+    PostMessageError,
     postMessageToHostApp,
 } from './post-message-event-bridge';
 
@@ -111,8 +112,18 @@ describe('postMessageToHostApp', () => {
             throw new Error('on message should have been initialized');
         }
 
-        // Wait for the promise to reject
+        // Wait for the promise to reject with PostMessageError
         await expect(promise).rejects.toThrow('Some error');
+        await expect(promise).rejects.toBeInstanceOf(PostMessageError);
+
+        // Verify the error carries the eventType context
+        try {
+            await promise;
+        } catch (err) {
+            expect(err).toBeInstanceOf(PostMessageError);
+            expect((err as PostMessageError).eventType).toBe(eventType);
+            expect((err as PostMessageError).name).toBe('PostMessageError');
+        }
 
         // Verify that the postMessage function was called with the correct
         // arguments
