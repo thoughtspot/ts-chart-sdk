@@ -88,7 +88,7 @@ export enum ChartToTSEvent {
      * Allows forwarding arbitrary chart events (click, hover, keypress, etc.)
      * from iframe to parent.
      *
-     * @version SDK: 2.9.0 | ThoughtSpot:
+     * @version SDK: 2.9.2 | ThoughtSpot:
      */
     DispatchChartInteraction = 'DispatchChartInteraction',
 }
