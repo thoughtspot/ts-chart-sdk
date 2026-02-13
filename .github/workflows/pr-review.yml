@@ -87,4 +87,4 @@ jobs:
                   anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
                   prompt: ${{ env.CLAUDE_PROMPT }}
                   claude_args: |
-                      --verbose --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git*),Bash(sed),Bash(echo),Bash(cat),Bash(ls)"
+                      --model claude-sonnet-4-20250514 --verbose --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git*),Bash(sed),Bash(echo),Bash(cat),Bash(ls)"
