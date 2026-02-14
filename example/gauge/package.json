@@ -13,8 +13,8 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "@thoughtspot/ts-chart-sdk": "0.0.2-alpha.16",
+    "@thoughtspot/ts-chart-sdk": "1.0.0",
     "highcharts": "^11.1.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   }
 }
