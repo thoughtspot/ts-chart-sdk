@@ -82,7 +82,149 @@ export enum ChartToTSEvent {
      * @version SDK: 2.8.0 | ThoughtSpot:
      */
     TrackChartInteraction = 'TrackChartInteraction',
+
+    /**
+     * Dispatch chart interactions to parent window.
+     * Allows forwarding arbitrary chart events (click, hover, keypress, etc.)
+     * from iframe to parent.
+     *
+     * @version SDK: 2.9.2 | ThoughtSpot:
+     */
+    DispatchChartInteraction = 'DispatchChartInteraction',
 }
+
+/**
+ * The type of DOM interaction being dispatched from the chart iframe.
+ * Extensible -- add new types as needed.
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export enum DispatchChartInteractionType {
+    /**
+     * @version SDK: 2.9.0 | ThoughtSpot:
+     * Click event support for forwarding to parent window.
+     */
+    PointerDown = 'PointerDown',
+    // Future: Hover = 'Hover', KeyPress = 'KeyPress', etc.
+}
+
+/**
+ * The intended use case / purpose for dispatching this interaction.
+ * Tells the app side what to DO with the received event.
+ *
+ * The app-side event processor uses this to route execution:
+ * - TriggerOnParent: Re-dispatch as a synthetic DOM event on the parent window
+ * - Future use cases can trigger different app-side behaviors
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export enum DispatchChartInteractionUseCase {
+    /**
+     * Trigger the event on the parent window as a synthetic DOM event.
+     * The app side will create a new event with adjusted iframe coordinates
+     * and dispatch it on the parent document.
+     * @version SDK: 2.9.0 | ThoughtSpot:
+     */
+    TriggerOnParent = 'TriggerOnParent',
+    // Future use cases:
+    // "Add Comment at the selected point",
+    // "Trigger cross iframe interaction", etc.
+}
+
+/**
+ * Click-specific event payload.
+ * Contains coordinates and optional metadata about the click target.
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface PointerDownEventPayload {
+    /**
+     * Position relative to the iframe viewport
+     */
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+
+    /**
+     * Identifier for what was clicked (e.g., 'axis-label', 'data-point')
+     */
+    targetId: string;
+
+    /**
+     * Optional scoped data about the click target
+     */
+    targetData?: Record<string, unknown>;
+}
+
+// Future event payloads will be added here:
+// export interface HoverEventPayload { ... }
+// export interface KeyPressEventPayload { ... }
+
+/**
+ * Base structure for all dispatch chart interaction events.
+ * Uses discriminated union pattern for type-safe payload handling.
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+interface BaseDispatchChartInteractionEventPayload {
+    /**
+     * What kind of DOM interaction occurred (discriminator for type narrowing)
+     */
+    type: DispatchChartInteractionType;
+
+    /**
+     * Array of use cases for this interaction.
+     * Multiple use cases allow the app side to execute multiple behaviors
+     * (e.g., TriggerOnParent + TrackAnalytics).
+     */
+    useCases: DispatchChartInteractionUseCase[];
+}
+
+/**
+ * PointerDown interaction event payload.
+ * Tightly couples PointerDown type with PointerDownEventPayload.
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface PointerDownDispatchChartInteractionEventPayload
+    extends BaseDispatchChartInteractionEventPayload {
+    type: DispatchChartInteractionType.PointerDown;
+    eventPayload: PointerDownEventPayload;
+}
+
+// Future event types will be added here:
+// export interface HoverDispatchChartInteractionEventPayload
+//     extends BaseDispatchChartInteractionEventPayload {
+//     type: DispatchChartInteractionType.Hover;
+//     eventPayload: HoverEventPayload;
+// }
+
+/**
+ * Discriminated union of all dispatch chart interaction event payloads.
+ * TypeScript will narrow the type based on the 'type' discriminator.
+ *
+ * @example PointerDown forwarded to parent:
+ * {
+ *   type: DispatchChartInteractionType.PointerDown,
+ *   useCases: [DispatchChartInteractionUseCase.TriggerOnParent],
+ *   eventPayload: {
+ *     event: { clientX: 120, clientY: 45 },
+ *     targetId: 'axis-label',
+ *     targetData: { columnId: 'col-123' },
+ *   }
+ * }
+ *
+ *
+ * @version SDK: 2.9.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export type DispatchChartInteractionEventPayload =
+    PointerDownDispatchChartInteractionEventPayload;
+// Future: | HoverDispatchChartInteractionEventPayload
+//         | KeyPressDispatchChartInteractionEventPayload;
 
 /**
  * This map defines the event type and its corresponding payload needed by the event
@@ -218,6 +360,16 @@ export interface ChartToTSEventsPayloadMap {
      * @version SDK: 2.8.0 | ThoughtSpot:
      */
     [ChartToTSEvent.TrackChartInteraction]: [TrackChartInteractionEventPayload];
+
+    /**
+     * Trigger this event to dispatch a chart interaction to the parent window.
+     * Used for forwarding events from iframe to parent (e.g., clicks on axis labels).
+     *
+     * @version SDK: 2.9.0 | ThoughtSpot:
+     */
+    [ChartToTSEvent.DispatchChartInteraction]: [
+        DispatchChartInteractionEventPayload,
+    ];
 }
 
 /**
