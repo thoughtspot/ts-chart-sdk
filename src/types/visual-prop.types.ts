@@ -134,6 +134,7 @@ export enum SettingsElementType {
     NUMBER_FORMATTER = 'NumberFormatter',
     LINE_FORMATTER = 'LineFormatter',
     INTERVAL_FORMATTER = 'IntervalFormatter',
+    NUMBER_FILTER_INPUT = 'NumberFilterInput',
     BACKGROUND_FORMATTER = 'BackgroundFormatter',
     MARKER_FORMATTER = 'MarkerFormatter',
     VIEW = 'View',
