@@ -8,6 +8,7 @@
 
 import { Action } from './actions.types';
 import { ChartColumn } from './answer-column.types';
+import { ConditionalMetric } from './conditional-formatting.types';
 import type { ChartConfigEditorDefinition } from './configurator.types';
 import type { VisualPropEditorDefinition } from './visual-prop.types';
 
@@ -272,6 +273,79 @@ export type QueryData = {
     totalRowCount: number;
 };
 
+export interface ColumnDataLabelFilter {
+    value: number;
+    operator: string;
+}
+
+export interface ColumnDataLabelProperty {
+    columnId: string;
+    properties: {
+        isVisible: boolean;
+        filter: ColumnDataLabelFilter | null;
+    };
+}
+
+export interface AxisOverrideProperty {
+    linkedColumns: string[];
+    properties: {
+        isNameVisible?: boolean;
+        isLabelVisible?: boolean;
+        yAxisRange?: { min: number | null; max: number | null };
+        isGridLineEnabled?: boolean | null;
+    };
+}
+
+export interface ColumnOverrideProperty {
+    columnId: string;
+    properties: {
+        color?: string;
+        conditionalFormatting?: { rows: ConditionalMetric[] };
+    };
+}
+
+/**
+ * Visual overrides supplied by ThoughtSpot to the chart at render time.
+ * These carry host-level defaults and user-configurable overrides for
+ * legend, data labels, display, axis, and column properties.
+ *
+ * @group Chart Model
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export interface ChartVisualOverrides {
+    __typename?: string;
+    defaults?: {
+        colorPalatte?: { colors: string[] };
+    };
+    overrides?: {
+        columnProperties?: ColumnOverrideProperty[];
+        axisProperties?: AxisOverrideProperty[];
+        legendProperties?: {
+            showLegend?: boolean;
+            position?: string;
+        };
+        dataLabelProperties?: {
+            allLabels?: boolean;
+            stackLabelsProperties?: { isVisible?: boolean };
+            columnDataLabelProperties?: ColumnDataLabelProperty[];
+        };
+        displayProperties?: {
+            kpiDisplayProperties?: { customCompare?: string };
+            summariesState?: {
+                showRowTotals?: boolean;
+                showColumnTotals?: boolean;
+                showRowGrandTotals?: boolean;
+                showColumnGrandTotals?: boolean;
+            };
+            regressionLineProperties?: { enabled?: boolean };
+            gridLineProperties?: {
+                xGridlineEnabled?: boolean;
+                yGridlineEnabled?: boolean;
+            };
+        };
+    };
+}
+
 /**
  *
  * @group Chart Model
@@ -308,6 +382,13 @@ export interface ChartModel {
         // chart config stored by chart developer
         chartConfig?: ChartConfig[];
     };
+    /**
+     * Visual overrides provided by ThoughtSpot to set host-controlled
+     * defaults and user-facing overrides (legend, data labels, axis, etc.)
+     *
+     * @version SDK: 9.10.0 | ThoughtSpot:
+     */
+    visualOverrides?: ChartVisualOverrides;
 }
 
 // Validation Response for valid config or visual props
