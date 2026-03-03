@@ -273,33 +273,104 @@ export type QueryData = {
     totalRowCount: number;
 };
 
-export interface ColumnDataLabelFilter {
-    value: number;
-    operator: string;
+/**
+ * Comparison operator used in a data label filter condition.
+ * Mirrors the server-side `DataLabelFilterOperator` proto enum.
+ *
+ * @group Chart Model
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ */
+export enum DataLabelFilterOperator {
+    FILTER_OPERATOR_UNSPECIFIED = 'FILTER_OPERATOR_UNSPECIFIED',
+    LESS_THAN = 'LESS_THAN',
+    GREATER_THAN = 'GREATER_THAN',
+    LESS_THAN_OR_EQUAL_TO = 'LESS_THAN_OR_EQUAL_TO',
+    GREATER_THAN_OR_EQUAL_TO = 'GREATER_THAN_OR_EQUAL_TO',
+    EQUAL_TO = 'EQUAL_TO',
 }
 
+/**
+ * Position options for the chart legend.
+ * Mirrors the server-side `LegendPositionOptions` proto enum.
+ *
+ * @group Chart Model
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ */
+export enum LegendPositionOptions {
+    BOTTOM_LEGEND = 'BOTTOM_LEGEND',
+    TOP_LEGEND = 'TOP_LEGEND',
+    LEFT_LEGEND = 'LEFT_LEGEND',
+    RIGHT_LEGEND = 'RIGHT_LEGEND',
+}
+
+/**
+ * Filter condition attached to a per-column data label override.
+ * Controls whether a label is shown based on a value threshold.
+ *
+ * @group Chart Model
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ */
+export interface ColumnDataLabelFilter {
+    /** Threshold value used in the filter comparison. */
+    value: number;
+    /** Comparison operator for the filter condition. */
+    operator: DataLabelFilterOperator;
+}
+
+/**
+ * Per-column data label override specifying visibility and an optional
+ * filter condition for a specific column in the chart.
+ *
+ * @group Chart Model
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ */
 export interface ColumnDataLabelProperty {
+    /** The ID of the column these label properties apply to. */
     columnId: string;
     properties: {
+        /** Whether the data label is visible for this column. */
         isVisible: boolean;
+        /** Optional filter that conditionally shows the label; null means no filter. */
         filter: ColumnDataLabelFilter | null;
     };
 }
 
+/**
+ * Axis-level override for one logical axis group. Multiple columns sharing
+ * the same axis are listed in `linkedColumns`; when joined with `__` they
+ * form the shared axis identifier used in visual props.
+ *
+ * @group Chart Model
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ */
 export interface AxisOverrideProperty {
+    /** Column IDs that are linked to this axis group. */
     linkedColumns: string[];
     properties: {
+        /** Whether the axis name (title) is visible. */
         isNameVisible?: boolean;
+        /** Whether the axis labels (tick marks) are visible. */
         isLabelVisible?: boolean;
+        /** Custom min/max range for the y-axis; null means auto. */
         yAxisRange?: { min: number | null; max: number | null };
+        /** Whether grid lines are enabled for this axis. */
         isGridLineEnabled?: boolean | null;
     };
 }
 
+/**
+ * Per-column visual override for color and conditional formatting.
+ *
+ * @group Chart Model
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ */
 export interface ColumnOverrideProperty {
+    /** The ID of the column these properties apply to. */
     columnId: string;
     properties: {
+        /** Override color for the column series. */
         color?: string;
+        /** Conditional formatting rules applied to the column. */
         conditionalFormatting?: { rows: ConditionalMetric[] };
     };
 }
@@ -310,19 +381,19 @@ export interface ColumnOverrideProperty {
  * legend, data labels, display, axis, and column properties.
  *
  * @group Chart Model
- * @version SDK: 0.1 | ThoughtSpot:
+ * @version SDK: 2.10.0 | ThoughtSpot:
  */
 export interface ChartVisualOverrides {
     __typename?: string;
     defaults?: {
-        colorPalatte?: { colors: string[] };
+        colorPalette?: { colors: string[] };
     };
     overrides?: {
         columnProperties?: ColumnOverrideProperty[];
         axisProperties?: AxisOverrideProperty[];
         legendProperties?: {
             showLegend?: boolean;
-            position?: string;
+            position?: LegendPositionOptions;
         };
         dataLabelProperties?: {
             allLabels?: boolean;
@@ -386,7 +457,7 @@ export interface ChartModel {
      * Visual overrides provided by ThoughtSpot to set host-controlled
      * defaults and user-facing overrides (legend, data labels, axis, etc.)
      *
-     * @version SDK: 9.10.0 | ThoughtSpot:
+     * @version SDK: 2.10.0 | ThoughtSpot:
      */
     visualOverrides?: ChartVisualOverrides;
 }
