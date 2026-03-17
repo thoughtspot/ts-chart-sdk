@@ -837,17 +837,25 @@ export class CustomChartContext {
         activeColumnId?: string,
         changeInfo?: VisualPropsChangeInfo,
     ) {
-        const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
-            activeColumnId,
-            currentValidationState,
-        );
-        const chartConfigEditorDefinition = this.getChartConfigEditorDefinition(
-            currentValidationState,
-        );
         const syncedCustomVisualProps = this.syncCustomVisualProps(
             currentValidationState.visualProps,
             changeInfo,
         );
+        const currentVisualProps = {
+            ...currentValidationState,
+            visualProps: _.merge(
+                {},
+                currentValidationState?.visualProps ?? {},
+                syncedCustomVisualProps ?? {},
+            ),
+        };
+
+        const visualPropEditorDefinition = this.getVisualPropEditorDefinition(
+            activeColumnId,
+            currentVisualProps,
+        );
+        const chartConfigEditorDefinition =
+            this.getChartConfigEditorDefinition(currentVisualProps);
 
         return {
             ...validationResponse,

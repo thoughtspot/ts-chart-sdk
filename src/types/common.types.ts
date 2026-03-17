@@ -353,8 +353,6 @@ export interface AxisOverrideProperty {
         isLabelVisible?: boolean;
         /** Custom min/max range for the y-axis; null means auto. */
         yAxisRange?: { min: number | null; max: number | null };
-        /** Whether grid lines are enabled for this axis. */
-        isGridLineEnabled?: boolean | null;
     };
 }
 
@@ -384,7 +382,6 @@ export interface ColumnOverrideProperty {
  * @version SDK: 2.10.0 | ThoughtSpot:
  */
 export interface ChartVisualOverrides {
-    __typename?: string;
     defaults?: {
         colorPalette?: { colors: string[] };
     };
@@ -394,6 +391,7 @@ export interface ChartVisualOverrides {
         legendProperties?: {
             showLegend?: boolean;
             position?: LegendPositionOptions;
+            colorPalette?: { colors: string[] };
         };
         dataLabelProperties?: {
             allLabels?: boolean;
