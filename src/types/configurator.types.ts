@@ -91,7 +91,7 @@ export interface ChartConfigSection {
      * @version SDK: 0.1 | ThoughtSpot:
      */
     allowMeasureValueColumn?: boolean;
-     /**
+    /**
      * Allow measure value Column oly in the last position
      *
      * @default true
