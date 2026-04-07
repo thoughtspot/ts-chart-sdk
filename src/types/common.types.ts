@@ -639,6 +639,7 @@ export type ChartSdkCustomStylingConfig = {
     numColorPalettes?: number;
     disableColorRotation?: boolean;
     chartFeatureToFontGuid?: Record<CustomizableChartFeature, string>;
+    muzeFeatureToFontGuid?: Record<string, string>;
     fontFaces?: Array<TSFontFace>;
 };
 
