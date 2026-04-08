@@ -92,6 +92,13 @@ export interface ChartConfigSection {
      */
     allowMeasureValueColumn?: boolean;
     /**
+     * Allow measure value Column oly in the last position
+     *
+     * @default true
+     * @version SDK: 2.11.2 | ThoughtSpot:
+     */
+    allowValuesOnlyInLastPosition?: boolean;
+    /**
      * Allow flat items on the Section
      *
      * @default true
