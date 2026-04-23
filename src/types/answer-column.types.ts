@@ -333,4 +333,12 @@ export interface ChartColumn {
      * @version SDK: 2.7.5 | ThoughtSpot:
      */
     isAggregateApplied?: boolean;
+
+    /**
+     * The ID of the formula applied to this column.
+     *
+     * @version SDK: 2.11.3 | ThoughtSpot:
+     */
+    formulaId?: string;
+
 }
