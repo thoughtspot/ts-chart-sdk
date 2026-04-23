@@ -446,6 +446,12 @@ export interface ChartModel {
      * @version SDK: 2.3.0 | ThoughtSpot:
      */
     sortInfo?: SortInfo[];
+    /**
+     * Top info for the chart
+     *
+     * @version SDK: 2.11.4 | ThoughtSpot:
+     */
+    topInfo?: SortInfo[];
     visualProps?: VisualProps;
     config: {
         // chart config stored by chart developer
