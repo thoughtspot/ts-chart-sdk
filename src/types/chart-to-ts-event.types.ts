@@ -106,7 +106,21 @@ export enum DispatchChartInteractionType {
      * Click event support for forwarding to parent window.
      */
     PointerDown = 'PointerDown',
-    // Future: Hover = 'Hover', KeyPress = 'KeyPress', etc.
+    /**
+     * Right-click on a visualization data point.
+     * @version SDK: 2.10.0 | ThoughtSpot:
+     */
+    VizPointRightClick = 'VizPointRightClick',
+    /**
+     * Click on a visualization data point.
+     * @version SDK: 2.10.0 | ThoughtSpot:
+     */
+    VizPointClick = 'VizPointClick',
+    /**
+     * Double-click on a visualization data point.
+     * @version SDK: 2.10.0 | ThoughtSpot:
+     */
+    VizPointDoubleClick = 'VizPointDoubleClick',
 }
 
 /**
@@ -115,7 +129,7 @@ export enum DispatchChartInteractionType {
  *
  * The app-side event processor uses this to route execution:
  * - TriggerOnParent: Re-dispatch as a synthetic DOM event on the parent window
- * - Future use cases can trigger different app-side behaviors
+ * - DispatchEmbedEvent: Dispatch an embed event to the ThoughtSpot embed host
  *
  * @version SDK: 2.9.0 | ThoughtSpot:
  * @group Chart to ThoughtSpot Events
@@ -128,9 +142,11 @@ export enum DispatchChartInteractionUseCase {
      * @version SDK: 2.9.0 | ThoughtSpot:
      */
     TriggerOnParent = 'TriggerOnParent',
-    // Future use cases:
-    // "Add Comment at the selected point",
-    // "Trigger cross iframe interaction", etc.
+    /**
+     * Dispatch an embed event to the ThoughtSpot embed host.
+     * @version SDK: 2.10.0 | ThoughtSpot:
+     */
+    DispatchEmbedEvent = 'DispatchEmbedEvent',
 }
 
 /**
@@ -195,12 +211,77 @@ export interface PointerDownDispatchChartInteractionEventPayload
     eventPayload: PointerDownEventPayload;
 }
 
-// Future event types will be added here:
-// export interface HoverDispatchChartInteractionEventPayload
-//     extends BaseDispatchChartInteractionEventPayload {
-//     type: DispatchChartInteractionType.Hover;
-//     eventPayload: HoverEventPayload;
-// }
+/**
+ * Event payload for right-click on a visualization data point.
+ *
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface VizPointRightClickDispatchEventPayload {
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    clickedPoint: Point;
+}
+
+/**
+ * DispatchChartInteraction variant for viz point right-click.
+ * Use with useCases: [DispatchChartInteractionUseCase.DispatchEmbedEvent].
+ *
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface VizPointRightClickDispatchChartInteractionEventPayload
+    extends BaseDispatchChartInteractionEventPayload {
+    type: DispatchChartInteractionType.VizPointRightClick;
+    eventPayload: VizPointRightClickDispatchEventPayload;
+}
+
+/**
+ * Event payload for click on a visualization data point.
+ *
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface VizPointClickDispatchEventPayload {
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    clickedPoint: Point;
+}
+
+/**
+ * DispatchChartInteraction variant for viz point click.
+ * Use with useCases: [DispatchChartInteractionUseCase.DispatchEmbedEvent].
+ *
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface VizPointClickDispatchChartInteractionEventPayload
+    extends BaseDispatchChartInteractionEventPayload {
+    type: DispatchChartInteractionType.VizPointClick;
+    eventPayload: VizPointClickDispatchEventPayload;
+}
+
+/**
+ * Event payload for double-click on a visualization data point.
+ *
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface VizPointDoubleClickDispatchEventPayload {
+    event: Pick<PointerEvent, 'clientX' | 'clientY'>;
+    clickedPoint: Point;
+}
+
+/**
+ * DispatchChartInteraction variant for viz point double-click.
+ * Use with useCases: [DispatchChartInteractionUseCase.DispatchEmbedEvent].
+ *
+ * @version SDK: 2.10.0 | ThoughtSpot:
+ * @group Chart to ThoughtSpot Events
+ */
+export interface VizPointDoubleClickDispatchChartInteractionEventPayload
+    extends BaseDispatchChartInteractionEventPayload {
+    type: DispatchChartInteractionType.VizPointDoubleClick;
+    eventPayload: VizPointDoubleClickDispatchEventPayload;
+}
 
 /**
  * Discriminated union of all dispatch chart interaction event payloads.
@@ -222,9 +303,10 @@ export interface PointerDownDispatchChartInteractionEventPayload
  * @group Chart to ThoughtSpot Events
  */
 export type DispatchChartInteractionEventPayload =
-    PointerDownDispatchChartInteractionEventPayload;
-// Future: | HoverDispatchChartInteractionEventPayload
-//         | KeyPressDispatchChartInteractionEventPayload;
+    | PointerDownDispatchChartInteractionEventPayload
+    | VizPointRightClickDispatchChartInteractionEventPayload
+    | VizPointClickDispatchChartInteractionEventPayload
+    | VizPointDoubleClickDispatchChartInteractionEventPayload;
 
 /**
  * This map defines the event type and its corresponding payload needed by the event
