@@ -340,5 +340,4 @@ export interface ChartColumn {
      * @version SDK: 2.11.3 | ThoughtSpot:
      */
     formulaId?: string;
-
 }
