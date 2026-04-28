@@ -62,6 +62,11 @@ export enum ChartToTSEvent {
      */
     ShowGlobalAlertToast = 'ShowGlobalAlertToast',
     /**
+     * Global banner alert events.
+     */
+    ShowGlobalAlertBanner = 'ShowGlobalAlertBanner',
+    HideGlobalAlertBanner = 'HideGlobalAlertBanner',
+    /**
      * Label translation events.
      */
     GetLabelTranslation = 'GetLabelTranslation',
@@ -389,6 +394,15 @@ export interface ChartToTSEventsPayloadMap {
      */
     [ChartToTSEvent.ShowGlobalAlertToast]: [ShowGlobalAlertToastEventPayload];
     /**
+     * Trigger to show a persistent banner alert that stays visible until
+     * hidden via HideGlobalAlertBanner or dismissed by the user.
+     */
+    [ChartToTSEvent.ShowGlobalAlertBanner]: [ShowGlobalAlertBannerEventPayload];
+    /**
+     * Trigger to hide the currently-visible global banner alert. No payload.
+     */
+    [ChartToTSEvent.HideGlobalAlertBanner]: [];
+    /**
      * Trigger to update the visual props
      *
      * @version SDK: 0.0.1-alpha.4 | ThoughtSpot:
@@ -666,6 +680,44 @@ export interface ShowGlobalAlertToastEventPayload {
      * Show a primary button with callback
      */
     primaryActionButton?: AlertActionButton;
+}
+
+/**
+ * Visual style of a global banner alert.
+ */
+export enum BannerAlertType {
+    INFO = 'info',
+    WARNING = 'warning',
+    ERROR = 'error',
+    SUCCESS = 'success',
+}
+
+/**
+ * Payload for ChartToTSEvent.ShowGlobalAlertBanner. Mirrors the toast payload
+ * where it makes sense, but a banner is persistent — it only disappears when
+ * the chart emits HideGlobalAlertBanner or the user clicks the close button.
+ */
+export interface ShowGlobalAlertBannerEventPayload {
+    /**
+     * Fallback i18n message to show when labelTranslation does not resolve.
+     */
+    alertMessage: string;
+    /**
+     * Label-translation id (resolved by the host) that takes precedence over
+     * alertMessage when present.
+     */
+    labelTranslation?: string;
+    /**
+     * Visual style of the banner. Defaults to WARNING.
+     */
+    type?: BannerAlertType;
+    /**
+     * Whether to render the close (×) button so the user can dismiss the
+     * banner manually. The banner remains visible until either this button
+     * is clicked or HideGlobalAlertBanner is emitted.
+     * @default true
+     */
+    showCloseButton?: boolean;
 }
 
 /**
