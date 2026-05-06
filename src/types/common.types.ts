@@ -784,6 +784,11 @@ export interface AppConfig {
          * @version SDK: 2.7.8 | Thoughtspot;
          */
         isEmbedded?: boolean;
+        /*
+         * Flag set to true when chart is rendered in a Spotter Frame
+         * @version SDK: 2.13.1 | Thoughtspot;
+         */
+        isSpotterContext?: boolean;
     };
     /**
      * @type {UserInfo}
