@@ -149,6 +149,14 @@ export enum SettingsElementType {
     CHART_DATA_COLOR_PICKER = 'ChartDataColorPicker',
     NUMERIC_FILTER_INPUT = 'NumericFilterInput',
     COLOR_PICKER_V2 = 'ColorPickerV2',
+    /**
+     * Gradient color picker with low / mid / high color stops, numeric
+     * range inputs and an "auto-scale with data" toggle. Renders the gradient
+     * picker used for gradient legends and heatmap / treemap-style coloring.
+     *
+     * @version SDK: 2.13.2 | ThoughtSpot:
+     */
+    GRADIENT_PICKER_V2 = 'GradientPickerV2',
     COLUMN_RENAME_INPUT = 'ColumnRenameInput',
     SORT_FORMAT = 'SortFormat',
     /**
