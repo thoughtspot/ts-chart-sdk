@@ -789,6 +789,11 @@ export interface AppConfig {
          * @version SDK: 2.13.1 | Thoughtspot;
          */
         isSpotterContext?: boolean;
+        /*
+         * Flag set to true when chart should be rendered in dark mode
+         * @version SDK: 2.13.3 | ThoughtSpot;
+         */
+        isDarkMode?: boolean;
     };
     /**
      * @type {UserInfo}
