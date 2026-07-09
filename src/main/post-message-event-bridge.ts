@@ -8,6 +8,28 @@ import { timeout } from './util';
 
 const TIMEOUT_THRESHOLD = 30000; // 30sec
 
+/**
+ * Custom error for postMessage bridge failures.
+ * Carries the original error message from the host response
+ * and the event type that triggered the error.
+ * Allows consumers to distinguish bridge errors via `instanceof`.
+ *
+ * @version SDK: 0.1 | ThoughtSpot:
+ */
+export class PostMessageError extends Error {
+    /** The event type that was being sent when the error occurred */
+    public readonly eventType?: ChartToTSEvent;
+
+    constructor(message: string, eventType?: ChartToTSEvent) {
+        super(message);
+        this.name = 'PostMessageError';
+        this.eventType = eventType;
+
+        // Maintain proper prototype chain for instanceof checks
+        Object.setPrototypeOf(this, PostMessageError.prototype);
+    }
+}
+
 const elSelector = new URL(import.meta.url).searchParams.get('elSelector');
 const target =
     (elSelector && (document.querySelector(elSelector) as HTMLElement)) ||
@@ -72,7 +94,7 @@ const postMessageToHostApp = async (
         'ChartContext: postMessage operation timed out.',
     );
     if (resp?.hasError) {
-        throw new Error(resp.error);
+        throw new PostMessageError(resp.error, eventType);
     }
     return resp;
 };

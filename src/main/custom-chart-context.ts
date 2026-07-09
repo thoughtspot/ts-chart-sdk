@@ -175,6 +175,15 @@ export type ChartConfigParameters = {
          * @version SDK: 0.1 | ThoughtSpot:
          */
         measureValueColumnAlias?: string | TranslatedValue;
+
+        /**
+         * Alias for the clientState name.
+         * This allows users to define a custom name for the clientState name.
+         *
+         * @default 'Measure Name'
+         * @version SDK: 0.1 | ThoughtSpot:
+         */
+        clientStateAlias: string | TranslatedValue;
     };
 
     /**
@@ -568,7 +577,7 @@ export class CustomChartContext {
         eventType: T,
         callbackFn: TSToChartInternalEventsPayloadMap[T],
     ): void {
-        if (_.isNil(this.eventListeners[eventType])) {
+        if (_.isEmpty(this.eventListeners[eventType])) {
             this.eventListeners[eventType] = [];
         }
         this.eventListeners[eventType].push(callbackFn);
