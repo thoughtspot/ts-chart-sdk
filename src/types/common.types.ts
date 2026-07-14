@@ -27,6 +27,7 @@ export enum SortCategory {
     NONE = 'NONE',
     ALPHA = 'ALPHA',
     CUSTOM = 'CUSTOM',
+    BY_MEASURE = 'BY_MEASURE'
 }
 
 export type Scalars = {
@@ -605,6 +606,8 @@ export type SortInfo = {
      * @version SDK: 2.3.0 | ThoughtSpot:
      */
     customOrder?: string[];
+     
+    sortByColumnId : string;
 };
 
 /**
