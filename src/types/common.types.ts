@@ -612,7 +612,7 @@ export type SortInfo = {
      *
      * @version SDK: 2.13.4 | ThoughtSpot:
      */
-    sortByColumnId: string;
+    sortByColumnId?: string;
 };
 
 /**
