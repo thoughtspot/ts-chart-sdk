@@ -186,6 +186,19 @@ export interface SettingsElement {
      */
     key?: string;
     /**
+     * Pins the element's storage location in `visualProps`, decoupling it from
+     * its position in the settings tree. When set, the value is read, written,
+     * and defaulted at this path instead of the tree-derived one, so the control
+     * can be moved in the UI without a migration for saved charts.
+     *
+     * Absolute dotted path in stored space, including the namespace, e.g.
+     * `'axisVisualProps.<fieldId>.labelRotation'`. Settings V2 only. Ignored on
+     * `isAnswerProperty` elements.
+     *
+     * @version SDK: 2.14.0 | ThoughtSpot:
+     */
+    storeKey?: string;
+    /**
      * Type of the element
      */
     elementType: SettingsElementType;
