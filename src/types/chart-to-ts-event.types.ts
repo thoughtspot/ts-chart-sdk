@@ -623,7 +623,7 @@ export interface ShowToolTipEventPayload {
      * Include the full stylesheet on every ShowToolTip; the host only
      * re-applies it when the string changes.
      *
-     * @version SDK: 2.15.0 | ThoughtSpot:
+     * @version SDK: 2.14.3 | ThoughtSpot:
      */
     customTooltipCss?: string;
     /**
