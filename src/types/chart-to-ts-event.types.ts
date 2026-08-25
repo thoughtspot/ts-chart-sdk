@@ -608,6 +608,25 @@ export interface ShowToolTipEventPayload {
      */
     customTooltipContent?: string[];
     /**
+     * Optional stylesheet for customTooltipContent. When provided,
+     * ThoughtSpot renders the custom content inside an isolated shadow
+     * root with only this CSS applied — the default tooltip chrome
+     * (background, padding, list layout) is skipped entirely, so the
+     * chart fully owns the tooltip's look. The content is sanitized
+     * before rendering, so scripts and event handlers are stripped.
+     *
+     * Charts rendered inside an iframe can use this together with
+     * customTooltipContent to hand tooltip rendering to the host
+     * document, where the tooltip cannot be clipped at the iframe
+     * bounds on small tiles.
+     *
+     * Include the full stylesheet on every ShowToolTip; the host only
+     * re-applies it when the string changes.
+     *
+     * @version SDK: 2.15.0 | ThoughtSpot:
+     */
+    customTooltipCss?: string;
+    /**
      * Information about the data point associated
      * with the tooltip
      * User can also include both point and customTooltipContent
