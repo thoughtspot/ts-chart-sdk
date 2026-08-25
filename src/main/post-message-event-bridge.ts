@@ -66,6 +66,7 @@ const postMessageToHostApp = async (
                         !!data && typeof data === 'object' && 'hasError' in data
                     );
                 },
+                closeAfterMs: TIMEOUT_THRESHOLD,
             },
         ),
         TIMEOUT_THRESHOLD,

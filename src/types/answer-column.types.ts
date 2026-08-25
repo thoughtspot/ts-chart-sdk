@@ -340,4 +340,26 @@ export interface ChartColumn {
      * @version SDK: 2.11.3 | ThoughtSpot:
      */
     formulaId?: string;
+
+    /**
+     * Display name of the data source (table / worksheet / model) that backs
+     * this column. Resolved by the host, so it is already localized and
+     * accounts for the special cases below.
+     *
+     * 1. For a column referencing exactly one table, this is that table's
+     *    display name.
+     * 2. For an in-answer formula or a filter-only column, this is the
+     *    localized "Formula" label.
+     * 3. For a column referencing multiple tables, this falls back to the
+     *    column's base name.
+     *
+     * Charts use this to show the column's origin — for example in the axis
+     * tooltip alongside the column name and {@link aggregationType}.
+     *
+     * @example
+     * "Parameters Model"
+     *
+     * @version SDK: 2.14.1 | ThoughtSpot:
+     */
+    dataSourceName?: string;
 }
