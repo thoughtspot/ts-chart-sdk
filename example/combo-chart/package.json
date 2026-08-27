@@ -13,9 +13,9 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "@thoughtspot/ts-chart-sdk": "0.0.1-alpha.9",
+    "@thoughtspot/ts-chart-sdk": "1.0.0",
     "chart.js": "^4.3.0",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   }
 }
