@@ -14,11 +14,11 @@
     "vite": "^5.3.4"
   },
   "dependencies": {
-    "@thoughtspot/ts-chart-sdk": "^0.0.2-alpha.3",
+    "@thoughtspot/ts-chart-sdk": "^1.0.0",
     "@types/chart.js": "^2.9.41",
     "chart.js": "^4.4.3",
     "chartjs-plugin-datalabels": "^2.2.0",
     "leaflet": "^1.9.4",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   }
 }
