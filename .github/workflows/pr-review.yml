@@ -10,61 +10,74 @@ on:
 jobs:
     claude:
         # Only run if:
-        # 1. It is a Pull Request event
-        # 2. OR it is a comment on a PR (not an issue) AND the comment contains "@claude"
+        # 1. It is a Pull Request event from a branch in this repository (not a fork)
+        # 2. OR it is a comment on a PR (not an issue) that contains "@claude" AND
+        #    was written by an owner, org member or collaborator of this repository
         if: |
-            github.event_name == 'pull_request' || 
-            (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude'))
+            (github.event_name == 'pull_request' &&
+             github.event.pull_request.head.repo.full_name == github.repository) ||
+            (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
+             contains(github.event.comment.body, '@claude') &&
+             contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
         runs-on: ubuntu-latest
         permissions:
-            contents: write
-            pull-requests: write
-            issues: write
-            id-token: write
+            contents: read # Review only reads the code
+            pull-requests: write # Post the review and inline comments
+            issues: write # Reply to "@claude" comments (PR comments are issue comments)
             actions: read # Required for Claude to read CI results on PRs
         steps:
             - name: Setup Context
               id: context
+              # Never put a github.event expression inside this script. Values that a
+              # user controls (comment text, branch names) are passed through env
+              # so the shell treats them as data, not as code.
+              env:
+                  EVENT_NAME: ${{ github.event_name }}
+                  COMMENT_BODY: ${{ github.event.comment.body }}
+                  ISSUE_NUMBER: ${{ github.event.issue.number }}
+                  PULL_NUMBER: ${{ github.event.pull_request.number }}
+                  REPO: ${{ github.repository }}
               run: |
-                  # Initialize variables
-                  body="${{ github.event.comment.body }}"
-                  if [[ "${{ github.event_name }}" == "issue_comment" && ${#body} -ge 8 ]]; then
+                  if [[ "$EVENT_NAME" == "issue_comment" ]]; then
                     echo "Detected ChatOps command via comment."
-
-                    # 1. Set PR Number from issue object
-                    echo "PR_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
-
-                    # 2. Set checkout ref to the PR head (so we see the code)
-                    echo "CHECKOUT_REF=refs/pull/${{ github.event.issue.number }}/head" >> $GITHUB_ENV
-
-                    # 3. Set Prompt to the user's comment (e.g., "@claude fix the naming")
-                    echo "CLAUDE_PROMPT<<EOF"
-                    echo "${{ github.event.comment.body }}"
-                    echo "Reply to above comment in context of PR_NUMBER: ${{ github.event.issue.number }}"
-                    echo "EOF" >> $GITHUB_ENV
+                    pr_number="$ISSUE_NUMBER"
                   else
                     echo "Detected standard PR event."
-
-                    # 1. Set PR Number from PR object
-                    echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-
-                    # 2. Set checkout ref to the PR head
-                    echo "CHECKOUT_REF=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
-
-                    # 3. Set Prompt to the Standard Review Template
-                    # We use EOF delimiter for multi-line strings in GITHUB_ENV
-                    {
-                      echo "CLAUDE_PROMPT<<EOF"
-                      echo "/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}"
-                      echo "EOF"
-                    } >> $GITHUB_ENV
+                    pr_number="$PULL_NUMBER"
                   fi
+
+                  if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
+                    echo "::error::Unexpected PR number"
+                    exit 1
+                  fi
+
+                  # A random delimiter, so text in the comment cannot end the
+                  # multi-line value early and add its own lines to GITHUB_ENV.
+                  delim="EOF_$(openssl rand -hex 16)"
+                  {
+                    # 1. PR number
+                    echo "PR_NUMBER=$pr_number"
+
+                    # 2. Checkout ref: the PR head, by number (never by branch name)
+                    echo "CHECKOUT_REF=refs/pull/$pr_number/head"
+
+                    # 3. Prompt: the user's comment, or the standard review template
+                    echo "CLAUDE_PROMPT<<$delim"
+                    if [[ "$EVENT_NAME" == "issue_comment" ]]; then
+                      printf '%s\n' "$COMMENT_BODY"
+                      echo "Reply to above comment in context of PR_NUMBER: $pr_number"
+                    else
+                      echo "/review-pr REPO: $REPO PR_NUMBER: $pr_number"
+                    fi
+                    echo "$delim"
+                  } >> "$GITHUB_ENV"
 
             - name: Checkout repository
               uses: actions/checkout@v5
               with:
                   ref: ${{ env.CHECKOUT_REF }}
                   fetch-depth: 2
+                  persist-credentials: false
 
             - name: Check for merge commit
               id: merge_check
@@ -85,6 +98,9 @@ jobs:
               uses: anthropics/claude-code-action@v1
               with:
                   anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+                  # Use the job token (scoped to the permissions above, expires with
+                  # the job). This also removes the need for id-token: write.
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
                   prompt: ${{ env.CLAUDE_PROMPT }}
                   claude_args: |
                       --model claude-sonnet-4-20250514 --verbose --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git*),Bash(sed),Bash(echo),Bash(cat),Bash(ls)"
