@@ -825,6 +825,11 @@ export interface AppConfig {
         sessionTimezone: string;
         numberLocale: string;
         dateLocale: string;
+        /**
+         * The viewer's own timezone (IANA name), when set. Absent on older hosts.
+         * @version SDK: 2.14.4 | ThoughtSpot:
+         */
+        userTimezone?: string;
     };
 
     /**
